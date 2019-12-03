@@ -1,6 +1,6 @@
-import {brush} from "d3-brush";
-import {event, select} from 'd3-selection';
-import {zoomTransform} from 'd3-zoom';
+import { brush } from "d3-brush";
+import { event, select } from 'd3-selection';
+import { zoomTransform } from 'd3-zoom';
 
 export function initBrush() {
   const self = this;

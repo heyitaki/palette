@@ -1,6 +1,6 @@
-import {easeLinear} from 'd3-ease';
-import {event} from 'd3-selection';
-import {zoom, zoomIdentity, zoomTransform} from 'd3-zoom';
+import { easeLinear } from 'd3-ease';
+import { event } from 'd3-selection';
+import { zoom, zoomIdentity, zoomTransform } from 'd3-zoom';
 import * as constants from '../constants/graph';
 
 export function initZoom() {
