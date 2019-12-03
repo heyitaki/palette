@@ -1,5 +1,6 @@
 import {select} from 'd3-selection';
 import { initZoom } from './graph/events/zoom';
+import { initBrush } from './graph/events/brush';
 
 export default class Graph {
   svg;
@@ -14,6 +15,7 @@ export default class Graph {
       .attr('pointer-events', 'all')
       .classed('svg-content', true);
     initZoom.bind(this)();
+    initBrush.bind(this)();
   }
   
   update() {
