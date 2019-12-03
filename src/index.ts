@@ -1,1 +1,4 @@
-document.getElementById('graph-boi').appendChild(document.createTextNode('hi'));
+import Graph from "./Graph";
+
+const containerId = '#graph-container';
+const graph = new Graph(containerId);
