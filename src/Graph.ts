@@ -4,11 +4,13 @@ import { initDrag } from './graph/events/drag';
 import { handleResize } from './graph/events/resize';
 import { initZoom } from './graph/events/zoom';
 import { initForce } from './graph/force';
+import { createContextMenu } from './graph/menu';
 
 export default class Graph {
   svg;
   container;
   defs;
+  contextMenu;
 
   constructor(graphContainerId) {
     this.initGraph(graphContainerId);
@@ -27,6 +29,7 @@ export default class Graph {
     initForce.bind(this)();
     initDrag.bind(this)();
     this.defs = this.svg.append('defs');
+    this.contextMenu = createContextMenu.bind(this)();
   }
   
   update() {
