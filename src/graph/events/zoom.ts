@@ -1,12 +1,12 @@
 import { easeLinear } from 'd3-ease';
 import { event } from 'd3-selection';
 import { zoom, zoomIdentity, zoomTransform } from 'd3-zoom';
-import * as constants from '../constants/graph';
+import { GRID_SQUARE_WIDTH, ZOOM_MAX_SCALE, ZOOM_MIN_SCALE } from '../constants/graph';
 
 export function initZoom() {
   const self = this;
   this.zoom = zoom()
-    .scaleExtent([constants.ZOOM_MIN_SCALE, constants.ZOOM_MAX_SCALE])
+    .scaleExtent([ZOOM_MIN_SCALE, ZOOM_MAX_SCALE])
     .on('start', function (d) { zoomstart.bind(self)(d, this); })
     .on('zoom', function (d) { zooming.bind(self)(d, this); })
     .on('end', function (d) { zoomend.bind(self)(d, this); });
@@ -25,8 +25,8 @@ export function zooming(d, self) {
   // 1. Reverse transform to keep lines fixed while other objects in container are transformed
   // 2. Use mod operator to reuse lines while panning to give illusion of infinite grid
   if (this.showGridLines) {
-    const transform = 'translate(' + (((et.x / et.k) % constants.GRID_SQUARE_WIDTH) - et.x / et.k) + ',' 
-      + (((et.y / et.k) % constants.GRID_SQUARE_WIDTH) - et.y / et.k) + ')scale(' + 1 + ')';
+    const transform = 'translate(' + (((et.x / et.k) % GRID_SQUARE_WIDTH) - et.x / et.k) + ',' 
+      + (((et.y / et.k) % GRID_SQUARE_WIDTH) - et.y / et.k) + ')scale(' + 1 + ')';
     this.svgGrid.attr('transform', transform);
   }
 
@@ -107,9 +107,10 @@ export function removeZoom() {
 
 export function translateGraphAroundPoint(x, y, duration=0, delay=0, callback=null) {
   // Calculate view centered on given node
+  const center = [this.width/2, this.height/2];
   const startTransform = zoomTransform(this.svg.node());
-  const newX = this.center[0] - x * startTransform.k;
-  const newY = this.center[1] - y * startTransform.k;
+  const newX = center[0] - x * startTransform.k;
+  const newY = center[1] - y * startTransform.k;
   const newTransform = zoomIdentity
     .translate(newX, newY)
     .scale(startTransform.k);

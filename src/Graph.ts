@@ -1,18 +1,22 @@
 import { select } from 'd3-selection';
-import { initZoom } from './graph/events/zoom';
 import { initBrush } from './graph/events/brush';
+import { initDrag } from './graph/events/drag';
+import { handleResize } from './graph/events/resize';
+import { initZoom } from './graph/events/zoom';
 import { initForce } from './graph/force';
 
 export default class Graph {
   svg;
   container;
+  defs;
 
-  constructor(divId) {
-    this.initGraph(divId);
+  constructor(graphContainerId) {
+    this.initGraph(graphContainerId);
   }
 
-  initGraph(divId) {
-    this.svg = select(divId).append('svg')
+  initGraph(graphContainerId) {
+    handleResize.bind(this)(graphContainerId);
+    this.svg = select('#' + graphContainerId).append('svg')
       .attr('id', 'graph-canvas')
       .attr('pointer-events', 'all')
       .classed('svg-content', true);
@@ -21,6 +25,8 @@ export default class Graph {
     this.container = this.svg.append('g')
       .attr('class', 'graph-bois');
     initForce.bind(this)();
+    initDrag.bind(this)();
+    this.defs = this.svg.append('defs');
   }
   
   update() {
