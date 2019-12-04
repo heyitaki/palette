@@ -1,0 +1,28 @@
+.unselectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -khtml-user-drag: none;
+  -webkit-user-drag: none;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font: normal 16px arial, sans-serif;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}

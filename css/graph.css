@@ -1,0 +1,17 @@
+#graph-container {
+  height: 100%;
+  width: 100%;
+}
+
+#graph-canvas {
+  min-height: 100%;
+}
+
+.svg-content {
+  height: 100%;
+  width: 100%;
+}
+
+svg {
+  border: 2px solid #a673eb;
+}
