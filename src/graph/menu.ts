@@ -1,8 +1,8 @@
-import { event, select, selectAll } from "d3-selection";
-import { getSelectedNodes } from "./selection.js";
-import { expandNodes } from "./state/expand.js";
-import { pinNodes } from "./state/pin.js";
-import { removeNodes } from "./state/remove.js";
+import { event, select, selectAll } from 'd3-selection';
+import { getSelectedNodes } from './selection';
+import { expandNodes } from './state/expand';
+import { pinNodes } from './state/pin';
+import { removeNodes } from './state/remove';
 
 export function getActionMenu() {
   return [

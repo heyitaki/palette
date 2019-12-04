@@ -1,15 +1,16 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "module": "commonjs",
-        "sourceMap": true,
-        "outDir": "./dist/",
-        "allowJs": true // include js or jsx files with compilation
-    },
-    "include": [
-        "src/**/*"
-    ],
-    "exclude": [
-        "node_modules"
-    ]
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "outDir": "./dist/",
+    "allowJs": true // include js or jsx files with compilation
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
