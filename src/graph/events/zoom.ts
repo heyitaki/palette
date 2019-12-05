@@ -2,6 +2,7 @@ import { easeLinear } from 'd3-ease';
 import { event } from 'd3-selection';
 import { zoom, zoomIdentity, zoomTransform } from 'd3-zoom';
 import { GRID_SQUARE_WIDTH, ZOOM_MAX_SCALE, ZOOM_MIN_SCALE } from '../constants/graph';
+import { transformGrid } from '../components/grid';
 
 export function initZoom() {
   const self = this;
@@ -21,16 +22,10 @@ export function zoomstart(d, self) {
 export function zooming(d, self) {
   const et = event.transform;
 
-  // Apply two transforms to grid lines simultaneously:
-  // 1. Reverse transform to keep lines fixed while other objects in container are transformed
-  // 2. Use mod operator to reuse lines while panning to give illusion of infinite grid
-  if (this.showGridLines) {
-    const transform = 'translate(' + (((et.x / et.k) % GRID_SQUARE_WIDTH) - et.x / et.k) + ',' 
-      + (((et.y / et.k) % GRID_SQUARE_WIDTH) - et.y / et.k) + ')scale(' + 1 + ')';
-    this.svgGrid.attr('transform', transform);
-  }
+  // Apply transform to grid
+  transformGrid.bind(this)(et);  
 
-  // Apply transform to all other events
+  // Apply transform to all other elements
   this.container.attr('transform', et);
 }
 

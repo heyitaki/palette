@@ -1,7 +1,7 @@
 import { drag } from 'd3-drag';
 import { event, select } from 'd3-selection';
 import { ALPHA_TARGET_DRAG, VELOCITY_DECAY_DRAG, ALPHA_TARGET, VELOCITY_DECAY_COOL, VELOCITY_DECAY } from '../constants/graph';
-import { hideContextMenu } from '../menu';
+import { hideContextMenu } from '../components/menu';
 
 let activeEvent = false;
 let dragTimer = null;

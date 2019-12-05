@@ -4,7 +4,6 @@ import { zoomTransform } from 'd3-zoom';
 
 export function initBrush() {
   const self = this;
-
   this.brushContainer = this.svg.append('g')
     .attr('class', 'brush-container');
 
@@ -43,9 +42,7 @@ export function brushing() {
 export function brushend() {
   this.isBrushing = false;
   if (this.freeSelect) return;
-  // Remove brush and switch back to pointer tool
   removeBrush.bind(this)();
-  // actions.selectPointerTool.bind(this)();
 
   // Reset .possible class on all graph objects
   const toSelect = this.node.filter('.possible');

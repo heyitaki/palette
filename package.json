@@ -12,6 +12,7 @@
   "author": "Akshath Sivaprasad",
   "license": "MIT",
   "devDependencies": {
+    "@types/d3-array": "^2.0.0",
     "@types/d3-brush": "^1.0.10",
     "@types/d3-drag": "^1.2.3",
     "@types/d3-ease": "^1.0.9",
@@ -27,6 +28,7 @@
     "webpack-dev-server": "^2.11.0"
   },
   "dependencies": {
+    "d3-array": "^2.4.0",
     "d3-brush": "^1.1.5",
     "d3-drag": "^1.2.5",
     "d3-ease": "^1.0.6",

@@ -1,5 +1,5 @@
 import { GRID_SQUARE_WIDTH, ZOOM_MIN_SCALE } from "../constants/graph";
-import { hideContextMenu } from "../menu";
+import { hideContextMenu } from "../components/menu";
 
 /**
  * Handle window resizing.

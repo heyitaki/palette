@@ -1,11 +1,12 @@
 import { select } from 'd3-selection';
+import AdjacencyMap from './AdjacencyMap';
+import { initGrid } from './graph/components/grid';
+import { createContextMenu } from './graph/components/menu';
 import { initBrush } from './graph/events/brush';
 import { initDrag } from './graph/events/drag';
 import { handleResize } from './graph/events/resize';
 import { initZoom } from './graph/events/zoom';
 import { initForce } from './graph/force';
-import { createContextMenu } from './graph/menu';
-import AdjacencyMap from './AdjacencyMap';
 
 export default class Graph {
   svg;
@@ -34,6 +35,7 @@ export default class Graph {
     initBrush.bind(this)();
     this.container = this.svg.append('g')
       .attr('class', 'graph-bois');
+    initGrid.bind(this)();
     initForce.bind(this)();
     initDrag.bind(this)();
     this.defs = this.svg.append('defs');
