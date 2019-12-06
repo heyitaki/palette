@@ -26,11 +26,11 @@ export default class Graph {
 
   initGraph(graphContainerId) {
     // Graph components
-    handleResize.bind(this)(graphContainerId);
     this.svg = select('#' + graphContainerId).append('svg')
       .attr('id', 'graph-canvas')
       .attr('pointer-events', 'all')
       .classed('svg-content', true);
+    handleResize.bind(this)(graphContainerId);
     initZoom.bind(this)();
     initBrush.bind(this)();
     this.container = this.svg.append('g')

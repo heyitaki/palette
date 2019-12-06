@@ -1,8 +1,8 @@
 import { easeLinear } from 'd3-ease';
 import { event } from 'd3-selection';
 import { zoom, zoomIdentity, zoomTransform } from 'd3-zoom';
-import { GRID_SQUARE_WIDTH, ZOOM_MAX_SCALE, ZOOM_MIN_SCALE } from '../constants/graph';
-import { transformGrid } from '../components/grid';
+import { ZOOM_MAX_SCALE, ZOOM_MIN_SCALE } from '../constants/graph';
+import { transformGrid, updateGridDimensions } from '../components/grid';
 
 export function initZoom() {
   const self = this;
@@ -20,6 +20,7 @@ export function zoomstart(d, self) {
 }
 
 export function zooming(d, self) {
+  updateGridDimensions.bind(this)();
   const et = event.transform;
 
   // Apply transform to grid
@@ -103,12 +104,12 @@ export function removeZoom() {
 export function translateGraphAroundPoint(x, y, duration=0, delay=0, callback=null) {
   // Calculate view centered on given node
   const center = [this.width/2, this.height/2];
-  const startTransform = zoomTransform(this.svg.node());
-  const newX = center[0] - x * startTransform.k;
-  const newY = center[1] - y * startTransform.k;
+  const currScale = getCurrentScale.bind(this)();
+  const newX = center[0] - x * currScale;
+  const newY = center[1] - y * currScale;
   const newTransform = zoomIdentity
     .translate(newX, newY)
-    .scale(startTransform.k);
+    .scale(currScale);
 
   // Transition to the new view over duration ms
   interpolateZoom.bind(this)(newTransform, duration, delay, callback);
@@ -121,4 +122,8 @@ export function translateGraphAroundNode(d, duration=250, delay=0, callback=null
 export function translateGraphAroundId(id, duration=250, delay=0, callback=null) {
   // const nodeData = selection.getDataFromId.bind(this)(id);
   // translateGraphAroundNode.bind(this)(nodeData, duration, delay, callback);
+}
+
+export function getCurrentScale() {
+  return zoomTransform(this.svg.node()).k;
 }

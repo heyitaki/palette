@@ -1,12 +1,12 @@
-import { GRID_SQUARE_WIDTH, ZOOM_MIN_SCALE } from "../constants/graph";
 import { hideContextMenu } from "../components/menu";
+import { updateGridDimensions } from "../components/grid";
 
 /**
  * Handle window resizing.
  * @param graphContainerId id of html element wrapping graph svg
  */
 export function handleResize(graphContainerId: string) {
-  updateDimensions.bind(this)(graphContainerId);
+  updateGraphDimensions.bind(this)(graphContainerId);
   window.addEventListener('resize', resized.bind(this, graphContainerId));
 }
 
@@ -19,7 +19,7 @@ export function resized(graphContainerId: string) {
   const self = this;
   setTimeout(function() {
     hideContextMenu.bind(self)();
-    updateDimensions.bind(self)(graphContainerId);
+    updateGraphDimensions.bind(self)(graphContainerId);
   }, 50);
 }
 
@@ -27,10 +27,9 @@ export function resized(graphContainerId: string) {
  * Update all properties dependent on svg width/height.
  * @param graphContainerId id of html element wrapping graph svg
  */
-export function updateDimensions(graphContainerId: string) {
-
+export function updateGraphDimensions(graphContainerId: string) {
   const graphContainer = document.getElementById(graphContainerId);
   this.width = graphContainer.clientWidth;
   this.height = graphContainer.clientHeight;
-  this.numTicks = this.width / GRID_SQUARE_WIDTH / ZOOM_MIN_SCALE;
+  updateGridDimensions.bind(this)();
 }
