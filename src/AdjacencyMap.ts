@@ -19,7 +19,7 @@ export default class AdjacencyMap {
     this.allLinks = []; // [linkData]
   }
 
-  getNodes = (idList) => {
+  getNodes = (idList?) => {
     // If no arguments passed in, return all nodes
     if (idList === undefined) return this.allNodes;
 
@@ -93,13 +93,13 @@ export default class AdjacencyMap {
     this.allLinks = _.uniqBy(this.allLinks.concat(links), (obj: any) => { return obj.id; });
   }
 
-  deleteNodes = (nodes=[], hi) => {
+  deleteNodes = (nodes=[]) => {
     if (!nodes || nodes.length === 0) return; 
     nodes = toArray(nodes);
 
     const self = this;
     const linksToDelete = [];
-    let nodeId, sourceId, numLinksLeft;
+    let nodeId;
 
     for (let i = 0; i < nodes.length; i++) {
       // If any given nodes are invalid, skip instead of throwing error
