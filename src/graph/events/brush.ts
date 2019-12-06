@@ -12,6 +12,7 @@ export function initBrush() {
     .on('start', function (d) { brushstart.bind(self)(d, this); })
     .on('brush', function (d) { brushing.bind(self)(d, this); })
     .on('end', function (d) { brushend.bind(self)(d, this); });
+  this.brush.keyModifiers(false);
 
   select('body')
     .on('keydown.brush', keydownBrush.bind(this))
