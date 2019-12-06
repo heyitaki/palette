@@ -20,7 +20,7 @@ export function initGrid() {
     .enter().append('line')
       .attr('x1', (d) => { return -1 * GRID_SQUARE_WIDTH; })
       .attr('y1', (d) => { return d; })
-      .attr('x2', (d) => { return (this.width + GRID_SQUARE_WIDTH) / currScale; })
+      .attr('x2', (d) => { return this.width / currScale + GRID_SQUARE_WIDTH; })
       .attr('y2', (d) => { return d; });
 
   this.gridY = this.grid.append('g')
@@ -33,7 +33,7 @@ export function initGrid() {
       .attr('x1', (d) => { return d; })
       .attr('y1', (d) => { return -1 * GRID_SQUARE_WIDTH; })
       .attr('x2', (d) => { return d; })
-      .attr('y2', (d) => { return (this.height + GRID_SQUARE_WIDTH) / currScale; });
+      .attr('y2', (d) => { return this.height / currScale + GRID_SQUARE_WIDTH; });
 }
 
 export function transformGrid(et) {
@@ -71,8 +71,7 @@ export function updateGridDimensions() {
       .attr('y1', (d) => { return d; })
       .attr('x2', (d) => { return x2; })
       .attr('y2', (d) => { return d; });
-  gridXEnter
-    .attr('x2', (d) => { return x2; })
+  gridXEnter.attr('x2', (d) => { return x2; })
   gridXEnter.exit().remove();
 
   // Add new vertical lines, update height of existing lines, remove unnecessary lines
@@ -88,7 +87,6 @@ export function updateGridDimensions() {
       .attr('y1', (d) => { return y1; })
       .attr('x2', (d) => { return d; })
       .attr('y2', (d) => { return y2; });
-  gridYEnter
-    .attr('y2', (d) => { return y2; });
+  gridYEnter.attr('y2', (d) => { return y2; });
   gridYEnter.exit().remove();
 }
