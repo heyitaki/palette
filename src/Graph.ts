@@ -2,7 +2,7 @@ import { select } from 'd3-selection';
 import AdjacencyMap from './AdjacencyMap';
 import { initGrid } from './graph/components/grid';
 import { createContextMenu } from './graph/components/menu';
-import { setNodeColor, wrapNodeText } from './graph/components/node';
+import { setNodeColor, wrapNodeText, getNodeColor } from './graph/components/node';
 import { NODE_RADIUS } from './graph/constants/graph';
 import { initBrush } from './graph/events/brush';
 import { initDrag } from './graph/events/drag';
@@ -165,7 +165,7 @@ export default class Graph {
       //     .on('end', this.stopPropagation)
       // );
 
-    gNode.call(setNodeColor.bind(this), '#e3e3e3');
+    gNode.call(setNodeColor.bind(this));
     this.node.exit().remove();
 
     // Update selectors

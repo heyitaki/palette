@@ -1,31 +1,50 @@
 import { color } from 'd3-color';
 import { select } from 'd3-selection';
+import { TYPES_TO_COLORS } from '../constants/types';
+import { getDataFromSelection } from '../selection';
 
 /**
- * Set node (and all components) color.
+ * Retrieve color of given node, return custom color if given, otherwise return
+ * type or default color.
+ * @param nodeData Data of node to get color of
+ */
+export function getNodeColor(nodeData) {
+  const nodeColor = nodeData.color,
+        nodeType = nodeData.type; console.log(nodeData, nodeColor, nodeType)
+  if (nodeColor && nodeColor != '') return color(nodeColor).toString();
+  else if (nodeType && nodeType != '') return color(TYPES_TO_COLORS[nodeType]);
+  else return color('#545454').toString();
+}
+
+/**
+ * Set color of given node (and all components).
  * @param node Node to color
  * @param nodeColor Color to set
  */
-export function setNodeColor(node, nodeColor: string) {
+export function setNodeColor(node, nodeColor?: string) {
   if (!node) return;
-  // Normalize input color
-  const parsedColor = color(nodeColor).toString();
-
+  // Use given color if possible, otherwise default to colors specified in node data
+  if (nodeColor && nodeColor != '') nodeColor = color(nodeColor).toString();
+  else {
+    const nodeData = getDataFromSelection.bind(this)(node)[0];
+    nodeColor = getNodeColor.bind(this)(nodeData);
+  }
+  
   // Color node using given color and background color
   node.select('.node-body')
-      .style('stroke', parsedColor)
-      .style('fill', parsedColor);
+      .style('stroke', nodeColor)
+      .style('fill', nodeColor);
 
   node.select('.node-glyph-top')
-      .style('stroke', parsedColor)
+      .style('stroke', nodeColor)
       .style('fill', '#fafafa');
 
   node.select('.node-glyph-top-text')
-      .style('stroke', parsedColor)
-      .style('fill', parsedColor);
+      .style('stroke', nodeColor)
+      .style('fill', nodeColor);
     
   node.select('.node-icon')
-      .style('stroke', parsedColor)
+      .style('stroke', nodeColor)
       .style('fill', '#fafafa');
 }
 
