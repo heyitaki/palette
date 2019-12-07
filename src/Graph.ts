@@ -2,7 +2,7 @@ import { select } from 'd3-selection';
 import AdjacencyMap from './AdjacencyMap';
 import { initGrid } from './graph/components/grid';
 import { createContextMenu } from './graph/components/menu';
-import { setNodeColor } from './graph/components/node';
+import { setNodeColor, wrapNodeText } from './graph/components/node';
 import { NODE_RADIUS } from './graph/constants/graph';
 import { initBrush } from './graph/events/brush';
 import { initDrag } from './graph/events/drag';
@@ -153,7 +153,7 @@ export default class Graph {
       .attr('dy', (NODE_RADIUS + 23.5).toString() + 'px')
       .classed('unselectable', true)
       .text((d) => { return d.title; })
-      // .call(aesthetics.wrapNodeText.bind(this), this.printFull)
+      .call(wrapNodeText.bind(this), 'abbrev')
       // .on('click', this.stopPropagation)
       // .on('dblclick', this.stopPropagation)
       // .on('mouseenter', this.stopPropagation)

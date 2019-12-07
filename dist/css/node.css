@@ -16,10 +16,6 @@
   cursor: default;
 }
 
-.node.grouped circle {
-  fill: #7cbdff;
-}
-
 .node circle {
   cursor: pointer;
   stroke-width: 4.5px;
