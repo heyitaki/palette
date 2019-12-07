@@ -1,0 +1,93 @@
+.node {
+  opacity: 1;
+  transition-property: stroke-opacity, fill-opacity;
+  transition-delay: 0ms;
+  transition-duration: 50ms;
+}
+
+.node-title tspan {
+  font-family: 'Avenir LT Std', 'Open Sans', sans-serif;
+  stroke: #efefef;
+  stroke-width: 3px;
+  paint-order: stroke;
+  font-size: 16px;
+  fill: #545454;
+  font-weight: 900;
+  cursor: default;
+}
+
+.node.grouped circle {
+  fill: #7cbdff;
+}
+
+.node circle {
+  cursor: pointer;
+  stroke-width: 4.5px;
+}
+
+.node.selected circle {
+  stroke: #0d77e2 !important;
+  fill: #0d77e2 !important;
+}
+
+.node.possible circle {
+  stroke: #0d77e2 !important;
+  fill: #0d77e2 !important;
+}
+
+.node .node-icon {
+  fill: #fff !important;
+  cursor: pointer;
+}
+
+.node.fixed .node-icon {
+  fill: #cccccc !important;
+}
+
+.node.selected .node-icon {
+  stroke: #0d77e2 !important;
+}
+
+.node.possible .node-icon {
+  stroke: #0d77e2 !important;
+}
+
+.node circle.node-glyph-top {
+  /*stroke: #fff !important;*/
+  fill: #fff !important;
+  stroke-width: 3px;
+}
+
+.node-glyph-top.hidden {
+  display: none;
+}
+
+.node.selected circle.node-glyph-top {
+  stroke: #0d77e2 !important;
+}
+
+.node.possible circle.node-glyph-top {
+  stroke: #0d77e2 !important;
+}
+
+.node.fixed circle.node-glyph-top {
+  fill: #cccccc !important;
+}
+
+.node-glyph-top-text {
+  font-size: 13px;
+}
+
+.node-glyph-top-text.hidden {
+  display: none;
+}
+
+.node.selected text.node-glyph-top-text {
+  stroke: #0d77e2 !important;
+  fill: #0d77e2 !important;
+}
+
+.node.possible text.node-glyph-top-text {
+  stroke: #0d77e2 !important;
+  fill: #0d77e2 !important;
+}
