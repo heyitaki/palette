@@ -2,6 +2,9 @@ export const ZOOM_MIN_SCALE = 0.25;
 export const ZOOM_MAX_SCALE = 10.0;
 export const GRID_SQUARE_WIDTH = 80;
 
+// Nodes
+export const NODE_RADIUS = 30;
+
 // Links
 export const MARKER_PADDING = 7;
 

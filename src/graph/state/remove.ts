@@ -5,7 +5,7 @@ import { getDataFromSelection } from "../selection";
 * @param nodeData Data of nodes to be removed.
 */
 export function removeNodesByData(nodeData, update=true) {
-  this.adjacencyStructure.removeNodes(nodeData);
+  this.adjacencyMap.removeNodes(nodeData);
   // aesthetics.resetObjectHighlighting.bind(this)();
   if (update) this.update();
 }
@@ -33,7 +33,7 @@ export function removeNodeAndSinglyConnectedNeighbors(d) {
 
   // Remove all neighbors of nodes which don't have other connections
   removeNodes.bind(this)(this.node.filter((o) => { 
-    return this.adjacencyStructure.areNeighbors(d.id, o.id) 
+    return this.adjacencyMap.areNeighbors(d.id, o.id) 
       && (o.weight <= 1); 
   }), false);
 

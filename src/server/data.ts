@@ -3,11 +3,12 @@
 export const nodes = `[
   {
     "id": 1,
-    "type": "",
+    "type": "card",
     "title": "Hi! I'm Akshath.",
     "description": "Click this box to learn more about the things I love 😊",
     "url": "",
-    "icon": ""
+    "icon": "",
+    "color": ""
   },
   {
     "id": 2,
@@ -15,7 +16,8 @@ export const nodes = `[
     "title": "Abhi Sivaprasad",
     "description": "",
     "url": "https://www.linkedin.com/in/abhisivaprasad/",
-    "icon": ""
+    "icon": "",
+    "color": ""
   }
 ]`;
 

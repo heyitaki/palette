@@ -1,5 +1,3 @@
-import { getSelectedNodes } from "../selection";
-
 /**
  * Add all first degree neighbors of nodes corresponding to given ids. If a node is not
  * expandable, ignore it.

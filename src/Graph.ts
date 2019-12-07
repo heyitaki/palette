@@ -2,13 +2,18 @@ import { select } from 'd3-selection';
 import AdjacencyMap from './AdjacencyMap';
 import { initGrid } from './graph/components/grid';
 import { createContextMenu } from './graph/components/menu';
+import { setNodeColor } from './graph/components/node';
+import { NODE_RADIUS } from './graph/constants/graph';
 import { initBrush } from './graph/events/brush';
 import { initDrag } from './graph/events/drag';
 import { handleResize } from './graph/events/resize';
 import { initZoom } from './graph/events/zoom';
 import { initForce } from './graph/force';
+import { getAllLinks, getAllNodes } from './graph/selection';
+import { getNumLinksToExpand, isExpandable } from './graph/state/expand';
 import { hash } from './graph/utils';
 import Server from './Server';
+import { addNodes, addNodesByData } from './graph/state/add';
 
 export default class Graph {
   svg;
@@ -56,10 +61,9 @@ export default class Graph {
     this.nodeContainer = this.container.append('g').attr('class', 'node-bois');
     this.node = this.nodeContainer.selectAll('.node');
 
-    // Add and display root node
+    // Display root node
     const root = this.server.getRoot();
-    this.adjacencyMap.addNodes(root);
-    this.update();
+    addNodesByData.bind(this)(root);
   }
   
   update() {
@@ -111,5 +115,69 @@ export default class Graph {
       // .on('contextmenu', function (d, i, nodes) { events.rightclicked.bind(self)(...arguments, this); })
       .each((d) => { if (!d.weight) d.weight = 0; }) // Assign d.weight to free radicals
       .call(this.drag);
+
+    const gNodeBody = gNode.append('g')
+      .attr('class', 'node-body')
+      // .on('mouseenter', function (d) { events.mouseenter.bind(self)(d, this); })
+      // .on('mouseleave', function (d) { events.mouseleave.bind(self)(d, this); });
+
+    gNodeBody.append('circle')
+      .attr('class', 'node-body')
+      .attr('r', NODE_RADIUS);
+
+    gNodeBody.append('circle')
+      .attr('class', 'node-glyph-top')
+      .attr('r', 11)
+      .attr('cx', 18)
+      .attr('cy', -19);
+
+    gNodeBody.append('text')
+      .attr('class', 'node-glyph-top-text')
+      .attr('dx', 18)
+      .attr('dy', -14.5)
+      .attr('text-anchor', 'middle')
+      .classed('unselectable', true);
+
+    gNodeBody.append('text')
+      .attr('class', 'node-icon')
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'central')
+      .attr('font-family', 'FontAwesome')
+      .attr('font-size', '21px')
+      .text((d) => { return ' '; }) //TODO
+      .classed('unselectable', true);
+
+    gNode.append('text')
+      .attr('class', 'node-title')
+      .attr('text-anchor', 'middle')
+      .attr('dy', (NODE_RADIUS + 23.5).toString() + 'px')
+      .classed('unselectable', true)
+      .text((d) => { return d.title; })
+      // .call(aesthetics.wrapNodeText.bind(this), this.printFull)
+      // .on('click', this.stopPropagation)
+      // .on('dblclick', this.stopPropagation)
+      // .on('mouseenter', this.stopPropagation)
+      // .on('mouseleave', this.stopPropagation)
+      // .on('mouseover', this.stopPropagation)
+      // .call(drag()
+      //     .on('start', this.stopPropagation)
+      //     .on('drag', this.stopPropagation)
+      //     .on('end', this.stopPropagation)
+      // );
+
+    gNode.call(setNodeColor.bind(this), '#e3e3e3');
+    this.node.exit().remove();
+
+    // Update selectors
+    this.link = getAllLinks.bind(this)();
+    this.node = getAllNodes.bind(this)();
+
+    // Update node glyphs
+    this.node.select('.node-glyph-top')
+      .classed('hidden', (d) => { return !isExpandable(d); });
+
+    this.node.select('.node-glyph-top-text')
+      .text((d) => { return getNumLinksToExpand(d); })
+      .classed('hidden', (d) => { return !isExpandable(d); });
   }
 }
