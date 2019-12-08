@@ -10,7 +10,7 @@ import { getDataFromSelection } from '../selection';
  */
 export function getNodeColor(nodeData) {
   const nodeColor = nodeData.color,
-        nodeType = nodeData.type; console.log(nodeData, nodeColor, nodeType)
+        nodeType = nodeData.type;
   if (nodeColor && nodeColor != '') return color(nodeColor).toString();
   else if (nodeType && nodeType != '') return color(TYPES_TO_COLORS[nodeType]);
   else return color('#545454').toString();

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { MALFORMED_DATA } from './map/constants/error';
+import { MALFORMED_DATA, MISSING_LINK_ID } from './map/constants/error';
 import { toArray, exists } from './map/utils';
 
 export default class AdjacencyMap {
@@ -66,7 +66,7 @@ export default class AdjacencyMap {
   addLinks = (links=[]) => {
     if (!links || links.length === 0) return;
     links = toArray(links);
-
+    
     let currLink, linkId, source, target, sourceId, targetId;
     for (let i = 0; i < links.length; i++) {
       currLink = links[i];
@@ -76,7 +76,7 @@ export default class AdjacencyMap {
 
       // If source and target are references to node objects, do nothing
       // Else replace node ids with references to the nodes
-      if (!currLink || !exists(linkId)) continue;
+      if (!currLink || !exists(linkId)) throw MISSING_LINK_ID;
       if (!exists(source) || !exists(target)) throw MALFORMED_DATA;
       if (!exists(source.id)) links[i].source = this.getNodes(source)[0];
       if (!exists(target.id)) links[i].target = this.getNodes(target)[0];

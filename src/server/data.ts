@@ -23,6 +23,7 @@ export const nodes = `[
 
 export const links = `[
   {
+    "id": 1,
     "title": "brother",
     "source": 1,
     "target": 2

@@ -1,4 +1,5 @@
 import { getDataFromSelection } from "../selection";
+import { updateGraph } from "../events/update";
 
 /**
 * Remove nodes corresponding to given data and reset highlighting.
@@ -7,7 +8,7 @@ import { getDataFromSelection } from "../selection";
 export function removeNodesByData(nodeData, update=true) {
   this.adjacencyMap.removeNodes(nodeData);
   // aesthetics.resetObjectHighlighting.bind(this)();
-  if (update) this.update();
+  if (update) updateGraph.bind(this)();
 }
 
 /**
