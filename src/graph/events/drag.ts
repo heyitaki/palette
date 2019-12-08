@@ -36,66 +36,63 @@ console.log('dragstart')
   // aesthetics.removeLinkText.bind(this)();
   
   // Freeze graph temporarily to disallow graph jiggling on click
-  //this.force.stop();
+  this.force.stop();
 }
 
 export function dragging(d, self) {
-  d.fx = d.x = event.x;
-  d.fy = d.y = event.y;
-  console.log(d.fx, d.fy, d)
-  // const dragTolerance = 3;
+  const dragTolerance = 3;
 
-  // // Allow some tolerance to mousedown action to disallow graph jiggling on click
-  // if (!activeEvent && d.dragDistance === dragTolerance) {
-  //   this.force
-  //     .alphaTarget(ALPHA_TARGET_DRAG)
-  //     .velocityDecay(VELOCITY_DECAY_DRAG)
-  //     .restart();
-  // }
+  // Allow some tolerance to mousedown action to disallow graph jiggling on click
+  if (!activeEvent && d.dragDistance === dragTolerance) {
+    this.force
+      .alphaTarget(ALPHA_TARGET_DRAG)
+      .velocityDecay(VELOCITY_DECAY_DRAG)
+      .restart();
+  }
 
-  // // Everytime we move the current node, we should reset the time it takes for the force layout to converge
-  // window.clearTimeout(dragTimer);
-  // dragTimer = setTimeout(() => { 
-  //   this.force
-  //     .alphaTarget(ALPHA_TARGET)
-  //     .velocityDecay(VELOCITY_DECAY_COOL); 
-  //   d.dragDistance = dragTolerance;
-  // }, 150);
+  // Everytime we move the current node, we should reset the time it takes for the force layout to converge
+  window.clearTimeout(dragTimer);
+  dragTimer = setTimeout(() => { 
+    this.force
+      .alphaTarget(ALPHA_TARGET)
+      .velocityDecay(VELOCITY_DECAY_COOL); 
+    d.dragDistance = dragTolerance;
+  }, 150);
 
-  // // Update node positions if tolerance is exceeded
-  // // Without this, quickly executed drags will update d.x and d.y without showing visual change
-  // if (d.dragDistance > dragTolerance) {
-  //   if (d.selected && this.isModifierPressed) {
-  //     // Drag all selected nodes together
-  //     this.node.filter((dx) => { return dx.selected; })
-  //       .each((dx) => { 
-  //         dx.fx = dx.x += event.dx;
-  //         dx.fy = dx.y += event.dy;
-  //       })
-  //       .classed('fixed', (dx) => { return dx.fixed = true; });
-  //   } else {
-  //     // Drag current node only
-  // d.fx = d.x = event.x;
-  // d.fy = d.y = event.y;
-  //   }
-  // }
+  // Update node positions if tolerance is exceeded
+  // Without this, quickly executed drags will update d.x and d.y without showing visual change
+  if (d.dragDistance > dragTolerance) {
+    if (d.selected && this.isModifierPressed) {
+      // Drag all selected nodes together
+      this.node.filter((dx) => { return dx.selected; })
+        .each((dx) => { 
+          dx.fx = dx.x += event.dx;
+          dx.fy = dx.y += event.dy;
+        })
+        .classed('fixed', (dx) => { return dx.fixed = true; });
+    } else {
+      // Drag current node only
+      d.fx = d.x = event.x;
+      d.fy = d.y = event.y;
+    }
+  }
 
   d.dragDistance++;
 }
 
 export function dragend(d, self) {
-  // // Allow graph to cool with normal velocityDecay
-  // window.clearTimeout(dragTimer);
-  // if (!event.active) {
-  //   this.force
-  //     .alphaTarget(ALPHA_TARGET)
-  //     .velocityDecay(VELOCITY_DECAY);
-  // }
-  console.log('dragend')
+  // Allow graph to cool with normal velocityDecay
+  window.clearTimeout(dragTimer);
+  if (!event.active) {
+    this.force
+      .alphaTarget(ALPHA_TARGET)
+      .velocityDecay(VELOCITY_DECAY);
+  }
+
   this.isDragging = false;
 
   // If dragDistance > 0, this is a drag action, not a click, so we should fix node
   // Otherwise, unfix node (fixed in dragstart)
-  // if (d.fixed || d.dragDistance) select(self).classed('fixed', d.fixed = true);
-  // else d.fx = d.fy = null;
+  if (d.fixed || d.dragDistance) select(self).classed('fixed', d.fixed = true);
+  else d.fx = d.fy = null;
 }
