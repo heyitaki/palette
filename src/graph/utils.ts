@@ -1,3 +1,6 @@
+import { color } from "d3-color";
+import { INVALID_COLOR } from "./constants/error";
+
 /**
  * Non-secure quick hash function
  * @param str String to hash
@@ -13,4 +16,10 @@ export function hash(str) {
   }
 
   return hash;
+}
+
+export function colorToHex(colorString) {
+  const parsedColor = color(colorString);
+  if (!parsedColor) throw INVALID_COLOR;
+  return parsedColor.hex();
 }

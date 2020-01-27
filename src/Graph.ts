@@ -7,7 +7,7 @@ import { initDrag } from './graph/events/drag';
 import { handleResize } from './graph/events/resize';
 import { initZoom } from './graph/events/zoom';
 import { initForce } from './graph/force';
-import { addNodesByData, addLinksByData } from './graph/state/add';
+import { addLinksByData, addNodesByData } from './graph/state/add';
 import Server from './Server';
 
 export default class Graph {
@@ -30,7 +30,7 @@ export default class Graph {
     this.initGraph(graphContainerId);
   }
 
-  initGraph(graphContainerId) {
+  private initGraph(graphContainerId) {
     // Graph components
     this.svg = select('#' + graphContainerId).append('svg')
       .attr('id', 'graph-canvas')
@@ -58,7 +58,7 @@ export default class Graph {
 
     // Display root node and neighbors
     const root = this.server.getRoot();
-    const neighbors = this.server.getNeighbors(root.id); console.log(neighbors)
+    const neighbors = this.server.getNeighbors(root.id);
     addNodesByData.bind(this)(root, false);
     addNodesByData.bind(this)(neighbors.nodes, false);
     addLinksByData.bind(this)(neighbors.links);

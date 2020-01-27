@@ -1,4 +1,3 @@
-import { getDataFromSelection } from "../selection";
 import { updateGraph } from "../events/update";
 
 /**

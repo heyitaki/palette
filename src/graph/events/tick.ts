@@ -1,8 +1,8 @@
-import { MARKER_PADDING } from "../constants/graph";
+import { calcLinkPosition } from "../components/node";
 
 export function tick() {
-  console.log('tick')
   setNodePositions.bind(this)(this.node);
+  setLinkPositions.bind(this)(this.link);
 }
 
 /**
@@ -21,22 +21,8 @@ export function setNodePositions(nodes) {
 */
 export function setLinkPositions(links) {
   links
-    .each((l) => {
-      const x1 = l.source.x,
-            y1 = l.source.y,
-            x2 = l.target.x,
-            y2 = l.target.y;
-      l.distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-
-      // 2.2 constant accounts for node stroke width, which is set in CSS
-      const sourcePadding = l.target.radius + (l.bidirectional ? MARKER_PADDING : 2.2),
-            targetPadding = l.source.radius + MARKER_PADDING;
-      l.sourceX = x1 + (x2 - x1) * (l.distance - sourcePadding) / l.distance;
-      l.sourceY = y1 + (y2 - y1) * (l.distance - sourcePadding) / l.distance;
-      l.targetX = x2 - (x2 - x1) * (l.distance - targetPadding) / l.distance;
-      l.targetY = y2 - (y2 - y1) * (l.distance - targetPadding) / l.distance;
-    })
-    .attr('d', (l) => { return 'M' + l.sourceX + ',' + l.sourceY + 'L' + l.targetX + ',' + l.targetY; });
+    .each(l => calcLinkPosition(l))
+    .attr('d', l => 'M' + l.sourceX + ',' + l.sourceY + 'L' + l.targetX + ',' + l.targetY);
 }
 
 /**

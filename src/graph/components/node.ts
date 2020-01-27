@@ -2,6 +2,9 @@ import { color } from 'd3-color';
 import { select } from 'd3-selection';
 import { TYPES_TO_COLORS } from '../constants/types';
 import { getDataFromSelection } from '../selection';
+import { colorToHex } from '../utils';
+import Card from './nodes/Card';
+import Circle from './nodes/Circle';
 
 /**
  * Retrieve color of given node, return custom color if given, otherwise return
@@ -24,8 +27,9 @@ export function getNodeColor(nodeData) {
 export function setNodeColor(node, nodeColor?: string) {
   if (!node) return;
   // Use given color if possible, otherwise default to colors specified in node data
-  if (nodeColor && nodeColor != '') nodeColor = color(nodeColor).toString();
-  else {
+  if (nodeColor && nodeColor != '') {
+    nodeColor = colorToHex(nodeColor);
+  } else {
     const nodeData = getDataFromSelection.bind(this)(node)[0];
     nodeColor = getNodeColor.bind(this)(nodeData);
   }
@@ -97,4 +101,13 @@ export function wrapNodeText(textSelection, printFull, width=100) {
     finalLine = (printFull === 0 && i < tokens.length-1) ? `${finalLine.trim()}...` : finalLine;
     tspan.text(finalLine);
   });
+}
+
+export function renderNode(n, gNodeRef) {
+  nodeTypeToClass(n).renderNode(gNodeRef);
+}
+
+export function nodeTypeToClass(type) {
+  if (type.type) type = type.type; 
+  return (type.toLowerCase() === "card") ? Card : Circle;
 }

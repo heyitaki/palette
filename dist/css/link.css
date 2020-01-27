@@ -1,0 +1,20 @@
+path.link {
+  stroke: #999;
+  opacity: 1;
+  transition-property: opacity;
+  transition-delay: 0ms;
+  transition-duration: 50ms;
+  cursor: pointer;
+}
+
+path.link.hidden {
+  stroke-width: 0;
+}
+
+path.link.selected {
+  stroke: #0d77e2;
+}
+
+path.link.possible {
+  stroke: #0d77e2;
+}
