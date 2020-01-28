@@ -18,6 +18,10 @@ export function hash(str) {
   return hash;
 }
 
+/**
+ * Convert color string to hex format.
+ * @param colorString Color, in any format
+ */
 export function colorToHex(colorString) {
   const parsedColor = color(colorString);
   if (!parsedColor) throw INVALID_COLOR;

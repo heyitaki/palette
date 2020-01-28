@@ -1,5 +1,4 @@
 import { colorToHex } from "../utils";
-import { nodeTypeToClass } from "./node";
 
 /**
  * Set link and link marker color.
@@ -35,8 +34,6 @@ export function setLinkColor(link, linkColor: string) { console.log(link, linkCo
 }
 
 export function calcLinkPosition(l) {
-  const sourceNodeType = nodeTypeToClass(l.source.type);
-  const targetNodeType = nodeTypeToClass(l.target.type);
-  sourceNodeType.calcLinkPosition(l, true);
-  targetNodeType.calcLinkPosition(l, false);
+  // sourceNodeType.calcLinkPosition(l, true);
+  // targetNodeType.calcLinkPosition(l, false);
 }

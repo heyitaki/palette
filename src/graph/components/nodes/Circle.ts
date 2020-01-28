@@ -2,9 +2,29 @@ import { select } from "d3-selection";
 import { NODE_CIRCLE_RADIUS } from "../../constants/graph";
 import Point from "../../Point";
 import { setNodeColor, wrapNodeText } from "../node";
+import Node from "./Node";
+import NodeData from "./NodeData";
 
-export default class Circle {
-  public static renderNode(gNodeRef) {
+export default class Circle implements Node {
+  id: string;
+  type: string;
+  title: string;
+  description?: string;
+  url?: string;
+  color?: string;
+  position?: Point;
+  
+  constructor(data: NodeData) {
+    this.id = data.id;
+    this.type = data.type;
+    this.title = data.title;
+    this.description = data.description;
+    this.url = data.url;
+    this.color = data.color;
+    this.position = data.position;
+  }
+
+  public renderNode(gNodeRef) {
     const gNode = select(gNodeRef);
     const gNodeBody = gNode.append('g')
       .attr('class', 'node-body')
@@ -59,7 +79,7 @@ export default class Circle {
     gNode.call(setNodeColor.bind(this));
   }
   
-  public static calcLinkPosition(l, isSource=true) {
+  public calcLinkPosition(l, isSource=true) {
     const x1 = l.source.x,
           y1 = l.source.y,
           x2 = l.target.x,
@@ -77,11 +97,7 @@ export default class Circle {
     }
   }
 
-  public static getCenter(n): Point {
+  public getCenter(n): Point {
     return new Point(n.x, n.y);
-  }
-
-  public static toString() {
-    return 'Circle';
   }
 }

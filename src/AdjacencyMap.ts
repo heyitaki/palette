@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { MALFORMED_DATA, MISSING_LINK_ID } from './map/constants/error';
-import { toArray, exists } from './map/utils';
+import { exists } from './map/utils';
+import { toArray } from './utils';
 
 export default class AdjacencyMap {
   adjacencyMapOutgoing;

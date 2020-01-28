@@ -1,5 +1,6 @@
 import { setLinkColor } from "../components/link";
-import { renderNode } from "../components/node";
+import { nodeDataToNodeObj } from "../components/node";
+import Node from "../components/nodes/Node";
 import { LINK_STROKE_WIDTH } from "../constants/graph";
 import { fastForceConvergence } from "../force";
 import { getAllLinks, getAllNodes } from "../selection";
@@ -8,8 +9,8 @@ import { hash } from "../utils";
 import { tick } from "./tick";
 
 export function updateGraph() {
-  const nodes = this.adjacencyMap.getNodes(),
-        links = this.adjacencyMap.getLinks(); console.log(nodes, links)
+  const nodes: Node[] = nodeDataToNodeObj(this.adjacencyMap.getNodes()),
+        links: any[] = this.adjacencyMap.getLinks();
 
   // Stop simulation while we update graph items
   this.force.stop();
@@ -60,7 +61,7 @@ export function updateGraph() {
     .each((n) => { if (!n.weight) n.weight = 0; }) // Assign d.weight to free radicals
     .call(this.drag);
 
-  gNode.each(function(n) { renderNode(n, this); });
+  gNode.each(function(n) { n.renderNode(this); });
   this.node.exit().remove();
 
   // Update selectors

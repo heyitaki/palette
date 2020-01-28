@@ -1,10 +1,13 @@
 import { color } from 'd3-color';
 import { select } from 'd3-selection';
+import { toArray } from '../../utils';
 import { TYPES_TO_COLORS } from '../constants/types';
 import { getDataFromSelection } from '../selection';
 import { colorToHex } from '../utils';
 import Card from './nodes/Card';
 import Circle from './nodes/Circle';
+import Node from './nodes/Node';
+import NodeData from './nodes/NodeData';
 
 /**
  * Retrieve color of given node, return custom color if given, otherwise return
@@ -103,11 +106,19 @@ export function wrapNodeText(textSelection, printFull, width=100) {
   });
 }
 
-export function renderNode(n, gNodeRef) {
-  nodeTypeToClass(n).renderNode(gNodeRef);
-}
+export function nodeDataToNodeObj(data: NodeData | NodeData[]): Node[] {
+  let nodes: Node[] = [];
+  if (!data) return nodes;
+  data = toArray(data);
 
-export function nodeTypeToClass(type) {
-  if (type.type) type = type.type; 
-  return (type.toLowerCase() === "card") ? Card : Circle;
+  for (let i = 0; i < data.length; i++) {
+    if (!data[i].type) continue;
+    nodes.push(
+      (data[i].type.toLowerCase() === "card") 
+        ? new Card(data[i]) 
+        : new Circle(data[i])
+    );
+  }
+
+  return nodes;
 }
