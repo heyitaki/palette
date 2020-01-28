@@ -63,7 +63,7 @@ export default class Circle implements Node {
       .attr('text-anchor', 'middle')
       .attr('dy', (NODE_CIRCLE_RADIUS + 23.5).toString() + 'px')
       .classed('unselectable', true)
-      .text((n: any) => { console.log('what', n);return n.title; })
+      .text((n: any) => { return n.title; })
       .call(wrapNodeText.bind(this), 'abbrev')
       // .on('click', this.stopPropagation)
       // .on('dblclick', this.stopPropagation)

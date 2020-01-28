@@ -55,38 +55,32 @@ export function updateGridDimensions() {
   this.gridHeight = (this.height / GRID_SQUARE_WIDTH) / currScale;
 
   // Don't update grid if it hasn't been created yet or if scale hasn't changed
-  const hasScaleChanged = (this.width / GRID_SQUARE_WIDTH) / prevGridWidth != currScale;
+  const hasScaleChanged = this.gridWidth != prevGridWidth;
   if (!this.grid || !hasScaleChanged) return;
 
-  // Add new horizontal lines, update width of existing lines, remove unnecessary lines
-  const gridXEnter = this.gridX
+  // Add new horizontal lines, update width of all lines, remove unnecessary lines
+  const xSelection = this.gridX
     .selectAll('line')
     .data(range(0, (this.gridHeight + 1) * GRID_SQUARE_WIDTH, GRID_SQUARE_WIDTH));
+  
+  const xEnter = xSelection.enter().append('line')
+    .attr('x1', -1 * GRID_SQUARE_WIDTH)
+    .attr('y1', (d) => { return d; })
+    .attr('y2', (d) => { return d; });
+  xSelection.merge(xEnter)
+    .attr('x2', this.width / currScale + GRID_SQUARE_WIDTH)
+  xSelection.exit().remove();
 
-  const x1 = -1 * GRID_SQUARE_WIDTH;
-  const x2 = this.width / currScale + GRID_SQUARE_WIDTH; 
-  gridXEnter
-    .enter().append('line')
-      .attr('x1', (d) => { return x1; })
-      .attr('y1', (d) => { return d; })
-      .attr('x2', (d) => { return x2; })
-      .attr('y2', (d) => { return d; });
-  gridXEnter.attr('x2', (d) => { return x2; })
-  gridXEnter.exit().remove();
-
-  // Add new vertical lines, update height of existing lines, remove unnecessary lines
-  const gridYEnter = this.gridY
+  // Add new vertical lines, update height of all lines, remove unnecessary lines
+  const ySelection = this.gridY
     .selectAll('line')
     .data(range(0, (this.gridWidth + 1) * GRID_SQUARE_WIDTH, GRID_SQUARE_WIDTH));
 
-  const y1 = -1 * GRID_SQUARE_WIDTH;
-  const y2 = this.height / currScale + GRID_SQUARE_WIDTH;
-  gridYEnter
-    .enter().append('line')
-      .attr('x1', (d) => { return d; })
-      .attr('y1', (d) => { return y1; })
-      .attr('x2', (d) => { return d; })
-      .attr('y2', (d) => { return y2; });
-  gridYEnter.attr('y2', (d) => { return y2; });
-  gridYEnter.exit().remove();
+  const yEnter = ySelection.enter().append('line')
+    .attr('x1', (d) => { return d; })
+    .attr('y1', -1 * GRID_SQUARE_WIDTH)
+    .attr('x2', (d) => { return d; });
+  ySelection.merge(yEnter)
+    .attr('y2', this.height / currScale + GRID_SQUARE_WIDTH);
+  ySelection.exit().remove();
 }
