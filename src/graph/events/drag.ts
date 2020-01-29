@@ -1,8 +1,7 @@
 import { drag } from 'd3-drag';
 import { event, select } from 'd3-selection';
-import { ALPHA_TARGET_DRAG, VELOCITY_DECAY_DRAG, ALPHA_TARGET, VELOCITY_DECAY_COOL, VELOCITY_DECAY } from '../constants/graph';
 import { hideContextMenu } from '../components/menu';
-import { tick } from './tick';
+import { ALPHA_TARGET, ALPHA_TARGET_DRAG, VELOCITY_DECAY, VELOCITY_DECAY_COOL, VELOCITY_DECAY_DRAG } from '../constants/graph';
 
 let activeEvent = false;
 let dragTimer = null;
@@ -17,7 +16,7 @@ export function initDrag() {
 
 export function dragstart(d, self) {
   hideContextMenu.bind(this)(); 
-console.log('dragstart')
+  
   // We don't want to restart force layout in dragging if there is already a drag action occuring
   // Must save this value here, because event.active is always true in dragging
   activeEvent = event.active;

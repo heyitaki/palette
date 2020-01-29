@@ -5,7 +5,7 @@ import { colorToHex } from "../utils";
  * @param link Selection of links to color
  * @param linkColor Color to set
  */
-export function setLinkColor(link, linkColor: string) { console.log(link, linkColor)
+export function setLinkColor(link, linkColor: string) {
   if (!link || link.empty()) return;
   linkColor = colorToHex(linkColor);
 
@@ -28,12 +28,10 @@ export function setLinkColor(link, linkColor: string) { console.log(link, linkCo
 
   link
     .style('stroke', linkColor)
-    .style('marker-end', (l) => {
-      return `url(${id})`;
-    });
+    .style('marker-end', `url(${id})`);
 }
 
-export function calcLinkPosition(l) {
-  // sourceNodeType.calcLinkPosition(l, true);
-  // targetNodeType.calcLinkPosition(l, false);
+export function calcLinkPosition(l) { //console.log("source",l.source); console.log("target", l.target)
+  l.target.calcLinkPosition(l, true);
+  l.source.calcLinkPosition(l, false);
 }

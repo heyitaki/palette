@@ -1,5 +1,4 @@
 import { setLinkColor } from "../components/link";
-import { nodeDataToNodeObj } from "../components/node";
 import Node from "../components/nodes/Node";
 import { LINK_STROKE_WIDTH } from "../constants/graph";
 import { fastForceConvergence } from "../force";
@@ -9,7 +8,7 @@ import { hash } from "../utils";
 import { tick } from "./tick";
 
 export function updateGraph() {
-  const nodes: Node[] = nodeDataToNodeObj(this.adjacencyMap.getNodes()),
+  const nodes: Node[] = this.adjacencyMap.getNodes(),
         links: any[] = this.adjacencyMap.getLinks();
 
   // Stop simulation while we update graph items

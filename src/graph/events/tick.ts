@@ -1,3 +1,4 @@
+import { calcLinkPosition } from "../components/link";
 
 export function tick() {
   setNodePositions.bind(this)(this.node);
@@ -20,7 +21,7 @@ export function setNodePositions(nodes) {
 */
 export function setLinkPositions(links) {
   links
-    //.each(l => calcLinkPosition(l))
+    .each(l => calcLinkPosition(l))
     .attr('d', l => 'M' + l.sourceX + ',' + l.sourceY + 'L' + l.targetX + ',' + l.targetY);
 }
 

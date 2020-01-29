@@ -11,7 +11,8 @@ export default class Card implements Node {
   description?: string;
   url?: string;
   color?: string;
-  position?: Point;
+  x?: number;
+  y?: number;
 
   constructor(data: NodeData) {
     this.id = data.id;
@@ -20,7 +21,8 @@ export default class Card implements Node {
     this.description = data.description;
     this.url = data.url;
     this.color = data.color;
-    this.position = data.position;
+    this.x = data.x;
+    this.y = data.y;
   }
 
   public renderNode(gNodeRef) {
@@ -38,29 +40,33 @@ export default class Card implements Node {
   }
 
   public calcLinkPosition(l, isSource=true) {
-    // const 
-    //       x1 = l.source.x,
-    //       y1 = l.source.y,
-    //       x2 = point.x,
-    //       y2 = point.y,
-    //       dist = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)),
-    //       slope = Math.abs((y1 - y2) / (x1 - x2));
+    const sourcePos = l.source.getCenter(),
+          targetPos = l.target.getCenter(),
+          x1 = sourcePos.x,
+          y1 = sourcePos.y,
+          x2 = targetPos.x,
+          y2 = targetPos.y,
+          dist = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)),
+          slope = Math.abs((y1 - y2) / (x1 - x2));
 
-    // // 2.2 constant accounts for node stroke width, which is set in CSS
-    // const overlap = (slope > (NODE_CARD_HEIGHT / NODE_CARD_LENGTH))
-    //   ? dist * (NODE_CARD_HEIGHT / 2) / Math.abs(y1 - y2)
-    //   : dist * (NODE_CARD_LENGTH / 2) / Math.abs(x1 - x2);
-    // const padding = overlap //+ (l.bidirectional ? MARKER_PADDING : 2.2);
-    // if (isSource) {
-    //   l.sourceX = x1 + (x2 - x1) * (dist - padding) / dist;
-    //   l.sourceY = y1 + (y2 - y1) * (dist - padding) / dist;
-    // } else {
-    //   l.targetX = x2 - (x2 - x1) * (dist - padding) / dist;
-    //   l.targetY = y2 - (y2 - y1) * (dist - padding) / dist;
-    // }
+    // By default, link stretches to node center, so we need to calculate
+    // overlap between link and node (node edge to center)
+    const overlap = (slope > (NODE_CARD_HEIGHT / NODE_CARD_LENGTH))
+      ? dist * (NODE_CARD_HEIGHT / 2) / Math.abs(y1 - y2)
+      : dist * (NODE_CARD_LENGTH / 2) / Math.abs(x1 - x2);
+
+    // 2.2 constant accounts for node stroke width, which is set in CSS
+    const padding = overlap; // + (l.bidirectional ? MARKER_PADDING : 2.2);
+    if (isSource) {
+      l.sourceX = x1 + (x2 - x1) * (dist - padding) / dist;
+      l.sourceY = y1 + (y2 - y1) * (dist - padding) / dist;
+    } else {
+      l.targetX = x2 - (x2 - x1) * (dist - padding) / dist;
+      l.targetY = y2 - (y2 - y1) * (dist - padding) / dist;
+    }
   }
 
-  public getCenter(n): Point {
-    return new Point(n.x + NODE_CARD_LENGTH / 2, n.y + NODE_CARD_HEIGHT / 2);
+  public getCenter(): Point {
+    return new Point(this.x + NODE_CARD_LENGTH / 2, this.y + NODE_CARD_HEIGHT / 2);
   }
 }

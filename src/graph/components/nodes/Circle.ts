@@ -12,7 +12,8 @@ export default class Circle implements Node {
   description?: string;
   url?: string;
   color?: string;
-  position?: Point;
+  x?: number;
+  y?: number;
   
   constructor(data: NodeData) {
     this.id = data.id;
@@ -21,7 +22,8 @@ export default class Circle implements Node {
     this.description = data.description;
     this.url = data.url;
     this.color = data.color;
-    this.position = data.position;
+    this.x = data.x;
+    this.y = data.y;
   }
 
   public renderNode(gNodeRef) {
@@ -80,10 +82,12 @@ export default class Circle implements Node {
   }
   
   public calcLinkPosition(l, isSource=true) {
-    const x1 = l.source.x,
-          y1 = l.source.y,
-          x2 = l.target.x,
-          y2 = l.target.y,
+    const sourcePos = l.source.getCenter(),
+          targetPos = l.target.getCenter(),
+          x1 = sourcePos.x,
+          y1 = sourcePos.y,
+          x2 = targetPos.x,
+          y2 = targetPos.y,
           dist = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
 
     // 2.2 constant accounts for node stroke width, which is set in CSS
@@ -97,7 +101,7 @@ export default class Circle implements Node {
     }
   }
 
-  public getCenter(n): Point {
-    return new Point(n.x, n.y);
+  public getCenter(): Point {
+    return new Point(this.x, this.y);
   }
 }

@@ -1,4 +1,3 @@
-import Point from "../../Point";
 
 export default interface NodeData {
   id: string;
@@ -7,5 +6,6 @@ export default interface NodeData {
   description?: string;
   url?: string;
   color?: string;
-  position?: Point;
+  x?: number;
+  y?: number;
 }

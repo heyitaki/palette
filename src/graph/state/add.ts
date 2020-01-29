@@ -1,10 +1,11 @@
+import NodeData from "../components/nodes/NodeData";
 import { updateGraph } from "../events/update";
 
 /**
 * Add nodes corresponding to given data.
 * @param nodeData Data of nodes to be added.
 */
-export function addNodesByData(nodeData, update=true) {
+export function addNodesByData(nodeData: NodeData, update=true) {
   this.adjacencyMap.addNodes(nodeData);
   if (update) updateGraph.bind(this)();
 }

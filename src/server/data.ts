@@ -2,7 +2,7 @@
 
 export const nodes = `[
   {
-    "id": 1,
+    "id": "1",
     "type": "card",
     "title": "Hi! I'm Akshath.",
     "description": "Click this box to learn more about the things I love 😊",
@@ -11,7 +11,7 @@ export const nodes = `[
     "color": ""
   },
   {
-    "id": 2,
+    "id": "2",
     "type": "person",
     "title": "Abhi Sivaprasad",
     "description": "",
@@ -23,9 +23,9 @@ export const nodes = `[
 
 export const links = `[
   {
-    "id": 1,
+    "id": "1",
     "title": "brother",
-    "source": 2,
-    "target": 1
+    "source": "2",
+    "target": "1"
   }
 ]`;

@@ -1,26 +1,27 @@
+import Node from '../src/graph/components/nodes/Node';
+import { nodeDataToNodeObj } from './graph/components/node';
 import { links, nodes } from './server/data';
-import _ from 'lodash';
 
 export default class Server {
-  nodes;
-  links;
-  nodeIdToNode;
+  nodes: Node[];
+  links: any[];
+  nodeIdToNodeObj: Map<string, Node>;
 
   constructor() {
     this.loadData();
   }
 
   loadData() {
-    this.nodes = JSON.parse(nodes);
+    this.nodes = nodeDataToNodeObj(JSON.parse(nodes));
     this.links = JSON.parse(links);
 
     // Construct helper data structures
-    this.nodeIdToNode = new Map();
-    this.nodes.forEach((n) => this.nodeIdToNode[n.id] = n);
+    this.nodeIdToNodeObj = new Map();
+    this.nodes.forEach((n) => this.nodeIdToNodeObj[n.id] = n);
   }
 
   getRoot() {
-    return this.nodes.filter((n) => n.id === 1)[0];
+    return this.nodes.filter((n) => n.id === '1')[0];
   }
 
   /**
@@ -34,10 +35,10 @@ export default class Server {
     // Save each incoming/outgoing link and corresponding neighbor
     this.links.forEach((l) => {
       if (l.source === id) {
-        nodes.push(this.nodeIdToNode[l.target]);
+        nodes.push(this.nodeIdToNodeObj[l.target]);
         links.push(l);
       } else if (l.target === id) {
-        nodes.push(this.nodeIdToNode[l.source]);
+        nodes.push(this.nodeIdToNodeObj[l.source]);
         links.push(l);
       }
     });
