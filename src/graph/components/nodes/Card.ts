@@ -1,8 +1,9 @@
 import { select } from "d3-selection";
+import NodeData from "../../../server/NodeData";
+import { DISCONNECTED_LINK } from "../../constants/error";
 import { NODE_CARD_HEIGHT, NODE_CARD_LENGTH } from "../../constants/graph";
 import Point from "../../Point";
 import Node from "./Node";
-import NodeData from "./NodeData";
 
 export default class Card implements Node {
   id: string;
@@ -39,7 +40,12 @@ export default class Card implements Node {
       .style('fill', 'rgba(0,0,0,0.3)');
   }
 
-  public calcLinkPosition(l, isSource=true) {
+  public calcLinkPosition(l) {
+    if (this.id != l.source.id && this.id != l.target.id) {
+      console.error(DISCONNECTED_LINK, this, l);
+      return;
+    }
+    
     const sourcePos = l.source.getCenter(),
           targetPos = l.target.getCenter(),
           x1 = sourcePos.x,
@@ -57,7 +63,7 @@ export default class Card implements Node {
 
     // 2.2 constant accounts for node stroke width, which is set in CSS
     const padding = overlap; // + (l.bidirectional ? MARKER_PADDING : 2.2);
-    if (isSource) {
+    if (this.id === l.source.id) {
       l.sourceX = x1 + (x2 - x1) * (dist - padding) / dist;
       l.sourceY = y1 + (y2 - y1) * (dist - padding) / dist;
     } else {

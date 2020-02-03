@@ -1,13 +1,15 @@
 import { select } from 'd3-selection';
-import AdjacencyMap from './AdjacencyMap';
+import AdjacencyMap from './graph/AdjacencyMap';
 import { initGrid } from './graph/components/grid';
+import { linkDataToLinkObj } from './graph/components/link';
 import { createContextMenu } from './graph/components/menu';
+import { nodeDataToNodeObj } from './graph/components/node';
 import { initBrush } from './graph/events/brush';
 import { initDrag } from './graph/events/drag';
 import { handleResize } from './graph/events/resize';
 import { initZoom } from './graph/events/zoom';
 import { initForce } from './graph/force';
-import { addLinksByData, addNodesByData } from './graph/state/add';
+import { addLinks, addNodes } from './graph/state/add';
 import Server from './Server';
 
 export default class Graph {
@@ -26,11 +28,11 @@ export default class Graph {
   nodeContainer;
   node;
 
-  constructor(graphContainerId) {
+  constructor(graphContainerId: string) {
     this.initGraph(graphContainerId);
   }
 
-  private initGraph(graphContainerId) {
+  private initGraph(graphContainerId: string) {
     // Graph components
     this.svg = select('#' + graphContainerId).append('svg')
       .attr('id', 'graph-canvas')
@@ -57,10 +59,14 @@ export default class Graph {
     this.node = this.nodeContainer.selectAll('.node');
 
     // Display root node and neighbors
-    const root = this.server.getRoot();
+    const root = nodeDataToNodeObj(this.server.getRoot())[0];
     const neighbors = this.server.getNeighbors(root.id);
-    addNodesByData.bind(this)(root, false);
-    addNodesByData.bind(this)(neighbors.nodes, false);
-    addLinksByData.bind(this)(neighbors.links);
+    
+    const nodes = nodeDataToNodeObj(neighbors.nodes);
+    addNodes.bind(this)(root, this.adjacencyMap, false);
+    addNodes.bind(this)(nodes, this.adjacencyMap, false);
+
+    const links = linkDataToLinkObj(neighbors.links, this.adjacencyMap);
+    addLinks.bind(this)(links, this.adjacencyMap);
   }
 }

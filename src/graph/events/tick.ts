@@ -1,4 +1,4 @@
-import { calcLinkPosition } from "../components/link";
+import { calcLinkPosition } from "../components/links/Link";
 
 export function tick() {
   setNodePositions.bind(this)(this.node);

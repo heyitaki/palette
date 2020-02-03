@@ -1,9 +1,10 @@
 import { select } from "d3-selection";
+import NodeData from "../../../server/NodeData";
+import { DISCONNECTED_LINK } from "../../constants/error";
 import { NODE_CIRCLE_RADIUS } from "../../constants/graph";
 import Point from "../../Point";
 import { setNodeColor, wrapNodeText } from "../node";
 import Node from "./Node";
-import NodeData from "./NodeData";
 
 export default class Circle implements Node {
   id: string;
@@ -81,7 +82,12 @@ export default class Circle implements Node {
     gNode.call(setNodeColor.bind(this));
   }
   
-  public calcLinkPosition(l, isSource=true) {
+  public calcLinkPosition(l) {
+    if (this.id != l.source.id && this.id != l.target.id) {
+      console.error(DISCONNECTED_LINK, this, l);
+      return;
+    }
+
     const sourcePos = l.source.getCenter(),
           targetPos = l.target.getCenter(),
           x1 = sourcePos.x,
@@ -90,9 +96,10 @@ export default class Circle implements Node {
           y2 = targetPos.y,
           dist = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
 
-    // 2.2 constant accounts for node stroke width, which is set in CSS
-    const padding = NODE_CIRCLE_RADIUS //+ (l.bidirectional ? MARKER_PADDING : 2.2);
-    if (isSource) {
+    // By default, link stretches to node center, so we need to calculate
+    // overlap between link and node (node edge to center)
+    const padding = NODE_CIRCLE_RADIUS;
+    if (this.id === l.source.id) {
       l.sourceX = x1 + (x2 - x1) * (dist - padding) / dist;
       l.sourceY = y1 + (y2 - y1) * (dist - padding) / dist;
     } else {

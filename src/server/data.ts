@@ -25,7 +25,7 @@ export const links = `[
   {
     "id": "1",
     "title": "brother",
-    "source": "2",
-    "target": "1"
+    "sourceId": "2",
+    "targetId": "1"
   }
 ]`;

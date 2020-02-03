@@ -1,5 +1,6 @@
 import { color } from 'd3-color';
 import { select } from 'd3-selection';
+import NodeData from '../../server/NodeData';
 import { toArray } from '../../utils';
 import { TYPES_TO_COLORS } from '../constants/types';
 import { getDataFromSelection } from '../selection';
@@ -7,7 +8,6 @@ import { colorToHex } from '../utils';
 import Card from './nodes/Card';
 import Circle from './nodes/Circle';
 import Node from './nodes/Node';
-import NodeData from './nodes/NodeData';
 
 /**
  * Retrieve color of given node, return custom color if given, otherwise return
@@ -108,7 +108,6 @@ export function wrapNodeText(textSelection, printFull, width=100) {
 
 export function nodeDataToNodeObj(data: NodeData | NodeData[]): Node[] {
   let nodes: Node[] = [];
-  if (!data) return nodes;
   data = toArray(data);
 
   for (let i = 0; i < data.length; i++) {
