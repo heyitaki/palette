@@ -46,6 +46,7 @@ export default class Card implements Node {
       return;
     }
     
+    console.log('card calclinkpos', l);
     const sourcePos = l.source.getCenter(),
           targetPos = l.target.getCenter(),
           x1 = sourcePos.x,
@@ -63,7 +64,7 @@ export default class Card implements Node {
 
     // 2.2 constant accounts for node stroke width, which is set in CSS
     const padding = overlap; // + (l.bidirectional ? MARKER_PADDING : 2.2);
-    if (this.id === l.source.id) {
+    if (this.id === l.target.id) {
       l.sourceX = x1 + (x2 - x1) * (dist - padding) / dist;
       l.sourceY = y1 + (y2 - y1) * (dist - padding) / dist;
     } else {

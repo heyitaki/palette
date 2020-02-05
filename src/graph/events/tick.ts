@@ -22,7 +22,7 @@ export function setNodePositions(nodes) {
 export function setLinkPositions(links) {
   links
     .each(l => calcLinkPosition(l))
-    .attr('d', l => 'M' + l.sourceX + ',' + l.sourceY + 'L' + l.targetX + ',' + l.targetY);
+    .attr('d', l => 'M' + l.targetX + ',' + l.targetY + 'L' + l.sourceX + ',' + l.sourceY);
 }
 
 /**

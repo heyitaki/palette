@@ -99,7 +99,7 @@ export default class Circle implements Node {
     // By default, link stretches to node center, so we need to calculate
     // overlap between link and node (node edge to center)
     const padding = NODE_CIRCLE_RADIUS;
-    if (this.id === l.source.id) {
+    if (this.id === l.target.id) {
       l.sourceX = x1 + (x2 - x1) * (dist - padding) / dist;
       l.sourceY = y1 + (y2 - y1) * (dist - padding) / dist;
     } else {

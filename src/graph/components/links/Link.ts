@@ -26,13 +26,14 @@ export function setLinkColor(link, linkColor: string) {
   if (!link || link.empty()) return;
   linkColor = colorToHex(linkColor);
 
+  // If marker def doesn't exist for given color, create it.
   const id = `#defs-link-${linkColor.substring(1)}`;
   if (this.defs.select(id).empty()) {
     this.defs
       .append('marker')
         .attr('id', id.substring(1))
         .attr('viewBox', '5 -5 10 10')
-        .attr('refX', 10)
+        .attr('refX', 9)
         .attr('markerWidth', 5)
         .attr('markerHeight', 5)
         .attr('orient', 'auto')
