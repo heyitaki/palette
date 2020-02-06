@@ -3,6 +3,7 @@ import NodeData from "../../../server/NodeData";
 import { DISCONNECTED_LINK } from "../../constants/error";
 import { NODE_CIRCLE_RADIUS } from "../../constants/graph";
 import Point from "../../Point";
+import Link from "../links/Link";
 import { setNodeColor, wrapNodeText } from "../node";
 import Node from "./Node";
 
@@ -36,8 +37,7 @@ export default class Circle implements Node {
 
     gNodeBody.append('circle')
       .attr('class', 'node-body')
-      .attr('r', NODE_CIRCLE_RADIUS)
-      .style('fill', 'rgba(0,0,0,0.3)');
+      .attr('r', NODE_CIRCLE_RADIUS);
 
     gNodeBody.append('circle')
       .attr('class', 'node-glyph-top')
@@ -82,7 +82,13 @@ export default class Circle implements Node {
     gNode.call(setNodeColor.bind(this));
   }
   
-  public calcLinkPosition(l) {
+  /**
+   * Return position of link relating to this node. Link should be in line with 
+   * centers of source and target nodes, but needs to be scaled back so marker 
+   * doesn't overlap with node body.
+   * @param l Link connected to this node to return position on node edge for 
+   */
+  public getLinkPosition(l: Link): Point {
     if (this.id != l.source.id && this.id != l.target.id) {
       console.error(DISCONNECTED_LINK, this, l);
       return;
@@ -96,18 +102,16 @@ export default class Circle implements Node {
           y2 = targetPos.y,
           dist = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
 
-    // By default, link stretches to node center, so we need to calculate
-    // overlap between link and node (node edge to center)
-    const padding = NODE_CIRCLE_RADIUS;
-    if (this.id === l.target.id) {
-      l.sourceX = x1 + (x2 - x1) * (dist - padding) / dist;
-      l.sourceY = y1 + (y2 - y1) * (dist - padding) / dist;
-    } else {
-      l.targetX = x2 - (x2 - x1) * (dist - padding) / dist;
-      l.targetY = y2 - (y2 - y1) * (dist - padding) / dist;
-    }
+    // Determine which end of the link we want to calculate new position 
+    const scale = (n: number): number => n * (dist - NODE_CIRCLE_RADIUS) / dist;
+    return (this.id === l.target.id)
+      ? new Point(x1 + scale(x2 - x1), y1 + scale(y2 - y1))
+      : new Point(x2 - scale(x2 - x1), y2 - scale(y2 - y1));
   }
 
+  /**
+   * Get the center of this node. 
+   */
   public getCenter(): Point {
     return new Point(this.x, this.y);
   }

@@ -5,7 +5,7 @@ import { INVALID_COLOR } from "./constants/error";
  * Non-secure quick hash function
  * @param str String to hash
  */
-export function hash(str) {
+export function hash(str: string): number {
   let char, hash = 0;
   if (str.length === 0) return hash;
   for (let i = 0; i < str.length; i++) {
@@ -22,7 +22,7 @@ export function hash(str) {
  * Convert color string to hex format.
  * @param colorString Color, in any format
  */
-export function colorToHex(colorString) {
+export function colorToHex(colorString: string): string {
   const parsedColor = color(colorString);
   if (!parsedColor) throw INVALID_COLOR;
   return parsedColor.hex();

@@ -1,4 +1,5 @@
 import Point from "../../Point";
+import Link from "../links/Link";
 
 export default interface Node {
   id: string;
@@ -7,8 +8,9 @@ export default interface Node {
   description?: string;
   url?: string;
   color?: string;
-  position?: Point;
+  x?: number;
+  y?: number;
   renderNode(gNodeRef: any): void;
-  calcLinkPosition(link: any, isSource: boolean): void;
-  getCenter(node: any): Point;
+  getLinkPosition(link: Link): Point;
+  getCenter(): Point;
 }

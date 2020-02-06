@@ -48,8 +48,3 @@ export function setLinkColor(link, linkColor: string) {
     .style('stroke', linkColor)
     .style('marker-end', `url(${id})`);
 }
-
-export function calcLinkPosition(l) {
-  l.source.calcLinkPosition(l);
-  l.target.calcLinkPosition(l);
-}

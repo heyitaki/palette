@@ -1,4 +1,4 @@
-import { calcLinkPosition } from "../components/links/Link";
+import Link from "../components/links/Link";
 
 export function tick() {
   setNodePositions.bind(this)(this.node);
@@ -11,7 +11,7 @@ export function tick() {
 * @param {Transition || Selection} nodes - Object containing list of nodes to translate.
 */
 export function setNodePositions(nodes) {
-  nodes.attr('transform', (d) => { return `translate(${d.x},${d.y})`; });
+  nodes.attr('transform', d => `translate(${d.x},${d.y})`);
 }
 
 /**
@@ -20,9 +20,11 @@ export function setNodePositions(nodes) {
 * @param {Transition || Selection} links - Object containing list of links to update.
 */
 export function setLinkPositions(links) {
-  links
-    .each(l => calcLinkPosition(l))
-    .attr('d', l => 'M' + l.targetX + ',' + l.targetY + 'L' + l.sourceX + ',' + l.sourceY);
+  links.attr('d', (l: Link): string => { 
+    const sourcePos = l.source.getLinkPosition(l),
+          targetPos = l.target.getLinkPosition(l);
+    return 'M' + sourcePos.x + ',' + sourcePos.y + 'L' + targetPos.x + ',' + targetPos.y;
+  });
 }
 
 /**
