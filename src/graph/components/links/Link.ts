@@ -1,4 +1,5 @@
 import LinkData from "../../../server/LinkData";
+import { toArray } from "../../../utils";
 import AdjacencyMap from "../../AdjacencyMap";
 import { colorToHex } from "../../utils";
 import Node from "../nodes/Node";
@@ -14,6 +15,16 @@ export default class Link {
     this.title = data.title;
     this.source = map.getNodes(data.sourceId)[0];
     this.target = map.getNodes(data.targetId)[0];
+  }
+
+  static linkDataToLinkObj(data: LinkData | LinkData[], map: AdjacencyMap): Link[] {
+    data = toArray(data);
+    const links: Link[] = [];
+    for (let i = 0; i < data.length; i++) {
+      links.push(new Link(data[i], map));
+    }
+  
+    return links;
   }
 }
 

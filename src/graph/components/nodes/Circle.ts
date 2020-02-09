@@ -4,8 +4,7 @@ import { DISCONNECTED_LINK } from "../../constants/error";
 import { NODE_CIRCLE_RADIUS } from "../../constants/graph";
 import Point from "../../Point";
 import Link from "../links/Link";
-import { setNodeColor, wrapNodeText } from "../node";
-import Node from "./Node";
+import Node, { setNodeColor, wrapNodeText } from "./Node";
 
 export default class Circle implements Node {
   id: string;

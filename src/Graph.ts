@@ -1,9 +1,9 @@
 import { select } from 'd3-selection';
 import AdjacencyMap from './graph/AdjacencyMap';
 import Grid from './graph/components/Grid';
-import { linkDataToLinkObj } from './graph/components/link';
+import Link from './graph/components/links/Link';
 import { createContextMenu } from './graph/components/menu';
-import { nodeDataToNodeObj } from './graph/components/node';
+import { nodeDataToNodeObj } from './graph/components/nodes/Node';
 import { initBrush } from './graph/events/brush';
 import { initDrag } from './graph/events/drag';
 import { handleResize } from './graph/events/resize';
@@ -69,7 +69,7 @@ export default class Graph {
     addNodes.bind(this)(root, this.adjacencyMap, false);
     addNodes.bind(this)(nodes, this.adjacencyMap, false);
 
-    const links = linkDataToLinkObj(neighbors.links, this.adjacencyMap);
+    const links = Link.linkDataToLinkObj(neighbors.links, this.adjacencyMap);
     addLinks.bind(this)(links, this.adjacencyMap);
   }
 }
