@@ -5,6 +5,7 @@ export default interface Node {
   id: string;
   type: string;
   title: string;
+  weight: number;
   description?: string;
   url?: string;
   color?: string;

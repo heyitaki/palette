@@ -30,9 +30,10 @@ export function brushing() {
   const extent = event.selection;
   this.node
     .classed('possible', (d) => {
-      const transform = zoomTransform(this.svg.node());
-      const x = d.x * transform.k + transform.x;
-      const y = d.y * transform.k + transform.y;
+      const center = d.getCenter(),
+            transform = zoomTransform(this.svg.node()),
+            x = center.x * transform.k + transform.x,
+            y = center.y * transform.k + transform.y;
       return d.possible = (extent[0][0] <= x && x <= extent[1][0]
                         && extent[0][1] <= y && y <= extent[1][1]);
     });

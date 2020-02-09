@@ -1,6 +1,6 @@
 import { select } from 'd3-selection';
 import AdjacencyMap from './graph/AdjacencyMap';
-import Grid from './graph/components/grid';
+import Grid from './graph/components/Grid';
 import { linkDataToLinkObj } from './graph/components/link';
 import { createContextMenu } from './graph/components/menu';
 import { nodeDataToNodeObj } from './graph/components/node';
@@ -41,8 +41,6 @@ export default class Graph {
       .attr('id', 'graph-canvas')
       .attr('pointer-events', 'all')
       .classed('svg-content', true);
-    
-    
     this.container = this.svg.append('g')
       .attr('class', 'graph-bois');
     this.grid = new Grid(this, this.container);

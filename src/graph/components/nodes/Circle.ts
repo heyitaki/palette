@@ -11,6 +11,7 @@ export default class Circle implements Node {
   id: string;
   type: string;
   title: string;
+  weight: number;
   description?: string;
   url?: string;
   color?: string;
@@ -26,6 +27,7 @@ export default class Circle implements Node {
     this.color = data.color;
     this.x = data.x;
     this.y = data.y;
+    this.weight = 0;
   }
 
   public renderNode(gNodeRef) {

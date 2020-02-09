@@ -1,15 +1,16 @@
 import { forceLink, forceManyBody, forceSimulation, forceX, forceY } from 'd3-force';
 import { VELOCITY_DECAY } from './constants/graph';
-import { setLinkPositions, setNodePositions } from './events/tick';
+import { setLinkPositions, setNodePositions, tick } from './events/tick';
 import { translateGraphAroundId } from './events/zoom';
 
 export function initForce() {
   this.force = forceSimulation()
-    .force('link', forceLink().distance(250).strength(1).iterations(6))
+    .force('link', forceLink().distance(250).strength(1).iterations(7))
     .force('charge', forceManyBody().strength(-15000).distanceMax(10000).theta(0.75))
     .force('y', forceY().strength(0.2))
     .force('x', forceX().strength(0.2))
     .velocityDecay(VELOCITY_DECAY)
+    .on('tick', tick.bind(this))
     .stop();
 }
 

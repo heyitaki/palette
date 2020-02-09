@@ -26,6 +26,7 @@
   fill: #0d77e2 !important;
 }
 
+.node.possible,
 .node.possible circle {
   stroke: #0d77e2 !important;
   fill: #0d77e2 !important;
