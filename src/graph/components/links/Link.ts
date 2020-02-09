@@ -33,7 +33,7 @@ export function setLinkColor(link, linkColor: string) {
       .append('marker')
         .attr('id', id.substring(1))
         .attr('viewBox', '5 -5 10 10')
-        .attr('refX', 9)
+        .attr('refX', 10)
         .attr('markerWidth', 5)
         .attr('markerHeight', 5)
         .attr('orient', 'auto')

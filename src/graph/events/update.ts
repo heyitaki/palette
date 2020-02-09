@@ -23,8 +23,8 @@ export function updateGraph() {
     .links(links);
   
   // Update links
-  this.link = this.link.data(links, (l) => { return l.id; });
-  this.linkEnter = this.link.enter().append('path')
+  const linkSelection = this.link.data(links, l => l.id);
+  this.linkEnter = linkSelection.enter().append('path')
     .attr('class', 'link')
     .attr('id', (l) => { return `link-${hash(l.id)}`; })
     .style('stroke-width', LINK_STROKE_WIDTH + 'px')
@@ -36,10 +36,10 @@ export function updateGraph() {
       l.source.weight++;
       l.target.weight++;
     });
-  this.linkEnter.call(setLinkColor.bind(this), '#000');
+  this.linkEnter.call(setLinkColor.bind(this), '#545454');
 
   // For each removed link, decrement weight of source and target nodes
-  this.link.exit()
+  linkSelection.exit()
     .each((l) => {
       if (!l.source || !l.target) return;
       l.source.weight = l.source.weight ? Math.max(0, l.source.weight - 1) : 0;
@@ -48,8 +48,8 @@ export function updateGraph() {
     .remove();
   
   // Update nodes
-  this.node = this.node.data(nodes, (d) => { return d.id; });
-  const gNode = this.node.enter().append('g')
+  const nodeSelection = this.node.data(nodes, (d) => { return d.id; });
+  const gNode = nodeSelection.enter().append('g')
     .attr('class', 'node')
     // .on('click', function (d) { events.clickWrapper.bind(self)(d, this); })
     // .on('dblclick', function (d) { events.dblclicked.bind(self)(d, this); })
@@ -61,7 +61,7 @@ export function updateGraph() {
     .call(this.drag);
 
   gNode.each(function(n) { n.renderNode(this); });
-  this.node.exit().remove();
+  nodeSelection.exit().remove();
 
   // Update selectors
   this.link = getAllLinks.bind(this)();

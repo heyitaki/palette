@@ -2,7 +2,6 @@ import { easeLinear } from 'd3-ease';
 import { event } from 'd3-selection';
 import { zoom, zoomIdentity, zoomTransform } from 'd3-zoom';
 import { ZOOM_MAX_SCALE, ZOOM_MIN_SCALE } from '../constants/graph';
-import { transformGrid, updateGridDimensions } from '../components/grid';
 
 export function initZoom() {
   const self = this;
@@ -20,11 +19,11 @@ export function zoomstart(d, self) {
 }
 
 export function zooming(d, self) {
-  updateGridDimensions.bind(this)();
+  this.grid.updateGrid(getCurrentScale.bind(this)());
   const et = event.transform;
 
   // Apply transform to grid
-  transformGrid.bind(this)(et);  
+  this.grid.transformGrid(et);  
 
   // Apply transform to all other elements
   this.container.attr('transform', et);

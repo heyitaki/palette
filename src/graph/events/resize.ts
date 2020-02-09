@@ -1,5 +1,5 @@
 import { hideContextMenu } from "../components/menu";
-import { updateGridDimensions } from "../components/grid";
+import { getCurrentScale } from "./zoom";
 
 /**
  * Handle window resizing.
@@ -13,6 +13,7 @@ export function handleResize(graphContainerId: string) {
 /**
  * Update all properties dependent on svg width/height. Trigger resized with 
  * 50ms delay to ensure it occurs after a window maximize input.
+ * TODO: Find out if we can avoid 50ms delay when window isnt maximized
  * @param graphContainerId id of html element wrapping graph svg
  */
 export function resized(graphContainerId: string) {
@@ -31,5 +32,5 @@ export function updateGraphDimensions(graphContainerId: string) {
   const graphContainer = document.getElementById(graphContainerId);
   this.width = graphContainer.clientWidth;
   this.height = graphContainer.clientHeight;
-  updateGridDimensions.bind(this)();
+  this.grid.updateGrid(getCurrentScale.bind(this)());
 }
