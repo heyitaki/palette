@@ -4,24 +4,24 @@ import LinkData from './server/LinkData';
 import NodeData from './server/NodeData';
 
 export default class Server {
-  nodes: NodeData[];
-  links: LinkData[];
-  nodeIdToNodeObj: Map<string, NodeData>;
+  private nodes: NodeData[];
+  private links: LinkData[];
+  private nodeIdToNodeData: Map<string, NodeData>;
 
   constructor() {
     this.loadData();
   }
 
-  loadData() {
+  private loadData() {
     this.nodes = JSON.parse(nodes);
     this.links = JSON.parse(links);
 
     // Construct helper data structures
-    this.nodeIdToNodeObj = new Map();
-    this.nodes.forEach((n) => this.nodeIdToNodeObj.set(n.id, n));
+    this.nodeIdToNodeData = new Map();
+    this.nodes.forEach((n) => this.nodeIdToNodeData.set(n.id, n));
   }
 
-  getRoot() {
+  public getRoot() {
     return this.nodes.filter((n) => n.id === '1')[0];
   }
 
@@ -29,17 +29,17 @@ export default class Server {
    * Get neighbors and relationships between them and given node.
    * @param id Id of node to search for
    */
-  getNeighbors(id: string): GraphData {
+  public getNeighbors(id: string): GraphData {
     const nodes = [],
           links = [];
 
     // Save each incoming/outgoing link and corresponding neighbor
     this.links.forEach((l) => {
       if (l.sourceId === id) {
-        nodes.push(this.nodeIdToNodeObj.get(l.targetId));
+        nodes.push(this.nodeIdToNodeData.get(l.targetId));
         links.push(l);
       } else if (l.targetId === id) {
-        nodes.push(this.nodeIdToNodeObj.get(l.sourceId));
+        nodes.push(this.nodeIdToNodeData.get(l.sourceId));
         links.push(l);
       }
     });

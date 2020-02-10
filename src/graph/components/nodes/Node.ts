@@ -80,7 +80,7 @@ export function setNodeColor(node, nodeColor?: string) {
  */
 export function wrapNodeText(textSelection, printFull, width=100) {
   if (printFull != 'abbrev' && printFull != 'full') return;
-  const lineHeight = 17;
+  const LINE_HEIGHT = 17;
   textSelection.each(function (d) {
     const text = select(this);
     const tokens = text.text().split(' ');
@@ -90,11 +90,14 @@ export function wrapNodeText(textSelection, printFull, width=100) {
     let remainder;
     let lineNum = 0;
     const dy = parseInt(text.attr('dy'), 10);
-    let tspan = text.append('tspan')
-                    .attr('x', 0)
-                    .attr('y', 0)
-                    .attr('dy', dy)
-                    .classed('unselectable', true);
+    const appendTspan = () => {
+      return text.append('tspan')
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('dy', LINE_HEIGHT * lineNum++ + dy)
+        .classed('unselectable', true);
+    };
+    let tspan = appendTspan();
 
     let i;
     for (i = 0; i < tokens.length; i++) {
@@ -103,12 +106,7 @@ export function wrapNodeText(textSelection, printFull, width=100) {
       if (tspan.node().getComputedTextLength() > width) {
         remainder = (line.length > 1) ? line.pop() : null;
         tspan.text(line.join(' '));
-        tspan = text.append('tspan')
-                    .attr('x', 0)
-                    .attr('y', 0)
-                    .attr('dy', lineHeight * (++lineNum) + dy)
-                    .classed('unselectable', true);
-
+        tspan = appendTspan();
         line = remainder ? [remainder] : [];
       }
 

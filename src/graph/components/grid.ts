@@ -40,9 +40,8 @@ export default class Grid {
     this.numSquaresX = (this.graph.width / GRID_SQUARE_WIDTH) / currScale;
     this.numSquaresY = (this.graph.height / GRID_SQUARE_WIDTH) / currScale;
   
-    // Don't update grid if it hasn't been created yet or if scale hasn't changed
-    const hasScaleChanged = this.numSquaresX != prevNumSquaresX;
-    if (!this.grid || !hasScaleChanged) return;
+    // Don't update grid if scale hasn't changed
+    if (this.numSquaresX === prevNumSquaresX) return;
   
     // Add new horizontal lines, update width of all lines, remove unnecessary lines
     const xSelection = this.gridX

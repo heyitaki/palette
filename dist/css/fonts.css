@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'Avenir LT Std';
+  src: url('../fonts/avenir/AvenirLTStd-Book.eot');
+  src: url('../fonts/avenir/AvenirLTStd-Book.eot?#iefix') format('embedded-opentype'),
+      url('../fonts/avenir/AvenirLTStd-Book.woff2') format('woff2'),
+      url('../fonts/avenir/AvenirLTStd-Book.woff') format('woff'),
+      url('../fonts/avenir/AvenirLTStd-Book.ttf') format('truetype'),
+      url('../fonts/avenir/AvenirLTStd-Book.svg#AvenirLTStd-Book') format('svg');
+  font-weight: 100;
+  font-style: normal;
+  letter-spacing: 0.75px;
+}

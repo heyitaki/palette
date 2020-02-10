@@ -8,7 +8,6 @@ export function initBrush() {
     .attr('class', 'brush-container');
 
   this.brush = brush()
-    .extent([[0,0], [this.width, this.height]])
     .on('start', function (d) { brushstart.bind(self)(d, this); })
     .on('brush', function (d) { brushing.bind(self)(d, this); })
     .on('end', function (d) { brushend.bind(self)(d, this); });
