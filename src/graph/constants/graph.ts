@@ -6,6 +6,7 @@ export const GRID_SQUARE_WIDTH = 80;
 export const NODE_CIRCLE_RADIUS = 30;
 export const NODE_CARD_LENGTH = 300;
 export const NODE_CARD_HEIGHT = 200;
+export const NODE_THIN_CARD_HEIGHT = 75;
 
 // Links
 export const LINK_STROKE_WIDTH = 2.7;

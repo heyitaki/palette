@@ -1,4 +1,4 @@
-import { links, nodes } from './server/data';
+import { links, nodes } from './server/data/data';
 import GraphData from './server/GraphData';
 import LinkData from './server/LinkData';
 import NodeData from './server/NodeData';

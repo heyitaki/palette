@@ -2,6 +2,7 @@ import { color } from "d3-color";
 import { select } from "d3-selection";
 import NodeData from "../../../server/NodeData";
 import { toArray } from "../../../utils";
+import { NODE_THIN_CARD_HEIGHT } from "../../constants/graph";
 import { TYPES_TO_COLORS } from "../../constants/types";
 import Point from "../../Point";
 import { getDataFromSelection } from "../../selection";
@@ -9,6 +10,7 @@ import { colorToHex } from "../../utils";
 import Link from "../links/Link";
 import Card from "./Card";
 import Circle from "./Circle";
+import ThinCard from "./ThinCard";
 
 
 export default interface Node {
@@ -29,11 +31,11 @@ export default interface Node {
 /**
  * Retrieve color of given node, return custom color if given, otherwise return
  * type or default color.
- * @param nodeData Data of node to get color of
+ * @param node Data of node to get color of
  */
-export function getNodeColor(nodeData) {
-  const nodeColor = nodeData.color,
-        nodeType = nodeData.type;
+export function getNodeColor(node: Node) {
+  const nodeColor = node.color,
+        nodeType = node.type;
   if (nodeColor && nodeColor != '') return color(nodeColor).toString();
   else if (nodeType && nodeType != '') return color(TYPES_TO_COLORS[nodeType]);
   else return color('#545454').toString();
@@ -74,7 +76,7 @@ export function setNodeColor(node, nodeColor?: string) {
 
 /**
  * Wrap long node labels. printFull states => abbrev, full, none
- * @param textSelection Element containing tspans
+ * @param textSelection Element that will contain the tspans
  * @param printFull Whether to abbreviate text, display full text, or hide text
  * @param width Max width of text
  */
@@ -122,16 +124,26 @@ export function wrapNodeText(textSelection, printFull, width=100) {
 }
 
 export function nodeDataToNodeObj(data: NodeData | NodeData[]): Node[] {
-  let nodes: Node[] = [];
+  let nodes: Node[] = [], node;
   data = toArray(data);
-
   for (let i = 0; i < data.length; i++) {
     if (!data[i].type) continue;
-    nodes.push(
-      (data[i].type.toLowerCase() === "card") 
-        ? new Card(data[i]) 
-        : new Circle(data[i])
-    );
+
+    // TODO: Should type -> obj conversion happen with switch or a dict in
+    // constants file?
+    switch (data[i].type.toLowerCase()) {
+      case "intro":
+        node = new Card(data[i]);
+        break;
+      case "topic":
+      case "subject":
+        node = new ThinCard(data[i], NODE_THIN_CARD_HEIGHT);
+        break;
+      default:
+        node = new Circle(data[i]);
+    }
+
+    nodes.push(node);
   }
 
   return nodes;

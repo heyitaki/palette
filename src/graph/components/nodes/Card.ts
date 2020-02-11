@@ -10,6 +10,8 @@ export default class Card implements Node {
   id: string;
   type: string;
   title: string;
+  height: number;
+  length: number;
   weight: number;
   description?: string;
   url?: string;
@@ -17,7 +19,7 @@ export default class Card implements Node {
   x?: number;
   y?: number;
 
-  constructor(data: NodeData) {
+  constructor(data: NodeData, height?: number, length?: number) {
     this.id = data.id;
     this.type = data.type;
     this.title = data.title;
@@ -26,6 +28,8 @@ export default class Card implements Node {
     this.color = data.color;
     this.x = data.x;
     this.y = data.y;
+    this.height = height || NODE_CARD_HEIGHT;
+    this.length = length || NODE_CARD_LENGTH;
     this.weight = 0;
   }
 
@@ -38,8 +42,10 @@ export default class Card implements Node {
 
     gNodeBody.append('rect')
       .attr('class', 'node-body')
-      .attr('width', NODE_CARD_LENGTH)
-      .attr('height', NODE_CARD_HEIGHT);
+      .attr('width', this.length)
+      .attr('height', this.height)
+      .attr('rx', 5)
+      .attr('ry', 5);
   }
 
   /**
@@ -65,9 +71,9 @@ export default class Card implements Node {
 
     // Calculate overlap, which is dependent on whether the link crosses through
     // this node's length and height 
-    const overlap = (slope > (NODE_CARD_HEIGHT / NODE_CARD_LENGTH))
-      ? dist * (NODE_CARD_HEIGHT / 2) / Math.abs(y1 - y2)
-      : dist * (NODE_CARD_LENGTH / 2) / Math.abs(x1 - x2);
+    const overlap = (slope > (this.height / this.length))
+      ? dist * (this.height / 2) / Math.abs(y1 - y2)
+      : dist * (this.length / 2) / Math.abs(x1 - x2);
 
     // Determine which end of the link we want to calculate new position for
     const scale = (n: number): number => n * (dist - overlap) / dist;
@@ -81,6 +87,6 @@ export default class Card implements Node {
    * top left corner. 
    */
   public getCenter(): Point {
-    return new Point(this.x + NODE_CARD_LENGTH / 2, this.y + NODE_CARD_HEIGHT / 2);
+    return new Point(this.x + this.length / 2, this.y + this.height / 2);
   }
 }
