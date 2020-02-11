@@ -1,19 +1,14 @@
 import { color } from "d3-color";
 import { select } from "d3-selection";
 import NodeData from "../../../server/NodeData";
-import { toArray } from "../../../utils";
-import { NODE_THIN_CARD_HEIGHT } from "../../constants/graph";
 import { TYPES_TO_COLORS } from "../../constants/types";
 import Point from "../../Point";
 import { getDataFromSelection } from "../../selection";
 import { colorToHex } from "../../utils";
 import Link from "../links/Link";
-import Card from "./Card";
-import Circle from "./Circle";
-import ThinCard from "./ThinCard";
 
 
-export default interface Node {
+export default class Node {
   id: string;
   type: string;
   title: string;
@@ -23,9 +18,22 @@ export default interface Node {
   color?: string;
   x?: number;
   y?: number;
-  renderNode(gNodeRef: any): void;
-  getLinkPosition(link: Link): Point;
-  getCenter(): Point;
+
+  constructor(data: NodeData) {
+    this.id = data.id;
+    this.type = data.type;
+    this.title = data.title;
+    this.description = data.description;
+    this.url = data.url;
+    this.color = data.color;
+    this.x = data.x;
+    this.y = data.y;
+    this.weight = 0;
+  }
+
+  renderNode(gNodeRef: any): void {}
+  getLinkPosition(link: Link): Point { return new Point(this.x, this.y); }
+  getCenter(): Point { return new Point(this.x, this.y); }
 }
 
 /**
@@ -121,30 +129,4 @@ export function wrapNodeText(textSelection, printFull, width=100) {
     finalLine = (printFull === 0 && i < tokens.length-1) ? `${finalLine.trim()}...` : finalLine;
     tspan.text(finalLine);
   });
-}
-
-export function nodeDataToNodeObj(data: NodeData | NodeData[]): Node[] {
-  let nodes: Node[] = [], node;
-  data = toArray(data);
-  for (let i = 0; i < data.length; i++) {
-    if (!data[i].type) continue;
-
-    // TODO: Should type -> obj conversion happen with switch or a dict in
-    // constants file?
-    switch (data[i].type.toLowerCase()) {
-      case "intro":
-        node = new Card(data[i]);
-        break;
-      case "topic":
-      case "subject":
-        node = new ThinCard(data[i], NODE_THIN_CARD_HEIGHT);
-        break;
-      default:
-        node = new Circle(data[i]);
-    }
-
-    nodes.push(node);
-  }
-
-  return nodes;
 }

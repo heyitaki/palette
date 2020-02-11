@@ -6,27 +6,9 @@ import Point from "../../Point";
 import Link from "../links/Link";
 import Node, { setNodeColor, wrapNodeText } from "./Node";
 
-export default class Circle implements Node {
-  id: string;
-  type: string;
-  title: string;
-  weight: number;
-  description?: string;
-  url?: string;
-  color?: string;
-  x?: number;
-  y?: number;
-  
+export default class Circle extends Node {
   constructor(data: NodeData) {
-    this.id = data.id;
-    this.type = data.type;
-    this.title = data.title;
-    this.description = data.description;
-    this.url = data.url;
-    this.color = data.color;
-    this.x = data.x;
-    this.y = data.y;
-    this.weight = 0;
+    super(data);
   }
 
   public renderNode(gNodeRef) {

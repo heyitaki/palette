@@ -6,31 +6,14 @@ import Point from "../../Point";
 import Link from "../links/Link";
 import Node from "./Node";
 
-export default class Card implements Node {
-  id: string;
-  type: string;
-  title: string;
+export default class Card extends Node {
   height: number;
   length: number;
-  weight: number;
-  description?: string;
-  url?: string;
-  color?: string;
-  x?: number;
-  y?: number;
 
   constructor(data: NodeData, height?: number, length?: number) {
-    this.id = data.id;
-    this.type = data.type;
-    this.title = data.title;
-    this.description = data.description;
-    this.url = data.url;
-    this.color = data.color;
-    this.x = data.x;
-    this.y = data.y;
+    super(data);
     this.height = height || NODE_CARD_HEIGHT;
     this.length = length || NODE_CARD_LENGTH;
-    this.weight = 0;
   }
 
   public renderNode(gNodeRef) {
