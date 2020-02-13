@@ -1,3 +1,4 @@
+import Graph from "./Graph";
 import AdjacencyMap from "./graph/AdjacencyMap";
 import Link from "./graph/components/links/Link";
 import Card from "./graph/components/nodes/Card";
@@ -21,7 +22,7 @@ export function exists(input) {
 	return !(!input && input != 0);
 }
 
-export function nodeDataToNodeObj(data: NodeData | NodeData[]): Node[] {
+export function nodeDataToNodeObj(graph: Graph, data: NodeData | NodeData[]): Node[] {
   let nodes: Node[] = [], node;
   data = toArray(data);
   for (let i = 0; i < data.length; i++) {
@@ -31,14 +32,14 @@ export function nodeDataToNodeObj(data: NodeData | NodeData[]): Node[] {
     // constants file?
     switch (data[i].type.toLowerCase()) {
       case "intro":
-        node = new Card(data[i]);
+        node = new Card(graph, data[i]);
         break;
       case "topic":
       case "subject":
-        node = new ThinCard(data[i], NODE_THIN_CARD_HEIGHT);
+        node = new ThinCard(graph, data[i], NODE_THIN_CARD_HEIGHT);
         break;
       default:
-        node = new Circle(data[i]);
+        node = new Circle(graph, data[i]);
     }
 
     nodes.push(node);

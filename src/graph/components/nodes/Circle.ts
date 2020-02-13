@@ -1,4 +1,5 @@
 import { select } from "d3-selection";
+import Graph from "../../../Graph";
 import NodeData from "../../../server/NodeData";
 import { DISCONNECTED_LINK } from "../../constants/error";
 import { NODE_CIRCLE_RADIUS } from "../../constants/graph";
@@ -7,8 +8,8 @@ import Link from "../links/Link";
 import Node, { setNodeColor, wrapNodeText } from "./Node";
 
 export default class Circle extends Node {
-  constructor(data: NodeData) {
-    super(data);
+  constructor(graph: Graph, data: NodeData) {
+    super(graph, data);
   }
 
   public renderNode(gNodeRef) {

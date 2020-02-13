@@ -1,4 +1,5 @@
 import { select } from "d3-selection";
+import Graph from "../../../Graph";
 import NodeData from "../../../server/NodeData";
 import { DISCONNECTED_LINK } from "../../constants/error";
 import { NODE_CARD_HEIGHT, NODE_CARD_LENGTH } from "../../constants/graph";
@@ -10,14 +11,17 @@ export default class Card extends Node {
   height: number;
   length: number;
 
-  constructor(data: NodeData, height?: number, length?: number) {
-    super(data);
+  constructor(graph: Graph, data: NodeData, height?: number, length?: number) {
+    super(graph, data);
     this.height = height || NODE_CARD_HEIGHT;
     this.length = length || NODE_CARD_LENGTH;
   }
 
   public renderNode(gNodeRef) {
-    const gNode = select(gNodeRef);
+    const self = this,
+          gNode = select(gNodeRef);
+    gNode.on('contextmenu', function(d: Node, i: number, nodes) { self.onRightClick(d, i, nodes); });
+
     const gNodeBody = gNode.append('g')
       .attr('class', 'node-body')
       // .on('mouseenter', function (d) { events.mouseenter.bind(self)(d, this); })

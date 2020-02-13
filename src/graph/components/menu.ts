@@ -39,7 +39,7 @@ export function getActionMenu() {
         },
         {
           title: 'Unpin',
-          icon: './icons/unpin.svg}',
+          icon: './icons/unpin.svg',
           action: (nodes) => { pinNodes.bind(this)(nodes, false); },
           codes: {
             'Current node': '',
@@ -178,23 +178,10 @@ export function createContextMenu() {
           event.stopPropagation();
         });
 
-      if (nodes.size()) {
-        // Populate action menu
-        const parent = gMenu.append('ul')
-          .attr('class', 'action-menu');
-        parent.call(createNestedMenu, element);
-      } else {
-        gMenu.html(
-          `<div class="context-menu-empty">
-            <p>There are no <span style="color: #0d77e2;">selected</span> nodes!</p>
-            <ol>
-              <li>Click on a node to (un)select it. Shift+click to select multiple nodes.</li>
-              <li>Use the lasso or box selection tools on top of the canvas.</li>
-            </ol>
-            <p>Selecting nodes allows you to expand, pin, or remove them.</p>
-          </div>`
-        );
-      }
+      // Populate action menu
+      const parent = gMenu.append('ul')
+        .attr('class', 'action-menu');
+      parent.call(createNestedMenu, element);
 
       // The openCallback allows an action to fire before the menu is displayed
       // an example usage would be closing a tooltip

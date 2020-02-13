@@ -1,14 +1,17 @@
 import { color } from "d3-color";
 import { select } from "d3-selection";
+import Graph from "../../../Graph";
 import NodeData from "../../../server/NodeData";
 import { TYPES_TO_COLORS } from "../../constants/types";
 import Point from "../../Point";
 import { getDataFromSelection } from "../../selection";
 import { colorToHex } from "../../utils";
 import Link from "../links/Link";
+import { getActionMenu } from "../menu";
 
 
 export default class Node {
+  graph: Graph;
   id: string;
   type: string;
   title: string;
@@ -19,7 +22,8 @@ export default class Node {
   x?: number;
   y?: number;
 
-  constructor(data: NodeData) {
+  constructor(graph: Graph, data: NodeData) {
+    this.graph = graph;
     this.id = data.id;
     this.type = data.type;
     this.title = data.title;
@@ -32,8 +36,16 @@ export default class Node {
   }
 
   renderNode(gNodeRef: any): void {}
-  getLinkPosition(link: Link): Point { return new Point(this.x, this.y); }
-  getCenter(): Point { return new Point(this.x, this.y); }
+  getLinkPosition(link: Link): Point { return null; }
+  getCenter(): Point { return null; }
+
+  onClick() {
+    console.log('click');
+  }
+
+  onRightClick(d: Node, i: number, nodes) {
+    this.graph.contextMenu(getActionMenu())(...arguments);
+  }
 }
 
 /**

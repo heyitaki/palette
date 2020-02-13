@@ -61,10 +61,10 @@ export default class Graph {
     this.node = this.nodeContainer.selectAll('.node');
 
     // Display root node and neighbors
-    const root = nodeDataToNodeObj(this.server.getRoot())[0];
+    const root = nodeDataToNodeObj(this, this.server.getRoot())[0];
     const neighbors = this.server.getNeighbors(root.id);
     
-    const nodes = nodeDataToNodeObj(neighbors.nodes);
+    const nodes = nodeDataToNodeObj(this, neighbors.nodes);
     addNodes.bind(this)(root, this.adjacencyMap, false);
     addNodes.bind(this)(nodes, this.adjacencyMap, false);
 
