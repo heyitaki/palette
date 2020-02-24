@@ -1,7 +1,6 @@
-import AdjacencyMap from "../AdjacencyMap";
+import Graph from "../../Graph";
 import Link from "../components/links/Link";
 import Node from "../components/nodes/Node";
-import { updateGraph } from "../events/update";
 
 /**
 * Add given nodes to adjacency map.
@@ -11,9 +10,9 @@ import { updateGraph } from "../events/update";
 * updates of back-to-back state changes so that we can re-render just once at
 * the end.
 */
-export function addNodes(nodes: Node | Node[], map: AdjacencyMap, update=true) {
-  map.addNodes(nodes);
-  if (update) updateGraph.bind(this)();
+export function addNodes(graph: Graph, nodes: Node | Node[], update=true) {
+  graph.adjacencyMap.addNodes(nodes);
+  if (update) graph.updateGraph();
 }
 
 /**
@@ -24,7 +23,7 @@ export function addNodes(nodes: Node | Node[], map: AdjacencyMap, update=true) {
 * updates of back-to-back state changes so that we can re-render just once at
 * the end.
 */
-export function addLinks(links: Link | Link[], map: AdjacencyMap, update=true) {
-  map.addLinks(links);
-  if (update) updateGraph.bind(this)();
+export function addLinks(graph: Graph, links: Link | Link[], update=true) {
+  graph.adjacencyMap.addLinks(links);
+  if (update) graph.updateGraph();
 }

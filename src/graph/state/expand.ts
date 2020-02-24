@@ -1,23 +1,24 @@
+import Graph from "../../Graph";
+import { toArray } from "../../utils";
+import Node from '../components/nodes/Node';
+
 /**
  * Add all first degree neighbors of nodes corresponding to given ids. If a node is not
  * expandable, ignore it.
- * @param  {Object || Object[]} dataList List of data of nodes to be expanded. Single values
- * can be passed in as an Object instead of as a list.
- * @return {number} Returns the number of nodes expanded.
  */
-export function expandNodesByData(dataList) {
+export function expandNodesByData(graph: Graph, nodes: Node | Node[]): number {
   // If dataList is an object, wrap it with a list
-  if (dataList === null) return;
-  if (!Array.isArray(dataList)) dataList = [dataList];
+  if (nodes === null) return;
+  nodes = toArray(nodes);
 
   // Do nothing if we are given nothing
-  dataList = dataList.filter((d) => { return isExpandable(d); });
-  if (dataList.length === 0) return;
+  nodes = nodes.filter((n: Node) => isExpandable(n));
+  if (nodes.length === 0) return;
 
   // Freeze root nodes and expand
-  // for (let i = 0; i < dataList.length; i++) actions.freezeNodeByData(dataList[i], true);
-  const idList = dataList.map(d => d.id);
-  this.expandNodesFromData(idList);
+  const idList: string[] = nodes.map((n: Node) => n.id);
+  graph.server.getNeighbors(idList);
+  //this.expandNodesFromData(idList);
   return idList.length;
 }
 

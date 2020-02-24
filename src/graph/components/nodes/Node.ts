@@ -12,25 +12,30 @@ import Link from "../links/Link";
 export default class Node {
   graph: Graph;
   id: string;
-  type: string;
   title: string;
+  type: string;
   weight: number;
-  description?: string;
-  url?: string;
   color?: string;
+  description?: string;
+  fixed?: boolean;
+  fx?: number;
+  fy?: number;
+  saveRadical?: boolean;
+  url?: string;
   x?: number;
   y?: number;
 
   constructor(graph: Graph, data: NodeData) {
     this.graph = graph;
     this.id = data.id;
-    this.type = data.type;
     this.title = data.title;
+    this.type = data.type;
+    this.color = data.color;
     this.description = data.description;
     this.url = data.url;
-    this.color = data.color;
     this.x = data.x;
     this.y = data.y;
+    this.saveRadical = false;
     this.weight = 0;
   }
 

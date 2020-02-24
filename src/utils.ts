@@ -1,11 +1,12 @@
 import Graph from "./Graph";
-import AdjacencyMap from "./graph/AdjacencyMap";
 import Link from "./graph/components/links/Link";
 import Card from "./graph/components/nodes/Card";
 import Circle from "./graph/components/nodes/Circle";
 import Node from "./graph/components/nodes/Node";
 import ThinCard from "./graph/components/nodes/ThinCard";
 import { NODE_THIN_CARD_HEIGHT } from "./graph/constants/graph";
+import { addLinks, addNodes } from "./graph/state/add";
+import GraphData from "./server/GraphData";
 import LinkData from "./server/LinkData";
 import NodeData from "./server/NodeData";
 
@@ -20,6 +21,17 @@ export function toArray<T>(input: T | T[]): T[] {
 
 export function exists(input) {
 	return !(!input && input != 0);
+}
+
+export function loadGraphData(graph: Graph, graphData: GraphData): {nodes: Node[], links: Link[]} {
+  const nodesToAdd: Node[] = nodeDataToNodeObj(graph, graphData.nodes);
+  const linksToAdd: Link[] = linkDataToLinkObj(graph, graphData.links);
+  addNodes(graph, nodesToAdd, false);
+  addLinks(graph, linksToAdd, false);
+  return { 
+    nodes: nodesToAdd,
+    links: linksToAdd
+  };
 }
 
 export function nodeDataToNodeObj(graph: Graph, data: NodeData | NodeData[]): Node[] {
@@ -48,11 +60,11 @@ export function nodeDataToNodeObj(graph: Graph, data: NodeData | NodeData[]): No
   return nodes;
 }
 
-export function linkDataToLinkObj(data: LinkData | LinkData[], map: AdjacencyMap): Link[] {
+export function linkDataToLinkObj(graph: Graph, data: LinkData | LinkData[]): Link[] {
   data = toArray(data);
   const links: Link[] = [];
   for (let i = 0; i < data.length; i++) {
-    links.push(new Link(data[i], map));
+    links.push(new Link(data[i], graph.adjacencyMap));
   }
 
   return links;

@@ -12,11 +12,11 @@ import { handleResize } from './graph/events/resize';
 import { initZoom } from './graph/events/zoom';
 import { fastForceConvergence, initForce } from './graph/force';
 import { getAllLinks, getAllNodes } from './graph/selection';
-import { addLinks, addNodes } from './graph/state/add';
+import { addNodes } from './graph/state/add';
 import { getNumLinksToExpand, isExpandable } from './graph/state/expand';
 import { hash } from './graph/utils';
 import Server from './Server';
-import { linkDataToLinkObj, nodeDataToNodeObj } from './utils';
+import { loadGraphData, nodeDataToNodeObj } from './utils';
 
 export default class Graph {
   adjacencyMap: AdjacencyMap;
@@ -54,7 +54,7 @@ export default class Graph {
     handleResize.bind(this)(graphContainerId);
     initZoom.bind(this)();
     initBrush.bind(this)();
-    this.force = initForce.bind(this)();
+    this.force = initForce(this);
     initDrag.bind(this)();
     this.defs = this.svg.append('defs');
     this.contextMenu = new ContextMenu(this);
@@ -71,14 +71,8 @@ export default class Graph {
 
     // Display root node and neighbors
     const root = nodeDataToNodeObj(this, this.server.getRoot())[0];
-    const neighbors = this.server.getNeighbors(root.id);
-    
-    const nodes = nodeDataToNodeObj(this, neighbors.nodes);
-    addNodes.bind(this)(root, this.adjacencyMap, false);
-    addNodes.bind(this)(nodes, this.adjacencyMap, false);
-
-    const links = linkDataToLinkObj(neighbors.links, this.adjacencyMap);
-    addLinks.bind(this)(links, this.adjacencyMap);
+    loadGraphData(this, this.server.getNeighbors(root.id));
+    addNodes(this, root);
   }
 
   updateGraph() {
@@ -119,7 +113,6 @@ export default class Graph {
       // .on('mousedown', function (d) { events.mousedown.bind(self)(d, this); })
       // .on('mouseover', function (d) { events.mouseover.bind(self)(d, this); })
       // .on('mouseout', function (d) { events.mouseout.bind(self)(d, this); })
-      // .on('contextmenu', function (d, i, nodes) { events.rightclicked.bind(self)(...arguments, this); })
       .call(this.drag);
     gNode.each(function(n: Node) { n.renderNode(this); });
     nodeSelection.exit().remove();
@@ -136,7 +129,7 @@ export default class Graph {
       .text((d) => { return getNumLinksToExpand(d); })
       .classed('hidden', (d) => { return !isExpandable(d); });
   
-    if (this.fastConvergence) fastForceConvergence.bind(this)();
+    if (this.fastConvergence) fastForceConvergence(this);
     else this.force.restart();
   }
 }

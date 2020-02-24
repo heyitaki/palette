@@ -36,6 +36,7 @@
     "d3-ease": "^1.0.6",
     "d3-force": "^2.0.1",
     "d3-selection": "^1.4.1",
+    "d3-transition": "git+https://github.com/heyitaki/d3-transition.git",
     "d3-zoom": "^1.8.3",
     "lodash": "^4.17.15"
   }
