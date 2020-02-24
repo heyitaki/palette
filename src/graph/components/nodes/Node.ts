@@ -7,7 +7,6 @@ import Point from "../../Point";
 import { getDataFromSelection } from "../../selection";
 import { colorToHex } from "../../utils";
 import Link from "../links/Link";
-import { getActionMenu } from "../menu";
 
 
 export default class Node {
@@ -43,8 +42,8 @@ export default class Node {
     console.log('click');
   }
 
-  onRightClick(d: Node, i: number, nodes) {
-    this.graph.contextMenu(getActionMenu())(...arguments);
+  onRightClick(n: Node, i: number, nodes) {
+    this.graph.contextMenu.openMenu(n, i);
   }
 }
 

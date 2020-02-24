@@ -1,14 +1,24 @@
 import { event, select, selectAll } from 'd3-selection';
+import Graph from '../../Graph';
 import { getSelectedNodes } from '../selection';
 import { expandNodes } from '../state/expand';
 import { pinNodes } from '../state/pin';
 import { removeNodes } from '../state/remove';
+import Node from './nodes/Node';
 
-export function getActionMenu() {
+interface MenuItem {
+  title: (d?: Node, i?: number, nodes?: any[]) => string;
+  icon: string;
+  action: (nodes: any[]) => void;
+  code: string;
+  children?: MenuItem[];
+}
+
+export function getMenuItems(): MenuItem[] {
   return [
     {
       title: (d, i, nodes) => {
-        const subject = (nodes.size() > 1) ? 'nodes' : 'node';
+        const subject = (nodes.length > 1) ? 'nodes' : 'node';
         return `Expand ${subject}`; 
       },
       icon: './icons/expand.svg',
@@ -17,10 +27,10 @@ export function getActionMenu() {
     },
     {
       title: (d, i, nodes) => {
-        if (!nodes || nodes.size() === 0) return 'Pin node';
-        const subject = (nodes.size() > 1) ? 'nodes' : 'node';
-        const numSelected = nodes.filter((dx) => { return dx.fixed || false; }).size();
-        const action = numSelected < nodes.size() ? 'Pin' : 'Unpin';
+        if (!nodes || nodes.length === 0) return 'Pin node';
+        const subject = (nodes.length > 1) ? 'nodes' : 'node';
+        const numSelected = nodes.filter((dx) => { return dx.fixed || false; }).length;
+        const action = numSelected < nodes.length ? 'Pin' : 'Unpin';
         return `${action} ${subject}`; 
       },
       icon: './icons/pin.svg',
@@ -28,40 +38,28 @@ export function getActionMenu() {
       code: 'shift+f',
       children: [
         {
-          title: 'Pin',
+          title: () => 'Pin',
           icon: './icons/pin.svg',
           action: (nodes) => { pinNodes.bind(this)(nodes, true); },
-          codes: {
-            'Current node': '',
-            'Selected nodes': '',
-            'All nodes': ''
-          }
+          code: ''
         },
         {
-          title: 'Unpin',
+          title: () => 'Unpin',
           icon: './icons/unpin.svg',
           action: (nodes) => { pinNodes.bind(this)(nodes, false); },
-          codes: {
-            'Current node': '',
-            'Selected nodes': '',
-            'All nodes': ''
-          }
+          code: ''
         },
         {
-          title: 'Toggle',
+          title: () => 'Toggle',
           icon: './icons/toggle.svg',
           action: (nodes) => { pinNodes.bind(this)(nodes, null, true); },
-          codes: {
-            'Current node': '',
-            'Selected nodes': '',
-            'All nodes': ''
-          }
+          code: ''
         },
       ] 
     },
     {
       title: (d, i, nodes) => {
-        const subject = (nodes.size() > 1) ? 'nodes' : 'node';
+        const subject = (nodes.length > 1) ? 'nodes' : 'node';
         return `Remove ${subject}`; 
       },
       icon: './icons/remove.svg',
@@ -71,181 +69,155 @@ export function getActionMenu() {
   ];
 }
 
-export function hideContextMenu() {
-  this.contextMenu('close');
-}
+export default class ContextMenu {
+  graph: Graph;
+  isOpen: boolean;
+  menuItems: MenuItem[];
 
-export function createContextMenu() {
-  const self = this;
-  const utils = {
-    noop: function () {},
+  constructor(graph: Graph) {
+    this.graph = graph;
+    this.isOpen = false;
+  }
 
-    /**
-     * @param {*} value
-     * @returns {Boolean}
-     */
-    isFn: function (value) {
-      return typeof value === 'function';
-    },
+  openMenu(n: Node, i: number) {
+    this.closeMenu();
+    const self = this;
+    this.menuItems = getMenuItems(); console.log(this.menuItems)
 
-    /**
-     * @param {*} value
-     * @returns {Function}
-     */
-    const: function (value) {
-      return function () { return value; };
-    },
+    // Create the div element that will hold the context menu
+    selectAll('.d3-context-menu').data([1]).enter()
+      .append('div')
+      .attr('class', 'd3-context-menu d3-context-menu-theme');
 
-    /**
-     * @param {Function|*} value
-     * @param {*} [fallback]
-     * @returns {Function}
-     */
-    toFactory: function (value, fallback?) {
-      value = (value === undefined) ? fallback : value;
-      return utils.isFn(value) ? value : utils.const(value);
+    // Close menu on mousedown outside of canvas
+    select('body').on('mousedown.d3-context-menu', this.closeMenu);
+
+    // Right-clicking menu closes it
+    const gMenu = selectAll('.d3-context-menu')
+      .on('contextmenu', function() {
+        self.closeMenu();
+        event.preventDefault();
+        event.stopPropagation();
+      });
+    
+    // Populate action menu
+    const nodes = getSelectedNodes.bind(this.graph)();
+    const parent = gMenu.append('ul')
+      .attr('class', 'action-menu');
+    parent.call(this.createNestedMenu, this, [n, i, nodes]);
+
+    // Get position and display context menu
+    const CLICK_OFFSET = 2.5;
+    const pageWidth = window.innerWidth || document.documentElement.clientWidth;
+    const pageHeight = window.innerHeight || document.documentElement.clientHeight;
+    let xAlign: string, xAlignReset: string, xAlignValue: string;
+    if (event.pageX < pageWidth/2) {
+      xAlign = 'left';
+      xAlignReset = 'right';
+      xAlignValue = event.pageX - CLICK_OFFSET + 'px';
+    } else {
+      xAlign = 'right';
+      xAlignReset = 'left';
+      xAlignValue = pageWidth - event.pageX - CLICK_OFFSET + 'px';
     }
-  };
 
-  // Global state for d3-context-menu
-  let d3ContextMenu = null;
+    let yAlign: string, yAlignReset: string, yAlignValue: string;
+    if (event.pageY < pageHeight/2) {
+      yAlign = 'top';
+      yAlignReset = 'bottom';
+      yAlignValue = event.pageY - CLICK_OFFSET + 'px';
+    } else {
+      yAlign = 'bottom';
+      yAlignReset = 'top';
+      yAlignValue = pageHeight - event.pageY - CLICK_OFFSET + 'px';
+    }
+    
+    select('.d3-context-menu')
+      .style(xAlign, xAlignValue)
+      .style(xAlignReset, null)
+      .style(yAlign, yAlignValue)
+      .style(yAlignReset, null)
+      .style('display', 'block');
 
-  const closeMenu = function () {
-    // Global state is populated if a menu is currently opened
-    if (d3ContextMenu) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  createNestedMenu(parent, root, args, depth=0) {
+    const self = this; console.log('parent',parent,'root', root, depth)
+    parent.selectAll('li')
+      .data(function (d: MenuItem): MenuItem[] { console.log(this, self, d)
+        return (depth === 0) ? root.menuItems : d.children;
+      })
+      .enter()
+      .append('li')
+      .each(function (d: MenuItem) {
+        // Parse data objects
+        const hasChildren = !!d.children,
+              hasAction = !!d.action,
+              hasIcon = !!d.icon,
+              icon = hasIcon ? `<img src=${d.icon}>` : '',
+              text = `<p class="${hasIcon ? '' : 'context-menu-no-icon'}">${d.title(...args)}</p>`;
+        let code = d.code;
+        code = (code === 'disabled' || code === undefined ) ? '' : `<p class="context-menu-code">${code}</p>`;
+
+        const listItem = select(this)
+          .classed('context-menu-header', !hasChildren && !hasAction)
+          .classed('context-menu-parent', hasChildren)
+          .html(`<div class="context-menu-left">${icon}${text}</div>${code}`)
+          .on('click', function () {
+            event.stopPropagation();
+            // Do nothing if disabled or no action
+            if (!hasAction) return;
+
+            // Get selection, always pass in node id, only used when selecting current node
+            d.action.call(root.graph, args[2]);
+            root.closeMenu();
+          });
+
+        if (hasChildren) {
+          // Create children(`next parent`) and call recursive
+          const children = listItem.append('ul').classed('context-menu-children', true);
+          root.createNestedMenu(children, root, args, ++depth)
+        }
+      });
+  }
+
+  closeMenu() {
+    if (this.isOpen) {
       select('.d3-context-menu').remove();
       select('body').on('mousedown.d3-context-menu', null);
-      d3ContextMenu.boundCloseCallback();
-      d3ContextMenu = null;
+      this.isOpen = false;
     }
-  };
+  }
+}
 
-  /**
-   * Calls API method (e.g. `close`) or returns handler function for the `contextmenu` event
-   * @param {Function|Array|String} actionMenuItems
-   * @param {Function|Object} config
-   * @returns {?Function}
-   */
-  return function (actionMenuItems, config) {
-    // Allow 'contextMenu('close')` to programatically close the menu
-    if (actionMenuItems === 'close') {
-        return closeMenu();
-    }
+// export function createContextMenu() {
+//   const self = this;
 
-    // For convenience, make `actionMenuItems` a factory and `config` an object
-    actionMenuItems = utils.toFactory(actionMenuItems);
+//   return function (menuItems, config) {
+//     // For convenience, make `actionMenuItems` a factory and `config` an object
+//     menuItems = toFactory(menuItems);
 
-    if (utils.isFn(config)) config = { onOpen: config };
-    else config = config || {};
-
-    // Resolve config
-    const openCallback = config.onOpen || utils.noop;
-    const closeCallback = config.onClose || utils.noop;
-    const positionFactory = utils.toFactory(config.position);
-    const themeFactory = utils.toFactory(config.theme, 'd3-context-menu-theme');
-
-    /**
-     * Context menu event handler
-     * @param {*} data
-     * @param {Number} index
-     */
-    return function (dx, ix) {
-      const element = this,
-            nodes = getSelectedNodes.bind(self)();
-
-      // Close any open menus
-      closeMenu();
-
-      // Store close callback already bound to the correct args and scope
-      d3ContextMenu = {
-        boundCloseCallback: closeCallback.bind(element, dx, ix)
-      };
-
-      // Create the div element that will hold the context menu
-      selectAll('.d3-context-menu').data([1])
-        .enter()
-        .append('div')
-        .attr('class', 'd3-context-menu ' + themeFactory.bind(element)(dx, ix));
-
-      // Close menu on mousedown outside of canvas
-      select('body').on('mousedown.d3-context-menu', closeMenu);
+//     return function (dx, ix) {
+//       const element = this;
       
-      // Right-clicking menu closes it
-      const gMenu = selectAll('.d3-context-menu')
-        .on('contextmenu', function() {
-          closeMenu();
-          event.preventDefault();
-          event.stopPropagation();
-        });
+      
+//     };
+//   };
+// }
 
-      // Populate action menu
-      const parent = gMenu.append('ul')
-        .attr('class', 'action-menu');
-      parent.call(createNestedMenu, element);
+function noop() {}
 
-      // The openCallback allows an action to fire before the menu is displayed
-      // an example usage would be closing a tooltip
-      if (openCallback.bind(element)(dx, ix) === false) {
-        return;
-      }
+function isFunction(value: any): boolean {
+  return typeof value === 'function';
+}
 
-      // Get position and display context menu
-      const position = positionFactory.bind(element)(dx, ix);
-      select('.d3-context-menu')
-        .style('left', (position ? position.left : event.pageX - 2) + 'px')
-        .style('top', (position ? position.top : event.pageY - 2) + 'px')
-        .style('display', 'block');
+function toFunction(value: any): () => any {
+  return () => value;
+}
 
-      event.preventDefault();
-      event.stopPropagation();
-
-      function createNestedMenu(parent, root, depth=0) {
-        const resolve = function (value) {
-          return utils.toFactory(value).call(element, dx, ix, nodes);
-        };
-
-        parent.selectAll('li')
-          .data(function (d) {
-            const baseData = depth === 0 ? actionMenuItems : d.children;
-            return resolve(baseData);
-          })
-          .enter()
-          .append('li')
-          .each(function (d) {
-            // Parse data objects
-            const isDivider = !!resolve(d.divider);
-            const hasChildren = !!resolve(d.children);
-            const hasAction = !!d.action;
-            const hasIcon = !!resolve(d.icon);
-            const icon = hasIcon ? `<img src=${d.icon}>` : '';
-            const text = isDivider ? '<hr>' : `<p class="${hasIcon ? '' : 'context-menu-no-icon'}">${resolve(d.title)}</p>`;
-            let code = resolve(d.code);
-            const isDisabled = !!resolve(d.disabled) || code === 'disabled';
-            code = (code === 'disabled' || code === undefined ) ? '' : `<p class="context-menu-code">${code}</p>`;
-
-            const listItem = select(this)
-              .classed('context-menu-divider', isDivider)
-              .classed('context-menu-disabled', isDisabled)
-              .classed('context-menu-header', !hasChildren && !hasAction)
-              .classed('context-menu-parent', hasChildren)
-              .html(`<div class="context-menu-left">${icon}${text}</div>${code}`)
-              .on('click', function () {
-                event.stopPropagation();
-                // Do nothing if disabled or no action
-                if (isDisabled || !hasAction) return;
-
-                // Get selection, always pass in node id, only used when selecting current node
-                d.action.call(root, nodes);
-                closeMenu();
-              });
-
-            if (hasChildren) {
-              // Create children(`next parent`) and call recursive
-              const children = listItem.append('ul').classed('context-menu-children', true);
-              createNestedMenu(children, root, ++depth)
-            }
-          });
-      }
-    };
-  };
+function toFactory(value: any, fallback?: any): Function {
+  value = (value === undefined) ? fallback : value;
+  return isFunction(value) ? value : toFunction(value);
 }

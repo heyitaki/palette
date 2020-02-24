@@ -1,7 +1,7 @@
 import { select } from 'd3-selection';
 import AdjacencyMap from './graph/AdjacencyMap';
 import Grid from './graph/components/Grid';
-import { createContextMenu } from './graph/components/menu';
+import ContextMenu from './graph/components/menu';
 import { initBrush } from './graph/events/brush';
 import { initDrag } from './graph/events/drag';
 import { handleResize } from './graph/events/resize';
@@ -17,7 +17,7 @@ export default class Graph {
   force;
   drag;
   defs;
-  contextMenu;
+  contextMenu: ContextMenu;
   width: number;
   height: number;
   grid: Grid;
@@ -49,7 +49,7 @@ export default class Graph {
     initForce.bind(this)();
     initDrag.bind(this)();
     this.defs = this.svg.append('defs');
-    this.contextMenu = createContextMenu.bind(this)();
+    this.contextMenu = new ContextMenu(this);
     this.server = new Server();
     this.adjacencyMap = new AdjacencyMap();
 

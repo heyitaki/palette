@@ -20,7 +20,7 @@ export default class Card extends Node {
   public renderNode(gNodeRef) {
     const self = this,
           gNode = select(gNodeRef);
-    gNode.on('contextmenu', function(d: Node, i: number, nodes) { self.onRightClick(d, i, nodes); });
+    gNode.on('contextmenu', function(d: Node, i, nodes) { self.onRightClick(d, i, nodes); });
 
     const gNodeBody = gNode.append('g')
       .attr('class', 'node-body')

@@ -1,4 +1,3 @@
-import { hideContextMenu } from "../components/menu";
 import { getCurrentScale } from "./zoom";
 
 /**
@@ -19,7 +18,7 @@ export function handleResize(graphContainerId: string) {
 export function resized(graphContainerId: string) {
   const self = this;
   setTimeout(function() {
-    hideContextMenu.bind(self)();
+    self.contextMenu.closeMenu();
     updateGraphDimensions.bind(self)(graphContainerId);
   }, 50);
 }
