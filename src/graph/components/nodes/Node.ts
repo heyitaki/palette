@@ -21,6 +21,7 @@ export default class Node {
   fx?: number;
   fy?: number;
   saveRadical?: boolean;
+  totalLinks?: number;
   url?: string;
   x?: number;
   y?: number;
@@ -32,6 +33,7 @@ export default class Node {
     this.type = data.type;
     this.color = data.color;
     this.description = data.description;
+    this.totalLinks = data.totalLinks;
     this.url = data.url;
     this.x = data.x;
     this.y = data.y;

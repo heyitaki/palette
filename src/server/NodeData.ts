@@ -6,6 +6,7 @@ export default interface NodeData {
   description?: string;
   url?: string;
   color?: string;
+  totalLinks?: number;
   x?: number;
   y?: number;
 }

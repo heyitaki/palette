@@ -1,4 +1,4 @@
-import { ForceLink, Simulation, SimulationLinkDatum, SimulationNodeDatum } from 'd3-force';
+import { ForceLink, Simulation, SimulationNodeDatum } from 'd3-force';
 import { BaseType, select, Selection } from 'd3-selection';
 import AdjacencyMap from './graph/AdjacencyMap';
 import ContextMenu from './graph/components/ContextMenu';
@@ -25,7 +25,7 @@ export default class Graph {
   defs: Selection<SVGDefsElement, unknown, HTMLElement, any>;
   drag;
   fastConvergence: boolean;
-  force: Simulation<SimulationNodeDatum, SimulationLinkDatum<SimulationNodeDatum>>;
+  force: Simulation<SimulationNodeDatum, undefined>;
   grid: Grid;
   height: number;
   link: Selection<BaseType, unknown, SVGGElement, unknown>;
@@ -123,11 +123,11 @@ export default class Graph {
   
     // Update node glyphs
     this.node.select('.node-glyph-top')
-      .classed('hidden', (d) => { return !isExpandable(d); });
+      .classed('hidden', (n: Node) => !isExpandable(n));
   
     this.node.select('.node-glyph-top-text')
-      .text((d) => { return getNumLinksToExpand(d); })
-      .classed('hidden', (d) => { return !isExpandable(d); });
+      .text((n: Node) => getNumLinksToExpand(n))
+      .classed('hidden', (n: Node) => !isExpandable(n));
   
     if (this.fastConvergence) fastForceConvergence(this);
     else this.force.restart();

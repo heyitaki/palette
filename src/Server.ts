@@ -19,7 +19,16 @@ export default class Server {
 
     // Construct helper data structures
     this.nodeIdToNodeData = new Map();
-    this.nodes.forEach((n) => this.nodeIdToNodeData.set(n.id, n));
+    this.nodes.forEach((n: NodeData) => {
+      n.totalLinks = 0;
+      this.nodeIdToNodeData.set(n.id, n);
+    });
+    
+    // Calculate totalLinks field for nodes
+    this.links.forEach((l: LinkData) => {
+      this.nodeIdToNodeData.get(l.sourceId).totalLinks++;
+      this.nodeIdToNodeData.get(l.targetId).totalLinks++;
+    });
   }
 
   public getRoot() {
