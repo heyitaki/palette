@@ -2,7 +2,7 @@ import { color } from "d3-color";
 import { select } from "d3-selection";
 import Graph from "../../../Graph";
 import NodeData from "../../../server/NodeData";
-import { TYPES_TO_COLORS } from "../../constants/types";
+import { TYPES_TO_COLORS } from "../../constants/mappings";
 import Point from "../../Point";
 import { getDataFromSelection } from "../../selection";
 import { colorToHex } from "../../utils";

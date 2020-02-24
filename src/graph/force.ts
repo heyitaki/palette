@@ -1,10 +1,10 @@
-import { forceLink, forceManyBody, forceSimulation, forceX, forceY } from 'd3-force';
+import { forceLink, forceManyBody, forceSimulation, forceX, forceY, Simulation, SimulationNodeDatum } from 'd3-force';
 import { VELOCITY_DECAY } from './constants/graph';
 import { setLinkPositions, setNodePositions, tick } from './events/tick';
 import { translateGraphAroundId } from './events/zoom';
 
-export function initForce() {
-  this.force = forceSimulation()
+export function initForce(): Simulation<SimulationNodeDatum, undefined> {
+  return forceSimulation()
     .force('link', forceLink().distance(250).strength(1).iterations(7))
     .force('charge', forceManyBody().strength(-15000).distanceMax(10000).theta(0.75))
     .force('y', forceY().strength(0.2))
@@ -12,14 +12,6 @@ export function initForce() {
     .velocityDecay(VELOCITY_DECAY)
     .on('tick', tick.bind(this))
     .stop();
-}
-
-/**
- * Check if graph has cooled and is in a stable state.
- * @return {Boolean} Returns whether or not graph has cooled.
- */
-export function isGraphCooled() {
-  return this.force.alpha() < this.force.alphaMin();
 }
 
 /**
@@ -36,14 +28,7 @@ export function fastForceConvergence() {
 
   // Loop force.tick until graph is cooled
   this.force.alpha(1).stop(); 
-  while (!isGraphCooled.bind(this)()) this.force.tick();
-
-  // Unfreeze root nodes and let graph cool again
-  // if (this.rootNodeIds && this.rootNodeIds.length > 0) {
-  //     this.node.each((d) => { actions.freezeNodeByData(d, false); });
-  //     this.force.alpha(1);
-  //     while (!isGraphCooled.bind(this)()) this.force.tick();
-  // }
+  while (this.force.alpha() >= this.force.alphaMin()) this.force.tick();
 
   // Fade links out so we don't have to deal with/render them during the transition
   // aesthetics.removeLinkText.bind(this)();

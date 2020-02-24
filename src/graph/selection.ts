@@ -1,12 +1,15 @@
-export function getSelectedNodes() {
+import { BaseType, Selection } from 'd3-selection';
+
+export function getSelectedNodes(): 
+    Selection<BaseType, unknown, HTMLElement, any> {
   return this.nodeContainer.selectAll('.node.selected');
 }
 
-export function getAllNodes() {
+export function getAllNodes(): Selection<BaseType, unknown, HTMLElement, any> {
   return this.nodeContainer.selectAll('.node');
 }
 
-export function getAllLinks() {
+export function getAllLinks(): Selection<BaseType, unknown, HTMLElement, any> {
   return this.linkContainer.selectAll('.link');
 }
 
@@ -17,13 +20,4 @@ export function getAllLinks() {
 export function getDataFromSelection(selection) {
   if (!selection || selection.empty()) return;
   return selection.nodes().map(x => x.__data__);
-}
-
-/**
- * Determine if input is an instance of d3.selection.
- * https://github.com/palantir/plottable/pull/637
- * @param x 
- */
-export function isSelection(x) {
-  return typeof x[0] !== 'string';
 }

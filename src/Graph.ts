@@ -1,34 +1,42 @@
-import { select } from 'd3-selection';
+import { ForceLink, Simulation, SimulationLinkDatum, SimulationNodeDatum } from 'd3-force';
+import { BaseType, select, Selection } from 'd3-selection';
 import AdjacencyMap from './graph/AdjacencyMap';
 import ContextMenu from './graph/components/ContextMenu';
 import Grid from './graph/components/Grid';
+import Link, { setLinkColor } from './graph/components/links/Link';
+import Node from './graph/components/nodes/Node';
+import { LINK_STROKE_WIDTH } from './graph/constants/graph';
 import { initBrush } from './graph/events/brush';
 import { initDrag } from './graph/events/drag';
 import { handleResize } from './graph/events/resize';
 import { initZoom } from './graph/events/zoom';
-import { initForce } from './graph/force';
+import { fastForceConvergence, initForce } from './graph/force';
+import { getAllLinks, getAllNodes } from './graph/selection';
 import { addLinks, addNodes } from './graph/state/add';
+import { getNumLinksToExpand, isExpandable } from './graph/state/expand';
+import { hash } from './graph/utils';
 import Server from './Server';
 import { linkDataToLinkObj, nodeDataToNodeObj } from './utils';
 
 export default class Graph {
-  svg;
-  container;
-  force;
-  drag;
-  defs;
-  contextMenu: ContextMenu;
-  width: number;
-  height: number;
-  grid: Grid;
-  server: Server;
   adjacencyMap: AdjacencyMap;
-  linkContainer;
-  linkText;
-  link;
-  linkEnter;
-  nodeContainer;
-  node;
+  container: Selection<SVGGElement, unknown, HTMLElement, any>;
+  contextMenu: ContextMenu;
+  defs: Selection<SVGDefsElement, unknown, HTMLElement, any>;
+  drag;
+  fastConvergence: boolean;
+  force: Simulation<SimulationNodeDatum, SimulationLinkDatum<SimulationNodeDatum>>;
+  grid: Grid;
+  height: number;
+  link: Selection<BaseType, unknown, SVGGElement, unknown>;
+  linkContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
+  linkEnter: Selection<SVGPathElement, Link, SVGGElement, unknown>;
+  linkText: Selection<BaseType, unknown, SVGGElement, unknown>;
+  node: Selection<BaseType, unknown, SVGGElement, unknown>;
+  nodeContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
+  server: Server;
+  svg: Selection<BaseType, unknown, HTMLElement, any>;
+  width: number;
 
   constructor(graphContainerId: string) {
     this.initGraph(graphContainerId);
@@ -46,12 +54,13 @@ export default class Graph {
     handleResize.bind(this)(graphContainerId);
     initZoom.bind(this)();
     initBrush.bind(this)();
-    initForce.bind(this)();
+    this.force = initForce.bind(this)();
     initDrag.bind(this)();
     this.defs = this.svg.append('defs');
     this.contextMenu = new ContextMenu(this);
     this.server = new Server();
     this.adjacencyMap = new AdjacencyMap();
+    this.fastConvergence = false;
 
     // Selectors
     this.linkContainer = this.container.append('g').attr('class', 'link-bois');
@@ -70,5 +79,64 @@ export default class Graph {
 
     const links = linkDataToLinkObj(neighbors.links, this.adjacencyMap);
     addLinks.bind(this)(links, this.adjacencyMap);
+  }
+
+  updateGraph() {
+    const nodes: Node[] = this.adjacencyMap.getNodes(),
+          links: Link[] = this.adjacencyMap.getLinks();
+          
+    // Update node/link-based forces
+    this.force.stop();
+    this.force.nodes(nodes);
+    this.force.force<ForceLink<Node, Link>>('link').links(links);
+    
+    // Update links, for each new link, increment weights of source and target nodes.
+    const linkSelection = this.link.data(links, (l: Link) => l.id);
+    this.linkEnter = linkSelection.enter().append('path')
+      .attr('class', 'link')
+      .attr('id', (l: Link) => { return `link-${hash(l.id)}`; })
+      .style('stroke-width', LINK_STROKE_WIDTH + 'px')
+      .each((l: Link) => {
+        l.source.weight++;
+        l.target.weight++;
+      });
+    this.linkEnter.call(setLinkColor.bind(this), '#545454');
+  
+    // For each removed link, decrement weights of source and target nodes
+    linkSelection.exit()
+      .each((l: Link) => {
+        l.source.weight--;
+        l.target.weight--;
+      })
+      .remove();
+    
+    // Update nodes
+    const nodeSelection = this.node.data(nodes, (n: Node) => { return n.id; });
+    const gNode = nodeSelection.enter().append('g')
+      .attr('class', 'node')
+      // .on('click', function (d) { events.clickWrapper.bind(self)(d, this); })
+      // .on('dblclick', function (d) { events.dblclicked.bind(self)(d, this); })
+      // .on('mousedown', function (d) { events.mousedown.bind(self)(d, this); })
+      // .on('mouseover', function (d) { events.mouseover.bind(self)(d, this); })
+      // .on('mouseout', function (d) { events.mouseout.bind(self)(d, this); })
+      // .on('contextmenu', function (d, i, nodes) { events.rightclicked.bind(self)(...arguments, this); })
+      .call(this.drag);
+    gNode.each(function(n: Node) { n.renderNode(this); });
+    nodeSelection.exit().remove();
+  
+    // Update selectors
+    this.link = getAllLinks.bind(this)();
+    this.node = getAllNodes.bind(this)();
+  
+    // Update node glyphs
+    this.node.select('.node-glyph-top')
+      .classed('hidden', (d) => { return !isExpandable(d); });
+  
+    this.node.select('.node-glyph-top-text')
+      .text((d) => { return getNumLinksToExpand(d); })
+      .classed('hidden', (d) => { return !isExpandable(d); });
+  
+    if (this.fastConvergence) fastForceConvergence.bind(this)();
+    else this.force.restart();
   }
 }
