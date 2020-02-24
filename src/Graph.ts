@@ -1,7 +1,7 @@
 import { select } from 'd3-selection';
 import AdjacencyMap from './graph/AdjacencyMap';
+import ContextMenu from './graph/components/ContextMenu';
 import Grid from './graph/components/Grid';
-import ContextMenu from './graph/components/menu';
 import { initBrush } from './graph/events/brush';
 import { initDrag } from './graph/events/drag';
 import { handleResize } from './graph/events/resize';
