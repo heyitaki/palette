@@ -82,7 +82,7 @@ export default class AdjacencyMap {
    */
   addLinks = (links: Link | Link[]): void => {
     links = toArray(links);
-    let currLink, linkId, source, target, sourceId, targetId;
+    let currLink: Link, linkId, source, target, sourceId, targetId;
     for (let i = 0; i < links.length; i++) {
       currLink = links[i];
       linkId = currLink.id;
@@ -91,8 +91,8 @@ export default class AdjacencyMap {
 
       // If source and target are references to node objects, do nothing
       // Else replace node ids with references to the nodes
-      if (!currLink || !exists(linkId)) throw MISSING_LINK_ID;
-      if (!exists(source) || !exists(target)) throw MALFORMED_DATA;
+      if (!currLink || !exists(linkId)) console.error(MISSING_LINK_ID);
+      if (!exists(source) || !exists(target)) console.error(MALFORMED_DATA, currLink);
       if (!exists(source.id)) links[i].source = this.getNodes(source)[0];
       if (!exists(target.id)) links[i].target = this.getNodes(target)[0];
 

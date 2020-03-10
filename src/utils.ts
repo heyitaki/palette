@@ -25,9 +25,9 @@ export function exists(input) {
 
 export function loadGraphData(graph: Graph, graphData: GraphData): {nodes: Node[], links: Link[]} {
   const nodesToAdd: Node[] = nodeDataToNodeObj(graph, graphData.nodes);
-  const linksToAdd: Link[] = linkDataToLinkObj(graph, graphData.links);
   addNodes(graph, nodesToAdd, false);
-  addLinks(graph, linksToAdd, false);
+  const linksToAdd: Link[] = linkDataToLinkObj(graph, graphData.links);
+  addLinks(graph, linksToAdd);
   return { 
     nodes: nodesToAdd,
     links: linksToAdd

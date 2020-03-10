@@ -69,10 +69,11 @@ export default class Graph {
     this.nodeContainer = this.container.append('g').attr('class', 'node-bois');
     this.node = this.nodeContainer.selectAll('.node');
 
-    // Display root node and neighbors
+    // Display root node and neighbors 
+    debugger
     const root = nodeDataToNodeObj(this, this.server.getRoot())[0];
+    addNodes(this, root, false);
     loadGraphData(this, this.server.getNeighbors(root.id));
-    addNodes(this, root);
   }
 
   updateGraph() {
