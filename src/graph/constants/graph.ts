@@ -19,3 +19,7 @@ export const VELOCITY_DECAY = 0.25;
 export const ALPHA_TARGET_DRAG = 0.3;
 export const VELOCITY_DECAY_DRAG = 0.7;
 export const VELOCITY_DECAY_COOL = 0.8;
+
+// Menu
+export const CONTEXT_MENU_WIDTH = 275;
+export const CONTEXT_MENU_HEIGHT = 125;

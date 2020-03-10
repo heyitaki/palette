@@ -70,7 +70,6 @@ export default class Graph {
     this.node = this.nodeContainer.selectAll('.node');
 
     // Display root node and neighbors 
-    debugger
     const root = nodeDataToNodeObj(this, this.server.getRoot())[0];
     addNodes(this, root, false);
     loadGraphData(this, this.server.getNeighbors(root.id));

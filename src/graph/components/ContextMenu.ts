@@ -1,5 +1,6 @@
 import { event, select, selectAll } from 'd3-selection';
 import Graph from '../../Graph';
+import { CONTEXT_MENU_HEIGHT, CONTEXT_MENU_WIDTH } from '../constants/graph';
 import { getSelectedNodes } from '../selection';
 import { expandNodes } from '../state/expand';
 import { pinNodes } from '../state/pin';
@@ -61,7 +62,7 @@ export default class ContextMenu {
     const pageWidth = window.innerWidth || document.documentElement.clientWidth;
     const pageHeight = window.innerHeight || document.documentElement.clientHeight;
     let xAlign: string, xAlignReset: string, xAlignValue: string;
-    if (event.pageX < pageWidth/2) {
+    if (event.pageX + CONTEXT_MENU_WIDTH < pageWidth) {
       xAlign = 'left';
       xAlignReset = 'right';
       xAlignValue = event.pageX - CLICK_OFFSET + 'px';
@@ -72,7 +73,7 @@ export default class ContextMenu {
     }
 
     let yAlign: string, yAlignReset: string, yAlignValue: string;
-    if (event.pageY < pageHeight/2) {
+    if (event.pageY + CONTEXT_MENU_HEIGHT < pageHeight) {
       yAlign = 'top';
       yAlignReset = 'bottom';
       yAlignValue = event.pageY - CLICK_OFFSET + 'px';
