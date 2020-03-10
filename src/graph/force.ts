@@ -1,5 +1,4 @@
 import { forceLink, forceManyBody, forceSimulation, forceX, forceY, Simulation, SimulationNodeDatum } from 'd3-force';
-import 'd3-transition';
 import Graph from '../Graph';
 import { VELOCITY_DECAY } from './constants/graph';
 import { setLinkPositions, setNodePositions, tick } from './events/tick';

@@ -32,7 +32,7 @@ export default class Graph {
   linkContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
   linkEnter: Selection<SVGPathElement, Link, SVGGElement, unknown>;
   linkText: Selection<BaseType, unknown, SVGGElement, unknown>;
-  node: Selection<BaseType, unknown, SVGGElement, unknown>;
+  node: Selection<any, any, SVGGElement, unknown>;
   nodeContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
   server: Server;
   svg: Selection<BaseType, unknown, HTMLElement, any>;
