@@ -12,7 +12,6 @@ import { handleResize } from './graph/events/resize';
 import { initZoom } from './graph/events/zoom';
 import { fastForceConvergence, initForce } from './graph/force';
 import { getAllLinks, getAllNodes } from './graph/selection';
-import { addNodes } from './graph/state/add';
 import { getNumLinksToExpand, isExpandable } from './graph/state/expand';
 import { hash } from './graph/utils';
 import Server from './Server';
@@ -71,7 +70,7 @@ export default class Graph {
 
     // Display root node and neighbors 
     const root = nodeDataToNodeObj(this, this.server.getRoot())[0];
-    addNodes(this, root, false);
+    this.adjacencyMap.addNodes(root, false);
     loadGraphData(this, this.server.getNeighbors(root.id));
   }
 

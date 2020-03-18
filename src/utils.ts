@@ -5,7 +5,6 @@ import Circle from "./graph/components/nodes/Circle";
 import Node from "./graph/components/nodes/Node";
 import ThinCard from "./graph/components/nodes/ThinCard";
 import { NODE_THIN_CARD_HEIGHT } from "./graph/constants/graph";
-import { addLinks, addNodes } from "./graph/state/add";
 import GraphData from "./server/GraphData";
 import LinkData from "./server/LinkData";
 import NodeData from "./server/NodeData";
@@ -34,15 +33,10 @@ export function getMapVal<K, V>(map: Map<K, V>, key: K, defaultVal: V=null) {
   return map.get(key);
 }
 
-export function loadGraphData(graph: Graph, graphData: GraphData): {nodes: Node[], links: Link[]} {
+export function loadGraphData(graph: Graph, graphData: GraphData) {
   const nodesToAdd: Node[] = nodeDataToNodeObj(graph, graphData.nodes);
-  addNodes(graph, nodesToAdd, false);
-  const linksToAdd: Link[] = linkDataToLinkObj(graph, graphData.links);
-  addLinks(graph, linksToAdd);
-  return { 
-    nodes: nodesToAdd,
-    links: linksToAdd
-  };
+  graph.adjacencyMap.addNodes(nodesToAdd);
+  graph.adjacencyMap.addLinks(graphData.links, true);
 }
 
 export function nodeDataToNodeObj(graph: Graph, data: NodeData | NodeData[]): Node[] {

@@ -4,7 +4,6 @@ import { CONTEXT_MENU_HEIGHT, CONTEXT_MENU_WIDTH } from '../constants/graph';
 import { getSelectedNodes } from '../selection';
 import { expandNodes } from '../state/expand';
 import { pinNodes } from '../state/pin';
-import { removeNodes } from '../state/remove';
 import Node from './nodes/Node';
 
 interface MenuItem {
@@ -33,7 +32,7 @@ export default class ContextMenu {
     this.closeMenu();
     const self = this;
     this.isOpen = true;
-    this.menuItems = getMenuItems();
+    this.menuItems = getMenuItems(this.graph);
 
     // Create the div element that will hold the context menu
     selectAll('.d3-context-menu').data([1]).enter()
@@ -141,7 +140,7 @@ export default class ContextMenu {
   }
 }
 
-function getMenuItems(): MenuItem[] {
+function getMenuItems(graph: Graph): MenuItem[] {
   return [
     {
       title: (d, i, nodes) => {
@@ -190,7 +189,7 @@ function getMenuItems(): MenuItem[] {
         return `Remove ${subject}`; 
       },
       icon: './icons/remove.svg',
-      action: (nodes) => { removeNodes.bind(this)(nodes); },
+      action: (nodes) => { graph.adjacencyMap.deleteNodes(nodes); },
       code: 'shift+r'
     },
   ];

@@ -64,8 +64,9 @@ export default class AdjacencyMap {
   /**
    * Add given nodes to adjacency map if they haven't already been added.
    * @param nodeData Either a single nodeData or list of one or more nodes to add.
+   * @param update Whether or not to visually update graph to reflect changes.
    */
-  public addNodes = (nodeData: NodeData | NodeData[]): void => {
+  public addNodes = (nodeData: NodeData | NodeData[], update=false): void => {
     nodeData = toArray(nodeData);
     let nodes = nodeDataToNodeObj(this.graph, nodeData);
 
@@ -94,13 +95,16 @@ export default class AdjacencyMap {
       deferredLinkData = _.uniqBy(deferredLinkData, ld => ld.id);
       this.addLinks(deferredLinkData);
     }
+
+    if (update) this.graph.updateGraph();
   }
 
   /**
    * Add given links to adjacency map if they haven't already been added.
    * @param linkData Either a single link or a list of one or more links to add.
+   * @param update Whether or not to visually update graph to reflect changes.
    */
-  public addLinks = (linkData: LinkData | LinkData[]): void => {
+  public addLinks = (linkData: LinkData | LinkData[], update=false): void => {
     linkData = _.uniqBy(toArray(linkData), ld => ld.id);
     linkData = _.differenceBy(linkData, this.getLinks(), ld => ld.id);
 
@@ -128,13 +132,16 @@ export default class AdjacencyMap {
         if (!target) getMapVal(this.futureNodes, linkDatum.targetId, []).push(linkDatum);
       }
     }
+
+    if (update) this.graph.updateGraph();
   }
 
   /**
    * Remove given nodes from adjacency map.
    * @param nodes Either a single node or a list of one or more nodes to remove.
+   * @param update Whether or not to visually update graph to reflect changes.
    */
-  public deleteNodes = (nodes: Node | Node[]): void => {
+  public deleteNodes = (nodes: Node | Node[], update=false): void => {
     nodes = toArray(nodes);
     let nodeId: string;
     for (let i = 0; i < nodes.length; i++) {
@@ -153,13 +160,16 @@ export default class AdjacencyMap {
       this.adjacencyMapIncoming.delete(nodeId);
       this.nodeIdToNodeObj.delete(nodeId);
     }
+
+    if (update) this.graph.updateGraph();
   }
 
   /**
    * Remove given links from adjacency map.
    * @param links Either a single link or a list of one or more links to remove.
+   * @param update Whether or not to visually update graph to reflect changes.
    */
-  public deleteLinks = (links: Link | Link[]): void => {
+  public deleteLinks = (links: Link | Link[], update=false): void => {
     links = toArray(links);
     let currLink, sourceId, targetId;
     for (let i = 0; i < links.length; i++) {
@@ -172,6 +182,8 @@ export default class AdjacencyMap {
       this.adjacencyMapIncoming.get(targetId).delete(sourceId);
       this.linkIdToLinkObj.delete(currLink.id);
     }
+
+    if (update) this.graph.updateGraph();
   }
 
   /**
