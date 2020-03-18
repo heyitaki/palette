@@ -59,7 +59,7 @@ export default class Graph {
     this.defs = this.svg.append('defs');
     this.contextMenu = new ContextMenu(this);
     this.server = new Server();
-    this.adjacencyMap = new AdjacencyMap();
+    this.adjacencyMap = new AdjacencyMap(this);
     this.fastConvergence = false;
 
     // Selectors

@@ -1,28 +1,34 @@
 import _ from 'lodash';
-import { exists, toArray } from '../utils';
+import Graph from '../Graph';
+import LinkData from '../server/LinkData';
+import NodeData from '../server/NodeData';
+import { exists, getMapVal, linkDataToLinkObj, nodeDataToNodeObj, toArray } from '../utils';
 import Link from './components/links/Link';
 import Node from './components/nodes/Node';
 import { MALFORMED_DATA, MISSING_LINK_ID } from './constants/error';
 
 export default class AdjacencyMap {
+  graph: Graph;
   adjacencyMapOutgoing: Map<string, Map<string, string>>;
   adjacencyMapIncoming: Map<string, Map<string, string>>;
   nodeIdToNodeObj: Map<string, Node>;
   linkIdToLinkObj: Map<string, Link>;
+  futureNodes: Map<string, LinkData[]>;
 
-  constructor() {
-    this.adjacencyMapOutgoing = new Map(); // {srcNodeId : {targetNodeId : linkId}}
-    this.adjacencyMapIncoming = new Map(); // {targetNodeId : {srcNodeId : linkId}}
-    this.nodeIdToNodeObj = new Map(); // {nodeId : nodeObj}
-    this.linkIdToLinkObj = new Map(); // {linkId : linkObj}
-    // TODO: add data structures to hold links whose nodes haven't been added yet
+  constructor(graph: Graph) {
+    this.graph = graph;
+    this.adjacencyMapOutgoing = new Map(); // {srcNodeId: {targetNodeId: linkId}}
+    this.adjacencyMapIncoming = new Map(); // {targetNodeId: {srcNodeId: linkId}}
+    this.nodeIdToNodeObj = new Map(); // {nodeId: nodeObj}
+    this.linkIdToLinkObj = new Map(); // {linkId: linkObj}
+    this.futureNodes = new Map(); // {futureNodeId: [deferredLinkData]}
   }
   
   /**
    * Get nodes corresponding to given ids or return all nodes if no ids are given.
    * @param idList Either a single id or a list of one or more ids.
    */
-  getNodes = (idList?: string | string[]): Node[] => { 
+  public getNodes = (idList?: string | string[]): Node[] => { 
     // If no arguments passed in, return all nodes
     if (idList === undefined) return Array.from(this.nodeIdToNodeObj.values());
 
@@ -33,14 +39,15 @@ export default class AdjacencyMap {
       nodes.push(this.nodeIdToNodeObj.get(idList[i]));
     }
 
-    return nodes;
+    // Filter out results for those given ids which have no corresponding node
+    return nodes.filter(node => node != undefined);
   }
 
   /**
    * Get links corresponding to given ids or return all links if no ids are given.
    * @param idList Either a single id or a list of one or more ids.
    */
-  getLinks = (idList?: string | string[]): Link[] => {
+  public getLinks = (idList?: string | string[]): Link[] => {
     // If no arguments passed in, return all nodes
     if (idList === undefined) return Array.from(this.linkIdToLinkObj.values());
 
@@ -56,10 +63,11 @@ export default class AdjacencyMap {
 
   /**
    * Add given nodes to adjacency map if they haven't already been added.
-   * @param nodes Either a single node or a list of one or more nodes to add.
+   * @param nodeData Either a single nodeData or list of one or more nodes to add.
    */
-  addNodes = (nodes: Node | Node[]): void => {
-    nodes = toArray(nodes);
+  public addNodes = (nodeData: NodeData | NodeData[]): void => {
+    nodeData = toArray(nodeData);
+    let nodes = nodeDataToNodeObj(this.graph, nodeData);
 
     // Only consider each new node if it's not in the graph or a duplicate 
     // within the input list
@@ -67,41 +75,58 @@ export default class AdjacencyMap {
     const nodesToConsider = _.differenceBy(nodes, this.getNodes(), n => n.id);
 
     // Add nodes to map
-    let currNode;
+    let currNode: Node, 
+        deferredLinkData: LinkData[] = [];
     for (let i = 0; i < nodesToConsider.length; i++) {
       currNode = nodesToConsider[i];
       this.adjacencyMapOutgoing.set(currNode.id, new Map());
       this.adjacencyMapIncoming.set(currNode.id, new Map());
       this.nodeIdToNodeObj.set(currNode.id, currNode);
+
+      // Add deferred links that now have both bounding nodes added
+      if (this.futureNodes.has(currNode.id)) {
+        deferredLinkData.concat(this.futureNodes.get(currNode.id));
+        this.futureNodes.delete(currNode.id);
+      }
+    }
+
+    if (deferredLinkData.length > 0) {
+      deferredLinkData = _.uniqBy(deferredLinkData, ld => ld.id);
+      this.addLinks(deferredLinkData);
     }
   }
 
   /**
    * Add given links to adjacency map if they haven't already been added.
-   * @param links Either a single link or a list of one or more links to add.
+   * @param linkData Either a single link or a list of one or more links to add.
    */
-  addLinks = (links: Link | Link[]): void => {
-    links = toArray(links);
-    let currLink: Link, linkId, source, target, sourceId, targetId;
-    for (let i = 0; i < links.length; i++) {
-      currLink = links[i];
-      linkId = currLink.id;
-      source = currLink.source;
-      target = currLink.target;
+  public addLinks = (linkData: LinkData | LinkData[]): void => {
+    linkData = _.uniqBy(toArray(linkData), ld => ld.id);
+    linkData = _.differenceBy(linkData, this.getLinks(), ld => ld.id);
 
-      // If source and target are references to node objects, do nothing
-      // Else replace node ids with references to the nodes
-      if (!currLink || !exists(linkId)) console.error(MISSING_LINK_ID);
-      if (!exists(source) || !exists(target)) console.error(MALFORMED_DATA, currLink);
-      if (!exists(source.id)) links[i].source = this.getNodes(source)[0];
-      if (!exists(target.id)) links[i].target = this.getNodes(target)[0];
+    let linkDatum: LinkData;
+    for (let i = 0; i < linkData.length; i++) {
+      linkDatum = linkData[i];
+      if (!linkDatum || !exists(linkDatum.id)) console.error(MISSING_LINK_ID);
+      if (!exists(linkDatum.sourceId) || !exists(linkDatum.targetId)) {
+        console.error(MALFORMED_DATA, linkDatum);
+      }
 
-      // Add link
-      sourceId = currLink.source.id;
-      targetId = currLink.target.id;
-      this.adjacencyMapOutgoing.get(sourceId).set(targetId, linkId);
-      this.adjacencyMapIncoming.get(targetId).set(sourceId, linkId);
-      this.linkIdToLinkObj.set(linkId, currLink);
+      // If source and target nodes have been added to map, add link between them
+      // Else defer link until bounding nodes are added
+      const source: Node = this.getNodes(linkDatum.sourceId)[0],
+            target: Node = this.getNodes(linkDatum.targetId)[0];
+      if (source && target) {
+        // Add link
+        const link: Link = linkDataToLinkObj(this.graph, linkDatum)[0];
+        this.adjacencyMapOutgoing.get(source.id).set(target.id, link.id);
+        this.adjacencyMapIncoming.get(target.id).set(source.id, link.id);
+        this.linkIdToLinkObj.set(link.id, link);
+      } else {
+        // Defer link creation
+        if (!source) getMapVal(this.futureNodes, linkDatum.sourceId, []).push(linkDatum);
+        if (!target) getMapVal(this.futureNodes, linkDatum.targetId, []).push(linkDatum);
+      }
     }
   }
 
@@ -109,7 +134,7 @@ export default class AdjacencyMap {
    * Remove given nodes from adjacency map.
    * @param nodes Either a single node or a list of one or more nodes to remove.
    */
-  deleteNodes = (nodes: Node | Node[]): void => {
+  public deleteNodes = (nodes: Node | Node[]): void => {
     nodes = toArray(nodes);
     let nodeId: string;
     for (let i = 0; i < nodes.length; i++) {
@@ -134,7 +159,7 @@ export default class AdjacencyMap {
    * Remove given links from adjacency map.
    * @param links Either a single link or a list of one or more links to remove.
    */
-  deleteLinks = (links: Link | Link[]): void => {
+  public deleteLinks = (links: Link | Link[]): void => {
     links = toArray(links);
     let currLink, sourceId, targetId;
     for (let i = 0; i < links.length; i++) {
@@ -157,7 +182,7 @@ export default class AdjacencyMap {
    * @param directed Whether to only consider a link from source to target or 
    * both directions.
    */
-  areNeighbors = (sourceId: string, targetId: string, directed=false): boolean => {
+  public areNeighbors = (sourceId: string, targetId: string, directed=false): boolean => {
     // Check for outgoing link (and incoming link if we're not performing directional lookup)
     let areNeighbors = this.adjacencyMapOutgoing.get(sourceId).get(targetId);
     if (!directed) areNeighbors = areNeighbors || this.adjacencyMapOutgoing.get(targetId).get(sourceId);
@@ -171,7 +196,7 @@ export default class AdjacencyMap {
    * @param directed Whether to only consider a link from source to target or 
    * both directions.
    */
-  getNeighbors = (nodeId: string, directed=false): Node[] => {
+  public getNeighbors = (nodeId: string, directed=false): Node[] => {
     const neighbors: Node[] = [];
 
     // Find outgoing links

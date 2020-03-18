@@ -23,6 +23,17 @@ export function exists(input) {
 	return !(!input && input != 0);
 }
 
+/**
+ * Get value from map, set and return default value if key doesn't exist.
+ * @param map Map to get value from
+ * @param key Key associated to value
+ * @param defaultVal Set and return value if key does not already exist in map
+ */
+export function getMapVal<K, V>(map: Map<K, V>, key: K, defaultVal: V=null) {
+  if (!map.has(key)) map.set(key, defaultVal);
+  return map.get(key);
+}
+
 export function loadGraphData(graph: Graph, graphData: GraphData): {nodes: Node[], links: Link[]} {
   const nodesToAdd: Node[] = nodeDataToNodeObj(graph, graphData.nodes);
   addNodes(graph, nodesToAdd, false);
