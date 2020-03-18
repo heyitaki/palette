@@ -5,13 +5,17 @@ import Node from "../nodes/Node";
 
 export default class Link {
   id: string;
-  title: string;
+  possible: boolean;
+  selected: boolean;
   source: Node;
   target: Node;
+  title: string;
 
   constructor(data: LinkData, map: AdjacencyMap) {
     this.id = data.id;
     this.title = data.title;
+    this.possible = false;
+    this.selected = false;
     this.source = map.getNodes(data.sourceId)[0];
     this.target = map.getNodes(data.targetId)[0];
   }

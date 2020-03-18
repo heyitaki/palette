@@ -20,6 +20,8 @@ export default class Node {
   fixed?: boolean;
   fx?: number;
   fy?: number;
+  possible?: boolean;
+  selected?: boolean;
   saveRadical?: boolean;
   totalLinks?: number;
   url?: string;
@@ -37,6 +39,8 @@ export default class Node {
     this.url = data.url;
     this.x = data.x;
     this.y = data.y;
+    this.possible = false;
+    this.selected = false;
     this.saveRadical = false;
     this.weight = 0;
   }

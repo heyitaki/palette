@@ -6,7 +6,7 @@ import Grid from './graph/components/Grid';
 import Link, { setLinkColor } from './graph/components/links/Link';
 import Node from './graph/components/nodes/Node';
 import { LINK_STROKE_WIDTH } from './graph/constants/graph';
-import { initBrush } from './graph/events/brush';
+import Brush from './graph/events/brush';
 import { initDrag } from './graph/events/drag';
 import { handleResize } from './graph/events/resize';
 import { initZoom } from './graph/events/zoom';
@@ -19,6 +19,7 @@ import { loadGraphData } from './utils';
 
 export default class Graph {
   adjacencyMap: AdjacencyMap;
+  brush: Brush;
   container: Selection<SVGGElement, unknown, HTMLElement, any>;
   contextMenu: ContextMenu;
   defs: Selection<SVGDefsElement, unknown, HTMLElement, any>;
@@ -27,17 +28,20 @@ export default class Graph {
   force: Simulation<SimulationNodeDatum, undefined>;
   grid: Grid;
   height: number;
-  link: Selection<BaseType, unknown, SVGGElement, unknown>;
+  isModifierPressed: boolean;
+  link: Selection<BaseType, Link, SVGGElement, unknown>;
   linkContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
   linkEnter: Selection<SVGPathElement, Link, SVGGElement, unknown>;
   linkText: Selection<BaseType, unknown, SVGGElement, unknown>;
-  node: Selection<any, any, SVGGElement, unknown>;
+  node: Selection<any, Node, SVGGElement, unknown>;
   nodeContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
   server: Server;
-  svg: Selection<BaseType, unknown, HTMLElement, any>;
+  svg: Selection<SVGGElement, unknown, HTMLElement, any>;
   width: number;
 
   constructor(graphContainerId: string) {
+    this.isModifierPressed = false;
+    this.fastConvergence = false;
     this.initGraph(graphContainerId);
   }
 
@@ -52,14 +56,13 @@ export default class Graph {
     this.grid = new Grid(this, this.container);
     handleResize.bind(this)(graphContainerId);
     initZoom.bind(this)();
-    initBrush.bind(this)();
+    this.brush = new Brush(this);
     this.force = initForce(this);
     initDrag.bind(this)();
     this.defs = this.svg.append('defs');
     this.contextMenu = new ContextMenu(this);
     this.server = new Server();
     this.adjacencyMap = new AdjacencyMap(this);
-    this.fastConvergence = false;
 
     // Selectors
     this.linkContainer = this.container.append('g').attr('class', 'link-bois');

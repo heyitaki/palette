@@ -52,7 +52,7 @@ export default class Grid {
       .attr('y1', d => d)
       .attr('y2', d => d);
     xSelection.merge(xEnter)
-      .attr('x2', this.graph.width / currScale + GRID_SQUARE_WIDTH)
+      .attr('x2', this.graph.width / currScale + GRID_SQUARE_WIDTH);
     xSelection.exit().remove();
   
     // Add new vertical lines, update height of all lines, remove unnecessary lines
