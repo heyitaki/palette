@@ -15,7 +15,7 @@ import { getAllLinks, getAllNodes } from './graph/selection';
 import { getNumLinksToExpand, isExpandable } from './graph/state/expand';
 import { hash } from './graph/utils';
 import Server from './Server';
-import { loadGraphData, nodeDataToNodeObj } from './utils';
+import { loadGraphData } from './utils';
 
 export default class Graph {
   adjacencyMap: AdjacencyMap;
@@ -69,7 +69,7 @@ export default class Graph {
     this.node = this.nodeContainer.selectAll('.node');
 
     // Display root node and neighbors 
-    const root = nodeDataToNodeObj(this, this.server.getRoot())[0];
+    const root = this.server.getRoot();
     this.adjacencyMap.addNodes(root, false);
     loadGraphData(this, this.server.getNeighbors(root.id));
   }

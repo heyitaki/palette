@@ -34,8 +34,7 @@ export function getMapVal<K, V>(map: Map<K, V>, key: K, defaultVal: V=null) {
 }
 
 export function loadGraphData(graph: Graph, graphData: GraphData) {
-  const nodesToAdd: Node[] = nodeDataToNodeObj(graph, graphData.nodes);
-  graph.adjacencyMap.addNodes(nodesToAdd);
+  graph.adjacencyMap.addNodes(graphData.nodes);
   graph.adjacencyMap.addLinks(graphData.links, true);
 }
 
