@@ -15,8 +15,8 @@ export default class Brush {
   freeSelect: boolean;
   rectSelect: boolean;
   isBrushing: boolean;
-  gBrush;
-  gLasso;
+  gBrush: Selection<SVGGElement, unknown, HTMLElement, any>;
+  gLasso: Selection<SVGGElement, unknown, HTMLElement, any>;
 
   constructor(graph: Graph) {
     this.graph = graph;

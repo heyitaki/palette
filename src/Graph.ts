@@ -6,7 +6,7 @@ import Grid from './graph/components/Grid';
 import Link, { setLinkColor } from './graph/components/links/Link';
 import Node from './graph/components/nodes/Node';
 import { LINK_STROKE_WIDTH } from './graph/constants/graph';
-import Brush from './graph/events/brush';
+import Brush from './graph/events/Brush';
 import { initDrag } from './graph/events/drag';
 import { handleResize } from './graph/events/resize';
 import { initZoom } from './graph/events/zoom';
