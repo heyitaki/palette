@@ -15,6 +15,7 @@ import { getAllLinks, getAllNodes } from './graph/selection';
 import { getNumLinksToExpand, isExpandable } from './graph/state/expand';
 import { hash } from './graph/utils';
 import Server from './Server';
+import { LinkSelection, NodeSelection } from './types';
 import { loadGraphData } from './utils';
 
 export default class Graph {
@@ -29,11 +30,11 @@ export default class Graph {
   grid: Grid;
   height: number;
   isModifierPressed: boolean;
-  link: Selection<BaseType, Link, SVGGElement, unknown>;
+  link: LinkSelection;
   linkContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
   linkEnter: Selection<SVGPathElement, Link, SVGGElement, unknown>;
   linkText: Selection<BaseType, unknown, SVGGElement, unknown>;
-  node: Selection<any, Node, SVGGElement, unknown>;
+  node: NodeSelection;
   nodeContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
   server: Server;
   svg: Selection<SVGGElement, unknown, HTMLElement, any>;

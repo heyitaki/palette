@@ -2,11 +2,7 @@ import { brush } from "d3-brush";
 import { event, select, Selection } from 'd3-selection';
 import { zoomTransform } from 'd3-zoom';
 import Graph from "../../Graph";
-
-interface BrushDatum {
-  extent: [[number, number], [number, number]];
-  filterZoomEvent: boolean;
-}
+import { selectNodes } from "./select";
 
 export default class Brush {
   graph: Graph;
@@ -43,7 +39,7 @@ export default class Brush {
 
   private brushstart() {
     if (this.freeSelect) return;
-    // aesthetics.resetObjectHighlighting.bind(this)();
+    selectNodes(this.graph, this.graph.node, false);
     this.isBrushing = true;
   }
 
@@ -72,7 +68,7 @@ export default class Brush {
     const toSelect = this.graph.node.filter('.possible');
     this.graph.node.classed('possible', (d) => { return d.possible = false; });
     this.graph.link.classed('possible', (l) => { return l.possible = false; });
-    // aesthetics.highlightNodes.bind(this)(toSelect, true);
+    selectNodes(this.graph, toSelect, true);
   }
 
   private keydownBrush() {

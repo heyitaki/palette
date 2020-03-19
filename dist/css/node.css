@@ -16,18 +16,17 @@
   cursor: default;
 }
 
-.node circle {
+.node .node-body {
   cursor: pointer;
-  stroke-width: 4.5px;
 }
 
-.node.selected circle {
+.node.selected .node-body {
   stroke: #0d77e2 !important;
   fill: #0d77e2 !important;
 }
 
 .node.possible,
-.node.possible circle {
+.node.possible .node-body {
   stroke: #0d77e2 !important;
   fill: #0d77e2 !important;
 }

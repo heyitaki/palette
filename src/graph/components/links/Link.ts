@@ -1,4 +1,5 @@
 import LinkData from "../../../server/LinkData";
+import { LinkSelection } from "../../../types";
 import AdjacencyMap from "../../AdjacencyMap";
 import { colorToHex } from "../../utils";
 import Node from "../nodes/Node";
@@ -26,7 +27,7 @@ export default class Link {
  * @param link Selection of links to color
  * @param linkColor Color to set
  */
-export function setLinkColor(link, linkColor: string) {
+export function setLinkColor(link: LinkSelection, linkColor: string) {
   if (!link || link.empty()) return;
   linkColor = colorToHex(linkColor);
 
