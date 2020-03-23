@@ -1,11 +1,12 @@
 import { select } from "d3-selection";
 import Graph from "../../../Graph";
 import NodeData from "../../../server/NodeData";
+import { NodeSelection } from "../../../types";
 import { DISCONNECTED_LINK } from "../../constants/error";
 import { NODE_CARD_HEIGHT, NODE_CARD_LENGTH } from "../../constants/graph";
 import Point from "../../Point";
 import Link from "../links/Link";
-import Node from "./Node";
+import Node, { setNodeColor } from "./Node";
 
 export default class Card extends Node {
   height: number;
@@ -18,9 +19,8 @@ export default class Card extends Node {
   }
 
   public renderNode(gNodeRef) {
-    const self = this,
-          gNode = select(gNodeRef);
-    gNode.on('contextmenu', function(d: Node, i, nodes) { self.onRightClick(d, i, nodes); });
+    const gNode = select(gNodeRef);
+    gNode.on('contextmenu', (d: Node, i, nodes) => this.onRightClick(d, i, nodes));
 
     const gNodeBody = gNode.append('g')
       .attr('class', 'node-body')
@@ -33,6 +33,8 @@ export default class Card extends Node {
       .attr('height', this.height)
       .attr('rx', 5)
       .attr('ry', 5);
+    
+    setNodeColor(gNode as NodeSelection);
   }
 
   /**

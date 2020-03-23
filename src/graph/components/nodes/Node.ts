@@ -2,6 +2,7 @@ import { color } from "d3-color";
 import { select } from "d3-selection";
 import Graph from "../../../Graph";
 import NodeData from "../../../server/NodeData";
+import { NodeSelection } from "../../../types";
 import { TYPES_TO_COLORS } from "../../constants/mappings";
 import Point from "../../Point";
 import { getDataFromSelection } from "../../selection";
@@ -45,7 +46,7 @@ export default class Node {
     this.weight = 0;
   }
 
-  renderNode(gNodeRef: any): void {}
+  renderNode(gNodeRef: SVGElement): void {}
   getLinkPosition(link: Link): Point { return null; }
   getCenter(): Point { return null; }
 
@@ -75,7 +76,7 @@ export function getNodeColor(node: Node) {
  * @param node Node to color
  * @param nodeColor Color to set
  */
-export function setNodeColor(node, nodeColor?: string) {
+export function setNodeColor(node: NodeSelection, nodeColor?: string) {
   if (!node) return;
   // Use given color if possible, otherwise default to colors specified in node data
   if (nodeColor && nodeColor != '') {

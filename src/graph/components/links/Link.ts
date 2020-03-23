@@ -43,10 +43,9 @@ export function getLinkColor(link: Link) {
  * @param links Selection of links to color
  * @param linkColor Color to set
  */
-export function setLinkColor(graph: Graph, links: LinkSelection, linkColor: string | ((l?: Link) => string)) {
-  console.log(links)
+export function setLinkColor(graph: Graph, links: LinkSelection, 
+    linkColor: string | ((l?: Link) => string)) {
   if (!links || links.empty()) return;
-  //if (typeof linkColor === 'string') linkColor = (l: Link) => linkColor as string;
   const linkColorFn = toFunction(linkColor);
   links
     .style('stroke', (l: Link): string => {

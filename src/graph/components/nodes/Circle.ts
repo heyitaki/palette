@@ -1,6 +1,7 @@
 import { select } from "d3-selection";
 import Graph from "../../../Graph";
 import NodeData from "../../../server/NodeData";
+import { NodeSelection } from "../../../types";
 import { DISCONNECTED_LINK } from "../../constants/error";
 import { NODE_CIRCLE_RADIUS } from "../../constants/graph";
 import Point from "../../Point";
@@ -12,8 +13,10 @@ export default class Circle extends Node {
     super(graph, data);
   }
 
-  public renderNode(gNodeRef) {
+  public renderNode(gNodeRef: SVGElement) {
     const gNode = select(gNodeRef);
+    gNode.on('contextmenu', (d: Node, i, nodes) => this.onRightClick(d, i, nodes));
+    
     const gNodeBody = gNode.append('g')
       .attr('class', 'node-body')
       // .on('mouseenter', function (d) { events.mouseenter.bind(self)(d, this); })
@@ -63,7 +66,7 @@ export default class Circle extends Node {
       //     .on('end', this.stopPropagation)
       // );
 
-    gNode.call(setNodeColor.bind(this));
+    setNodeColor(gNode as NodeSelection);
   }
   
   /**
