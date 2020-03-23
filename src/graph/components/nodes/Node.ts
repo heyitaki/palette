@@ -61,13 +61,12 @@ export default class Node {
 /**
  * Retrieve color of given node, return custom color if given, otherwise return
  * type or default color.
- * @param node Data of node to get color of
+ * @param node Node to get color of
  */
 export function getNodeColor(node: Node) {
-  const nodeColor = node.color,
-        nodeType = node.type;
+  const nodeColor = node.color, nodeType = node.type;
   if (nodeColor && nodeColor != '') return color(nodeColor).toString();
-  else if (nodeType && nodeType != '') return color(TYPES_TO_COLORS[nodeType]);
+  else if (nodeType && TYPES_TO_COLORS[nodeType]) return color(TYPES_TO_COLORS[nodeType]).toString();
   else return color('#545454').toString();
 }
 

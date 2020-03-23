@@ -97,7 +97,7 @@ export default class Graph {
         l.source.weight++;
         l.target.weight++;
       });
-    this.linkEnter.call(setLinkColor.bind(this), '#545454');
+    setLinkColor(this, this.linkEnter, '#545454');
   
     // For each removed link, decrement weights of source and target nodes
     linkSelection.exit()

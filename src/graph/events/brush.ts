@@ -17,7 +17,7 @@ export default class Brush {
   constructor(graph: Graph) {
     this.graph = graph;
     this.freeSelect = false;
-    this.rectSelect = true;
+    this.rectSelect = false;
     this.isBrushing = false;
     this.initBrush();
   }
@@ -66,8 +66,8 @@ export default class Brush {
   
     // Reset .possible class on all graph objects
     const toSelect = this.graph.node.filter('.possible');
-    this.graph.node.classed('possible', (d) => { return d.possible = false; });
-    this.graph.link.classed('possible', (l) => { return l.possible = false; });
+    this.graph.node.classed('possible', n => n.possible = false);
+    this.graph.link.classed('possible', l => l.possible = false);
     selectNodes(this.graph, toSelect, true);
   }
 
