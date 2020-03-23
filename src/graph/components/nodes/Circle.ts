@@ -4,6 +4,7 @@ import NodeData from "../../../server/NodeData";
 import { NodeSelection } from "../../../types";
 import { DISCONNECTED_LINK } from "../../constants/error";
 import { NODE_CIRCLE_RADIUS } from "../../constants/graph";
+import PrintState from "../../enums/PrintState";
 import Point from "../../Point";
 import Link from "../links/Link";
 import Node, { setNodeColor, wrapNodeText } from "./Node";
@@ -14,7 +15,7 @@ export default class Circle extends Node {
   }
 
   public renderNode(gNodeRef: SVGElement) {
-    const gNode = select(gNodeRef);
+    const gNode: NodeSelection = select(gNodeRef);
     gNode.on('contextmenu', (d: Node, i, nodes) => this.onRightClick(d, i, nodes));
     
     const gNodeBody = gNode.append('g')
@@ -51,10 +52,10 @@ export default class Circle extends Node {
     gNode.append('text')
       .attr('class', 'node-title')
       .attr('text-anchor', 'middle')
-      .attr('dy', (NODE_CIRCLE_RADIUS + 23.5).toString() + 'px')
+      .attr('dy', NODE_CIRCLE_RADIUS + 23.5 + 'px')
       .classed('unselectable', true)
-      .text((n: any) => { return n.title; })
-      .call(wrapNodeText.bind(this), 'abbrev')
+      .text((n: Node) => n.title)
+      .call(wrapNodeText, PrintState.Full);
       // .on('click', this.stopPropagation)
       // .on('dblclick', this.stopPropagation)
       // .on('mouseenter', this.stopPropagation)
@@ -66,7 +67,7 @@ export default class Circle extends Node {
       //     .on('end', this.stopPropagation)
       // );
 
-    setNodeColor(gNode as NodeSelection);
+    setNodeColor(gNode);
   }
   
   /**

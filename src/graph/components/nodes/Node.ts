@@ -4,6 +4,7 @@ import Graph from "../../../Graph";
 import NodeData from "../../../server/NodeData";
 import { NodeSelection } from "../../../types";
 import { TYPES_TO_COLORS } from "../../constants/mappings";
+import PrintState from "../../enums/PrintState";
 import Point from "../../Point";
 import { getDataFromSelection } from "../../selection";
 import { colorToHex } from "../../utils";
@@ -51,7 +52,7 @@ export default class Node {
   getCenter(): Point { return null; }
 
   onClick() {
-    console.log('click');
+    this.graph.contextMenu.closeMenu();
   }
 
   onRightClick(n: Node, i: number, nodes) {
@@ -107,11 +108,11 @@ export function setNodeColor(node: NodeSelection, nodeColor?: string) {
 /**
  * Wrap long node labels. printFull states => abbrev, full, none
  * @param textSelection Element that will contain the tspans
- * @param printFull Whether to abbreviate text, display full text, or hide text
+ * @param printState Whether to abbreviate text, display full text, or hide text
  * @param width Max width of text
  */
-export function wrapNodeText(textSelection, printFull, width=100) {
-  if (printFull != 'abbrev' && printFull != 'full') return;
+export function wrapNodeText(textSelection, printState: PrintState, 
+    width: number=100) {
   const LINE_HEIGHT = 17;
   textSelection.each(function (d) {
     const text = select(this);
@@ -142,13 +143,15 @@ export function wrapNodeText(textSelection, printFull, width=100) {
         line = remainder ? [remainder] : [];
       }
 
-      if (printFull === 0 && lineNum > 0) {
+      if (printState === PrintState.Abbreviated && lineNum > 0) {
         break;
       }
     }
 
     let finalLine = line.join(' ');
-    finalLine = (printFull === 0 && i < tokens.length-1) ? `${finalLine.trim()}...` : finalLine;
+    finalLine = (printState === PrintState.Abbreviated && i < tokens.length-1) 
+      ? `${finalLine.trim()}...` 
+      : finalLine;
     tspan.text(finalLine);
   });
 }
