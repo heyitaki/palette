@@ -2,7 +2,8 @@ import { brush } from "d3-brush";
 import { event, select, Selection } from 'd3-selection';
 import { zoomTransform } from 'd3-zoom';
 import Graph from "../../Graph";
-import { selectNodes } from "./select";
+import NodeClass from "../enums/NodeClass";
+import { classNodes } from "./select";
 
 export default class Brush {
   graph: Graph;
@@ -39,7 +40,7 @@ export default class Brush {
 
   private brushstart() {
     if (this.freeSelect) return;
-    selectNodes(this.graph, this.graph.node, false);
+    classNodes(this.graph, this.graph.node, NodeClass.Selected, false);
     this.isBrushing = true;
   }
 
@@ -56,7 +57,8 @@ export default class Brush {
                           && extent[0][1] <= y && y <= extent[1][1]);
       });
   
-    // aesthetics.highlightPossibleLinksFromAllNodes.bind(this)();
+    const possibleNodes = this.graph.node.filter(n => n.possible);
+    classNodes(this.graph, possibleNodes, NodeClass.Possible, true);
   }
 
   private brushend() {
@@ -68,7 +70,7 @@ export default class Brush {
     const toSelect = this.graph.node.filter('.possible');
     this.graph.node.classed('possible', n => n.possible = false);
     this.graph.link.classed('possible', l => l.possible = false);
-    selectNodes(this.graph, toSelect, true);
+    classNodes(this.graph, toSelect, NodeClass.Selected, true);
   }
 
   private keydownBrush() {
