@@ -27,8 +27,8 @@
 
 .node.possible,
 .node.possible .node-body {
-  stroke: #0d77e2 !important;
-  fill: #0d77e2 !important;
+  stroke: #519dea !important;
+  fill: #519dea !important;
 }
 
 .node .node-icon {
@@ -63,7 +63,7 @@
 }
 
 .node.possible circle.node-glyph-top {
-  stroke: #0d77e2 !important;
+  stroke: #519dea !important;
 }
 
 .node.fixed circle.node-glyph-top {
@@ -84,6 +84,6 @@
 }
 
 .node.possible text.node-glyph-top-text {
-  stroke: #0d77e2 !important;
-  fill: #0d77e2 !important;
+  stroke: #519dea !important;
+  fill: #519dea !important;
 }
