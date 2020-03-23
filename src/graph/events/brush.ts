@@ -9,16 +9,12 @@ export default class Brush {
   graph: Graph;
   brushContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
   brush;
-  freeSelect: boolean;
-  rectSelect: boolean;
   isBrushing: boolean;
   gBrush: Selection<SVGGElement, unknown, HTMLElement, any>;
   gLasso: Selection<SVGGElement, unknown, HTMLElement, any>;
 
   constructor(graph: Graph) {
     this.graph = graph;
-    this.freeSelect = false;
-    this.rectSelect = false;
     this.isBrushing = false;
     this.initBrush();
   }
@@ -39,13 +35,11 @@ export default class Brush {
   }
 
   private brushstart() {
-    if (this.freeSelect) return;
     classNodes(this.graph, this.graph.node, NodeClass.Selected, false);
     this.isBrushing = true;
   }
 
   private brushing() {
-    if (this.freeSelect) return;
     const extent = event.selection;
     this.graph.node
       .classed('possible', (d) => {
@@ -63,32 +57,28 @@ export default class Brush {
 
   private brushend() {
     this.isBrushing = false;
-    if (this.freeSelect) return;
     this.removeBrush();
   
-    // Reset .possible class on all graph objects
-    const toSelect = this.graph.node.filter('.possible');
-    this.graph.node.classed('possible', n => n.possible = false);
-    this.graph.link.classed('possible', l => l.possible = false);
-    classNodes(this.graph, toSelect, NodeClass.Selected, true);
+    // Reset possible nodes and select those nodes
+    const possibleNodes = this.graph.node.filter('.possible');
+    classNodes(this.graph, possibleNodes, NodeClass.Possible, false);
+    classNodes(this.graph, possibleNodes, NodeClass.Selected, true);
   }
 
   private keydownBrush() {
     // Track if modifier is pressed
-    this.graph.isModifierPressed = event && (event.shiftKey || event.ctrlKey || event.metaKey); 
+    this.graph.isModifierPressed = event 
+      && (event.shiftKey || event.ctrlKey || event.metaKey); 
   
     // Only draw extent if shift drag or box select button is pressed
-    if (!this.freeSelect && (this.graph.isModifierPressed || this.rectSelect)) this.addBrush();
+    if (this.graph.isModifierPressed) this.addBrush();
   }
 
   private keyupBrush() {
     // Modifier is no longer pressed
     this.graph.isModifierPressed = false;
-  
-    // Don't remove brush if box select button is pressed
-    if (this.rectSelect) return;
     
-    // Else, remove brush (zoom/pan functionality restored automatically)
+    // Remove brush (zoom/pan functionality restored automatically)
     this.removeBrush();
   }
 

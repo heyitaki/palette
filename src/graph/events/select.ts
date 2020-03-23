@@ -12,7 +12,7 @@ export function classNodes(graph: Graph, nodes: NodeSelection,
 export function classLinks(graph: Graph, links: LinkSelection, 
     className: NodeClass, isClassed?: boolean, toggle: boolean=false) {
   links.classed(className, (l: Link) => { 
-    return l.selected = !isClassed
+    return l[className] = !isClassed
       ? l.source[className] && l.target[className]
       : toggle 
         ? !l[className] 

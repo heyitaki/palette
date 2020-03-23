@@ -33,7 +33,7 @@ export default class Link {
  * @param link Link to get color of
  */
 export function getLinkColor(link: Link) {
-  if (link.possible) return color('#2585e5').toString();
+  if (link.possible) return color('#519dea').toString();
   else if (link.selected) return color('#0d77e2').toString();
   else return color(link.color).toString();
 }
