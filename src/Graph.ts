@@ -16,14 +16,16 @@ import { getNumLinksToExpand, isExpandable } from './graph/state/expand';
 import { hash } from './graph/utils';
 import Server from './Server';
 import { LinkSelection, NodeSelection } from './types';
-import { loadGraphData } from './utils';
+import { loadGraphData, stopPropagation } from './utils';
 
 export default class Graph {
   adjacencyMap: AdjacencyMap;
   brush: Brush;
+  clickedNodeId: string;
   container: Selection<SVGGElement, unknown, HTMLElement, any>;
   contextMenu: ContextMenu;
   defs: Selection<SVGDefsElement, unknown, HTMLElement, any>;
+  doubleClickTimer;
   drag;
   fastConvergence: boolean;
   force: Simulation<SimulationNodeDatum, undefined>;
@@ -41,6 +43,10 @@ export default class Graph {
   width: number;
 
   constructor(graphContainerId: string) {
+    // Double click handler 
+    this.clickedNodeId = null;
+    this.doubleClickTimer = null;
+
     this.isModifierPressed = false;
     this.fastConvergence = false;
     this.initGraph(graphContainerId);
@@ -91,7 +97,7 @@ export default class Graph {
     const linkSelection = this.link.data(links, (l: Link) => l.id);
     this.linkEnter = linkSelection.enter().append('path')
       .attr('class', 'link')
-      .attr('id', (l: Link) => { return `link-${hash(l.id)}`; })
+      .attr('id', (l: Link) => `link-${hash(l.id)}`)
       .style('stroke-width', LINK_STROKE_WIDTH + 'px')
       .each((l: Link) => {
         l.source.weight++;
@@ -108,14 +114,12 @@ export default class Graph {
       .remove();
     
     // Update nodes
-    const nodeSelection = this.node.data(nodes, (n: Node) => { return n.id; });
+    const nodeSelection = this.node.data(nodes, (n: Node) => n.id);
     const gNode = nodeSelection.enter().append('g')
       .attr('class', 'node')
-      // .on('click', function (d) { events.clickWrapper.bind(self)(d, this); })
+      .on('click', function (n, i) { n.clickWrapper(n, i, this); })
       // .on('dblclick', function (d) { events.dblclicked.bind(self)(d, this); })
-      // .on('mousedown', function (d) { events.mousedown.bind(self)(d, this); })
-      // .on('mouseover', function (d) { events.mouseover.bind(self)(d, this); })
-      // .on('mouseout', function (d) { events.mouseout.bind(self)(d, this); })
+      .on('mousedown', stopPropagation)
       .call(this.drag);
     gNode.each(function(n: Node) { n.renderNode(this); });
     nodeSelection.exit().remove();

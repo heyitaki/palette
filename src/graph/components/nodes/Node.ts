@@ -1,12 +1,14 @@
 import { color } from "d3-color";
-import { select } from "d3-selection";
+import { event, select } from "d3-selection";
 import Graph from "../../../Graph";
 import NodeData from "../../../server/NodeData";
 import { NodeSelection } from "../../../types";
 import { TYPES_TO_COLORS } from "../../constants/mappings";
+import NodeClass from "../../enums/NodeClass";
 import PrintState from "../../enums/PrintState";
 import Point from "../../Point";
 import { getDataFromSelection } from "../../selection";
+import { classNodes } from "../../state/select";
 import { colorToHex } from "../../utils";
 import Link from "../links/Link";
 
@@ -51,8 +53,41 @@ export default class Node {
   getLinkPosition(link: Link): Point { return null; }
   getCenter(): Point { return null; }
 
-  onClick() {
+  clickWrapper(n: Node, i: number, nodeRef: SVGElement): void{
+    event.stopImmediatePropagation();
+    if (n.id === this.graph.clickedNodeId) {
+      // User has clicked twice within certain threshold, treat as double click
+      // Remove doubleClickTimer so single click action is not dispatched
+      // Do nothing, let d3 execute its own dblclick handler
+      this.graph.clickedNodeId = null;
+      clearTimeout(this.graph.doubleClickTimer);
+    } else {
+      // User has clicked once, remove timer in case user has clicked on a new
+      // node within doubleclick threshold
+      clearTimeout(this.graph.doubleClickTimer);
+
+      // Wait 200ms in case doubleclick, else treat as single click action
+      this.graph.clickedNodeId = n.id;
+      this.graph.doubleClickTimer = setTimeout(() => {
+        this.onClick(n, i, nodeRef);
+        this.graph.clickedNodeId = null;
+      }, 200);
+    }
+  }
+
+  onClick(n: Node, i: number, nodeRef: SVGElement) {
     this.graph.contextMenu.closeMenu();
+
+    // Handling single click selection
+    const currNode: NodeSelection = select(nodeRef);
+    if (!this.graph.isModifierPressed) {
+      // Unselect all other nodes, select current node
+      classNodes(this.graph, this.graph.node, NodeClass.Selected, false);
+      classNodes(this.graph, currNode, NodeClass.Selected, true);
+    } else {
+      // State of other nodes unchanged, toggle selection of current node
+      classNodes(this.graph, currNode, NodeClass.Selected, undefined, true);
+    }
   }
 
   onRightClick(n: Node, i: number, nodes) {

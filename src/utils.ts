@@ -1,3 +1,4 @@
+import { event } from 'd3-selection';
 import Graph from "./Graph";
 import Link from "./graph/components/links/Link";
 import Card from "./graph/components/nodes/Card";
@@ -43,6 +44,10 @@ export function toFunction<O>(input: O | FixedOutputTypeFn<O>):
 export function getMapVal<K, V>(map: Map<K, V>, key: K, defaultVal: V=null) {
   if (!map.has(key)) map.set(key, defaultVal);
   return map.get(key);
+}
+
+export function stopPropagation() {
+  event.stopPropagation();
 }
 
 export function loadGraphData(graph: Graph, graphData: GraphData) {

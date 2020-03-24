@@ -3,7 +3,7 @@ import { event, select, Selection } from 'd3-selection';
 import { zoomTransform } from 'd3-zoom';
 import Graph from "../../Graph";
 import NodeClass from "../enums/NodeClass";
-import { classNodes } from "./select";
+import { classNodes } from "../state/select";
 
 export default class Brush {
   graph: Graph;
