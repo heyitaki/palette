@@ -36,7 +36,7 @@ export function zoomend(d, self) {
 // Smoothly zoom between two views based on given transform for duration ms
 export function interpolateZoom(transform, duration, delay=0, callback=null) {
   this.isZooming = true;
-  this.svg.transition()
+  this.canvas.transition()
     .delay(delay)
     .duration(duration)
     .ease(easeLinear)
@@ -52,7 +52,7 @@ export function zoomByFixedScale(zoomIn) {
   const self = this,
     factor = 4/3,
     center = [this.width/2, this.height/2],
-    startTransform = zoomTransform(this.svg.node()),
+    startTransform = zoomTransform(this.canvas.node()),
     extent = this.zoom.scaleExtent();
 
   // Create object containing attributes of new view
@@ -88,11 +88,11 @@ export function zoomByFixedScale(zoomIn) {
 }
 
 export function addZoom() {
-  this.svg.call(this.zoom);
+  this.canvas.call(this.zoom);
 }
 
 export function removeZoom() {
-  this.svg
+  this.canvas
     .on('dblclick.zoom', null)
     .on('mousedown.zoom', null)
     .on('touchstart.zoom', null)
@@ -124,5 +124,5 @@ export function translateGraphAroundId(id, duration=250, delay=0, callback=null)
 }
 
 export function getCurrentScale() {
-  return zoomTransform(this.svg.node()).k;
+  return zoomTransform(this.canvas.node()).k;
 }

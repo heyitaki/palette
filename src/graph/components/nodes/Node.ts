@@ -8,6 +8,7 @@ import NodeClass from "../../enums/NodeClass";
 import PrintState from "../../enums/PrintState";
 import Point from "../../Point";
 import { getDataFromSelection } from "../../selection";
+import { expandNodes } from "../../state/expand";
 import { classNodes } from "../../state/select";
 import { colorToHex } from "../../utils";
 import Link from "../links/Link";
@@ -39,7 +40,7 @@ export default class Node {
     this.type = data.type;
     this.color = data.color;
     this.description = data.description;
-    this.totalLinks = data.totalLinks;
+    this.totalLinks = data.totalLinks || 0;
     this.url = data.url;
     this.x = data.x;
     this.y = data.y;
@@ -53,29 +54,8 @@ export default class Node {
   getLinkPosition(link: Link): Point { return null; }
   getCenter(): Point { return null; }
 
-  clickWrapper(n: Node, i: number, nodeRef: SVGElement): void{
-    event.stopImmediatePropagation();
-    if (n.id === this.graph.clickedNodeId) {
-      // User has clicked twice within certain threshold, treat as double click
-      // Remove doubleClickTimer so single click action is not dispatched
-      // Do nothing, let d3 execute its own dblclick handler
-      this.graph.clickedNodeId = null;
-      clearTimeout(this.graph.doubleClickTimer);
-    } else {
-      // User has clicked once, remove timer in case user has clicked on a new
-      // node within doubleclick threshold
-      clearTimeout(this.graph.doubleClickTimer);
-
-      // Wait 200ms in case doubleclick, else treat as single click action
-      this.graph.clickedNodeId = n.id;
-      this.graph.doubleClickTimer = setTimeout(() => {
-        this.onClick(n, i, nodeRef);
-        this.graph.clickedNodeId = null;
-      }, 200);
-    }
-  }
-
   onClick(n: Node, i: number, nodeRef: SVGElement) {
+    event.stopPropagation();
     this.graph.contextMenu.closeMenu();
 
     // Handling single click selection
@@ -88,6 +68,11 @@ export default class Node {
       // State of other nodes unchanged, toggle selection of current node
       classNodes(this.graph, currNode, NodeClass.Selected, undefined, true);
     }
+  }
+
+  onDoubleClick(n: Node, i: number, nodeRef: SVGElement) {
+    event.stopPropagation();
+    expandNodes(this.graph, select(nodeRef));
   }
 
   onRightClick(n: Node, i: number, nodes) {

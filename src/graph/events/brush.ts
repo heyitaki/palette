@@ -20,7 +20,7 @@ export default class Brush {
   }
 
   private initBrush() {
-    this.brushContainer = this.graph.svg.append('g')
+    this.brushContainer = this.graph.canvas.append('g')
       .attr('class', 'brush-container');
   
     this.brush = brush()
@@ -44,7 +44,7 @@ export default class Brush {
     this.graph.node
       .classed('possible', (d) => {
         const center = d.getCenter(),
-              transform = zoomTransform(this.graph.svg.node()),
+              transform = zoomTransform(this.graph.canvas.node()),
               x = center.x * transform.k + transform.x,
               y = center.y * transform.k + transform.y;
         return d.possible = (extent[0][0] <= x && x <= extent[1][0]

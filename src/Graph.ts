@@ -6,6 +6,7 @@ import Grid from './graph/components/Grid';
 import Link, { setLinkColor } from './graph/components/links/Link';
 import Node from './graph/components/nodes/Node';
 import { LINK_STROKE_WIDTH } from './graph/constants/graph';
+import NodeClass from './graph/enums/NodeClass';
 import Brush from './graph/events/Brush';
 import { initDrag } from './graph/events/drag';
 import { handleResize } from './graph/events/resize';
@@ -13,10 +14,11 @@ import { initZoom } from './graph/events/zoom';
 import { fastForceConvergence, initForce } from './graph/force';
 import { getAllLinks, getAllNodes } from './graph/selection';
 import { getNumLinksToExpand, isExpandable } from './graph/state/expand';
+import { classNodes } from './graph/state/select';
 import { hash } from './graph/utils';
 import Server from './Server';
 import { LinkSelection, NodeSelection } from './types';
-import { loadGraphData, stopPropagation } from './utils';
+import { stopPropagation } from './utils';
 
 export default class Graph {
   adjacencyMap: AdjacencyMap;
@@ -39,7 +41,7 @@ export default class Graph {
   node: NodeSelection;
   nodeContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
   server: Server;
-  svg: Selection<SVGGElement, unknown, HTMLElement, any>;
+  canvas: Selection<SVGGElement, unknown, HTMLElement, any>;
   width: number;
 
   constructor(graphContainerId: string) {
@@ -54,11 +56,16 @@ export default class Graph {
 
   private initGraph(graphContainerId: string) {
     // Graph components
-    this.svg = select('#' + graphContainerId).append('svg')
+    this.canvas = select('#' + graphContainerId).append('svg')
       .attr('id', 'graph-canvas')
       .attr('pointer-events', 'all')
-      .classed('svg-content', true);
-    this.container = this.svg.append('g')
+      .classed('svg-content', true)
+      .on('click', () => {
+        this.contextMenu.closeMenu();
+        classNodes(this, this.node, NodeClass.Selected, false);
+        clearTimeout(this.doubleClickTimer);
+      });
+    this.container = this.canvas.append('g')
       .attr('class', 'graph-bois');
     this.grid = new Grid(this, this.container);
     handleResize.bind(this)(graphContainerId);
@@ -66,7 +73,7 @@ export default class Graph {
     this.brush = new Brush(this);
     this.force = initForce(this);
     initDrag.bind(this)();
-    this.defs = this.svg.append('defs');
+    this.defs = this.canvas.append('defs');
     this.contextMenu = new ContextMenu(this);
     this.server = new Server();
     this.adjacencyMap = new AdjacencyMap(this);
@@ -80,8 +87,8 @@ export default class Graph {
 
     // Display root node and neighbors 
     const root = this.server.getRoot();
-    this.adjacencyMap.addNodes(root, false);
-    loadGraphData(this, this.server.getNeighbors(root.id));
+    this.adjacencyMap.addNodes(root, true);
+    // loadGraphData(this, this.server.getNeighbors(root.id));
   }
 
   updateGraph() {
@@ -117,8 +124,8 @@ export default class Graph {
     const nodeSelection = this.node.data(nodes, (n: Node) => n.id);
     const gNode = nodeSelection.enter().append('g')
       .attr('class', 'node')
-      .on('click', function (n, i) { n.clickWrapper(n, i, this); })
-      // .on('dblclick', function (d) { events.dblclicked.bind(self)(d, this); })
+      .on('click', function (n, i) { n.onClick(n, i, this); })
+      .on('dblclick', function (n, i) { n.onDoubleClick(n, i, this); })
       .on('mousedown', stopPropagation)
       .call(this.drag);
     gNode.each(function(n: Node) { n.renderNode(this); });
