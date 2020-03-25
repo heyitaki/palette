@@ -1,5 +1,6 @@
 import { event, select, selectAll } from 'd3-selection';
 import Graph from '../../Graph';
+import { MenuSelection, NodeSelection } from '../../types';
 import { CONTEXT_MENU_HEIGHT, CONTEXT_MENU_WIDTH } from '../constants/graph';
 import { getSelectedNodes } from '../selection';
 import { expandNodes } from '../state/expand';
@@ -7,9 +8,9 @@ import { pinNodes } from '../state/pin';
 import Node from './nodes/Node';
 
 interface MenuItem {
-  title: (d?: Node, i?: number, nodes?: any[]) => string;
+  title: (d?: Node, i?: number, nodes?: NodeSelection) => string;
   icon: string;
-  action: (nodes: any[]) => void;
+  action: (nodes: NodeSelection) => void;
   code: string;
   children?: MenuItem[];
 }
@@ -51,10 +52,10 @@ export default class ContextMenu {
       });
     
     // Populate action menu
-    const parent = gMenu.append('ul')
+    const parent: MenuSelection = gMenu.append('ul')
       .attr('class', 'action-menu');
-    const nodes = getSelectedNodes.bind(this.graph)();
-    parent.call(this.createNestedMenu, this, [n, i, nodes]);
+    const nodes: NodeSelection = getSelectedNodes(this.graph);
+    parent.call(this.createNestedMenu, this, n, i, nodes);
 
     // Get position and display context menu
     const CLICK_OFFSET = 2;
@@ -93,7 +94,8 @@ export default class ContextMenu {
     event.stopPropagation();
   }
 
-  private createNestedMenu(parent, root, args, depth=0) {
+  private createNestedMenu(parent: MenuSelection, root: ContextMenu, n: Node, 
+      i: number, nodes: NodeSelection, depth=0) {
     parent.selectAll('li')
       .data(function (mi: MenuItem): MenuItem[] {
         return (depth === 0) ? root.menuItems : mi.children;
@@ -107,7 +109,7 @@ export default class ContextMenu {
             <div class="context-menu-left">
               ${mi.icon ? `<img src=${mi.icon}>` : ''}
               <p class="${mi.icon ? '' : 'context-menu-no-icon'}">
-                ${mi.title(...args)}
+                ${mi.title(n, i, nodes)}
               </p>
             </div>
             <p class="context-menu-code">${mi.code}</p>
@@ -118,15 +120,15 @@ export default class ContextMenu {
             if (!mi.action) return;
 
             // Get selection, always pass in node id, only used when selecting current node
-            mi.action.call(root.graph, args[2]);
+            mi.action(nodes);
             root.closeMenu();
           });
 
         if (mi.children) {
           // Create children(`next parent`) and call recursive
-          const children = listItem.append('ul')
+          const children: MenuSelection = listItem.append('ul')
             .classed('context-menu-children', true);
-          root.createNestedMenu(children, root, args, ++depth)
+          root.createNestedMenu(children, root, n, i, nodes, ++depth)
         }
       });
   }
@@ -144,19 +146,19 @@ function getMenuItems(graph: Graph): MenuItem[] {
   return [
     {
       title: (d, i, nodes) => {
-        const subject = (nodes.length > 1) ? 'nodes' : 'node';
+        const subject = (nodes.size() > 1) ? 'nodes' : 'node';
         return `Expand ${subject}`; 
       },
       icon: './icons/expand.svg',
-      action: (nodes) => { expandNodes.bind(this)(nodes); },
+      action: (nodes) => { expandNodes(graph, nodes); },
       code: 'shift+e'
     },
     {
       title: (d, i, nodes) => {
-        if (!nodes || nodes.length === 0) return 'Pin node';
-        const subject = (nodes.length > 1) ? 'nodes' : 'node';
-        const numSelected = nodes.filter((dx) => { return dx.fixed || false; }).length;
-        const action = numSelected < nodes.length ? 'Pin' : 'Unpin';
+        if (!nodes || nodes.size() === 0) return 'Pin node';
+        const subject = (nodes.size() > 1) ? 'nodes' : 'node';
+        const numSelected = nodes.filter((dx) => { return dx.fixed || false; }).size();
+        const action = numSelected < nodes.size() ? 'Pin' : 'Unpin';
         return `${action} ${subject}`; 
       },
       icon: './icons/pin.svg',
@@ -185,11 +187,11 @@ function getMenuItems(graph: Graph): MenuItem[] {
     },
     {
       title: (d, i, nodes) => {
-        const subject = (nodes.length > 1) ? 'nodes' : 'node';
+        const subject = (nodes.size() > 1) ? 'nodes' : 'node';
         return `Remove ${subject}`; 
       },
       icon: './icons/remove.svg',
-      action: (nodes) => { graph.adjacencyMap.deleteNodes(nodes); },
+      action: (nodes) => { /*graph.adjacencyMap.deleteNodes(nodes);*/ },
       code: 'shift+r'
     },
   ];

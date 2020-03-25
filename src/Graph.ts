@@ -132,8 +132,8 @@ export default class Graph {
     nodeSelection.exit().remove();
   
     // Update selectors
-    this.link = getAllLinks.bind(this)();
-    this.node = getAllNodes.bind(this)();
+    this.link = getAllLinks(this);
+    this.node = getAllNodes(this);
   
     // Update node glyphs
     this.node.select('.node-glyph-top')

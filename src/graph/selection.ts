@@ -1,25 +1,24 @@
-import { BaseType, Selection } from 'd3-selection';
+import Graph from '../Graph';
+import { LinkSelection, NodeSelection } from '../types';
 import Node from './components/nodes/Node';
 
-export function getSelectedNodes(): 
-    Selection<BaseType, unknown, HTMLElement, any> {
-  return this.nodeContainer.selectAll('.node.selected');
+export function getSelectedNodes(graph: Graph): NodeSelection {
+  return graph.nodeContainer.selectAll('.node.selected');
 }
 
-export function getAllNodes(): Selection<BaseType, unknown, HTMLElement, any> {
-  return this.nodeContainer.selectAll('.node');
+export function getAllNodes(graph: Graph): NodeSelection {
+  return graph.nodeContainer.selectAll('.node');
 }
 
-export function getAllLinks(): Selection<BaseType, unknown, HTMLElement, any> {
-  return this.linkContainer.selectAll('.link');
+export function getAllLinks(graph: Graph): LinkSelection {
+  return graph.linkContainer.selectAll('.link');
 }
 
 /**
  * Get list of data bound to a given selection of nodes
  * @param selection d3 selection of DOM elements
  */
-export function getDataFromSelection(
-    selection: Selection<BaseType, unknown, SVGGElement, unknown>): Node[] {
+export function getDataFromSelection(selection: NodeSelection): Node[] {
   if (!selection || selection.empty()) return;
   return selection.nodes().map((x: any) => x.__data__);
 }
