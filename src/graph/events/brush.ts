@@ -24,22 +24,22 @@ export default class Brush {
       .attr('class', 'brush-container');
   
     this.brush = brush()
-      .on('start', () => { this.brushstart(); })
-      .on('brush', () => { this.brushing(); })
-      .on('end', () => { this.brushend(); });
+      .on('start', () => { this.onBrushStart(); })
+      .on('brush', () => { this.onBrush(); })
+      .on('end', () => { this.onBrushEnd(); });
     this.brush.keyModifiers(false);
   
     select('body')
-      .on('keydown.brush', () => { this.keydownBrush(); })
-      .on('keyup.brush', () => { this.keyupBrush(); });
+      .on('keydown.brush', () => { this.onKeyDown(); })
+      .on('keyup.brush', () => { this.onKeyUp(); });
   }
 
-  private brushstart() {
+  private onBrushStart() {
     classNodes(this.graph, this.graph.node, NodeClass.Selected, false);
     this.isBrushing = true;
   }
 
-  private brushing() {
+  private onBrush() {
     const extent = event.selection;
     this.graph.node
       .classed('possible', (d) => {
@@ -55,7 +55,7 @@ export default class Brush {
     classNodes(this.graph, possibleNodes, NodeClass.Possible, true);
   }
 
-  private brushend() {
+  private onBrushEnd() {
     this.isBrushing = false;
     this.removeBrush();
   
@@ -65,7 +65,7 @@ export default class Brush {
     classNodes(this.graph, possibleNodes, NodeClass.Selected, true);
   }
 
-  private keydownBrush() {
+  private onKeyDown() {
     // Track if modifier is pressed
     this.graph.isModifierPressed = event 
       && (event.shiftKey || event.ctrlKey || event.metaKey); 
@@ -74,7 +74,7 @@ export default class Brush {
     if (this.graph.isModifierPressed) this.addBrush();
   }
 
-  private keyupBrush() {
+  private onKeyUp() {
     // Modifier is no longer pressed
     this.graph.isModifierPressed = false;
     

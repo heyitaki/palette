@@ -22,6 +22,7 @@ export default class Node {
   weight: number;
   color?: string;
   description?: string;
+  dragDistance?: number;
   fixed?: boolean;
   fx?: number;
   fy?: number;
@@ -44,6 +45,7 @@ export default class Node {
     this.url = data.url;
     this.x = data.x;
     this.y = data.y;
+    this.dragDistance = 0;
     this.possible = false;
     this.selected = false;
     this.saveRadical = false;

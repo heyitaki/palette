@@ -8,7 +8,7 @@ import Node from './graph/components/nodes/Node';
 import { LINK_STROKE_WIDTH } from './graph/constants/graph';
 import NodeClass from './graph/enums/NodeClass';
 import Brush from './graph/events/Brush';
-import { initDrag } from './graph/events/drag';
+import Drag from './graph/events/Drag';
 import { handleResize } from './graph/events/resize';
 import { initZoom } from './graph/events/zoom';
 import { fastForceConvergence, initForce } from './graph/force';
@@ -72,7 +72,7 @@ export default class Graph {
     initZoom.bind(this)();
     this.brush = new Brush(this);
     this.force = initForce(this);
-    initDrag.bind(this)();
+    this.drag = new Drag(this);
     this.defs = this.canvas.append('defs');
     this.contextMenu = new ContextMenu(this);
     this.server = new Server();
@@ -127,7 +127,7 @@ export default class Graph {
       .on('click', function (n, i) { n.onClick(n, i, this); })
       .on('dblclick', function (n, i) { n.onDoubleClick(n, i, this); })
       .on('mousedown', stopPropagation)
-      .call(this.drag);
+      .call(this.drag.get());
     gNode.each(function(n: Node) { n.renderNode(this); });
     nodeSelection.exit().remove();
   

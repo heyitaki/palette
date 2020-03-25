@@ -43,7 +43,7 @@ export default class Card extends Node {
     gNodeBody.append('text')
       .attr('class', 'node-glyph-top-text')
       .attr('dx', this.length-4)
-      .attr('dy', 8.5)
+      .attr('dy', 8.25)
       .attr('text-anchor', 'middle')
       .classed('unselectable', true);
     
