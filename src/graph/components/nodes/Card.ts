@@ -31,8 +31,21 @@ export default class Card extends Node {
       .attr('class', 'node-body')
       .attr('width', this.length)
       .attr('height', this.height)
-      .attr('rx', 5)
-      .attr('ry', 5);
+      .attr('rx', 2.5)
+      .attr('ry', 2.5);
+    
+    gNodeBody.append('circle')
+      .attr('class', 'node-glyph-top')
+      .attr('r', 11)
+      .attr('cx', this.length-4)
+      .attr('cy', 4);
+
+    gNodeBody.append('text')
+      .attr('class', 'node-glyph-top-text')
+      .attr('dx', this.length-4)
+      .attr('dy', 8.5)
+      .attr('text-anchor', 'middle')
+      .classed('unselectable', true);
     
     setNodeColor(gNode);
   }

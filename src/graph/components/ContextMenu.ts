@@ -2,7 +2,7 @@ import { event, select, selectAll } from 'd3-selection';
 import Graph from '../../Graph';
 import { MenuSelection, NodeSelection } from '../../types';
 import { CONTEXT_MENU_HEIGHT, CONTEXT_MENU_WIDTH } from '../constants/graph';
-import { getSelectedNodes } from '../selection';
+import { getDataFromSelection, getSelectedNodes } from '../selection';
 import { expandNodes } from '../state/expand';
 import { pinNodes } from '../state/pin';
 import Node from './nodes/Node';
@@ -191,7 +191,10 @@ function getMenuItems(graph: Graph): MenuItem[] {
         return `Remove ${subject}`; 
       },
       icon: './icons/remove.svg',
-      action: (nodes) => { /*graph.adjacencyMap.deleteNodes(nodes);*/ },
+      action: (nodes) => { 
+        const nodesToDelete = getDataFromSelection(nodes);
+        graph.adjacencyMap.deleteNodes(nodesToDelete, true); 
+      },
       code: 'shift+r'
     },
   ];

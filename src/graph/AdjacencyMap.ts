@@ -145,6 +145,8 @@ export default class AdjacencyMap {
     nodes = toArray(nodes);
     let nodeId: string;
     for (let i = 0; i < nodes.length; i++) {
+      nodeId = nodes[i].id;
+      
       // Delete incoming links
       this.adjacencyMapOutgoing.get(nodeId).forEach((linkId, targetId) => {
         this.adjacencyMapIncoming.get(targetId).delete(nodeId);

@@ -25,8 +25,8 @@ export default class ThinCard extends Card {
       .attr('class', 'node-body')
       .attr('width', this.length)
       .attr('height', this.height)
-      .attr('rx', 5)
-      .attr('ry', 5);
+      .attr('rx', 2.5)
+      .attr('ry', 2.5);
     
     setNodeColor(gNode);
   }
