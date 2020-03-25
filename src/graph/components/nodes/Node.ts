@@ -75,7 +75,13 @@ export default class Node {
     expandNodes(this.graph, select(nodeRef));
   }
 
-  onRightClick(n: Node, i: number, nodes) {
+  onRightClick(n: Node, i: number, nodeRef: SVGElement) {
+    if (!n.selected) {
+      const currNode: NodeSelection = select(nodeRef);
+      classNodes(this.graph, this.graph.node, NodeClass.Selected, false);
+      classNodes(this.graph, currNode, NodeClass.Selected, true);
+    }
+    
     this.graph.contextMenu.openMenu(n, i);
   }
 }

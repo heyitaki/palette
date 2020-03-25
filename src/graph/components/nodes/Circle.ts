@@ -16,11 +16,11 @@ export default class Circle extends Node {
 
   public renderNode(gNodeRef: SVGElement) {
     const gNode: NodeSelection = select(gNodeRef);
-    gNode.on('contextmenu', (d: Node, i, nodes) => this.onRightClick(d, i, nodes));
+    gNode.on('contextmenu', function (n, i) { n.onRightClick(n, i, this); });
     
     const gNodeBody = gNode.append('g')
       .attr('class', 'node-body')
-      // .on('mouseenter', function (d) { events.mouseenter.bind(self)(d, this); })
+      // .on('mouseenter', function (d) { console.log(d); })
       // .on('mouseleave', function (d) { events.mouseleave.bind(self)(d, this); });
 
     gNodeBody.append('circle')

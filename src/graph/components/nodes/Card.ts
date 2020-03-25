@@ -19,8 +19,8 @@ export default class Card extends Node {
   }
 
   public renderNode(gNodeRef) {
-    const gNode = select(gNodeRef);
-    gNode.on('contextmenu', (d: Node, i, nodes) => this.onRightClick(d, i, nodes));
+    const gNode: NodeSelection = select(gNodeRef);
+    gNode.on('contextmenu', function (n, i) { n.onRightClick(n, i, this); });
 
     const gNodeBody = gNode.append('g')
       .attr('class', 'node-body')
@@ -34,7 +34,7 @@ export default class Card extends Node {
       .attr('rx', 5)
       .attr('ry', 5);
     
-    setNodeColor(gNode as NodeSelection);
+    setNodeColor(gNode);
   }
 
   /**

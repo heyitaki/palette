@@ -162,25 +162,25 @@ function getMenuItems(graph: Graph): MenuItem[] {
         return `${action} ${subject}`; 
       },
       icon: './icons/pin.svg',
-      action: (nodes) => { pinNodes.bind(this)(nodes, null, true); },
+      action: nodes => pinNodes(nodes, null, true),
       code: 'shift+f',
       children: [
         {
           title: () => 'Pin',
           icon: './icons/pin.svg',
-          action: (nodes) => { pinNodes.bind(this)(nodes, true); },
+          action: nodes => pinNodes(nodes, true),
           code: ''
         },
         {
           title: () => 'Unpin',
           icon: './icons/unpin.svg',
-          action: (nodes) => { pinNodes.bind(this)(nodes, false); },
+          action: nodes => pinNodes(nodes, false),
           code: ''
         },
         {
           title: () => 'Toggle',
           icon: './icons/toggle.svg',
-          action: (nodes) => { pinNodes.bind(this)(nodes, null, true); },
+          action: nodes => pinNodes(nodes, null, true),
           code: ''
         },
       ] 

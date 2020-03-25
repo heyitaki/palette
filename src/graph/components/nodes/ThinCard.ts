@@ -4,7 +4,7 @@ import NodeData from "../../../server/NodeData";
 import { NodeSelection } from "../../../types";
 import { NODE_THIN_CARD_HEIGHT } from "../../constants/graph";
 import Card from "./Card";
-import Node, { setNodeColor } from "./Node";
+import { setNodeColor } from "./Node";
 
 export default class ThinCard extends Card {
   constructor(graph: Graph, data: NodeData, height?: number, width?: number) {
@@ -13,8 +13,8 @@ export default class ThinCard extends Card {
   }
 
   renderNode(gNodeRef) {
-    const gNode = select(gNodeRef);
-    gNode.on('contextmenu', (d: Node, i, nodes) => this.onRightClick(d, i, nodes));
+    const gNode: NodeSelection = select(gNodeRef);
+    gNode.on('contextmenu', function (n, i) { n.onRightClick(n, i, this); });
     
     const gNodeBody = gNode.append('g')
       .attr('class', 'node-body')
@@ -28,6 +28,6 @@ export default class ThinCard extends Card {
       .attr('rx', 5)
       .attr('ry', 5);
     
-    setNodeColor(gNode as NodeSelection);
+    setNodeColor(gNode);
   }
 }
