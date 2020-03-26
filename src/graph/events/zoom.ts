@@ -30,6 +30,21 @@ export default class Zoom {
     this.translateGraphAroundPoint(center.x, center.y, duration, delay, callback);
   }
 
+  public translateGraphAroundPoint(x: number, y: number, duration: number=0, 
+    delay: number=0, callback=null) {
+    // Calculate view centered on given node
+    const center = [this.graph.width/2, this.graph.height/2];
+    const currScale = this.getCurrentScale();
+    const newX = center[0] - x * currScale;
+    const newY = center[1] - y * currScale;
+    const newTransform = zoomIdentity
+      .translate(newX, newY)
+      .scale(currScale);
+
+    // Transition to the new view over duration ms
+    this.interpolateZoom(newTransform, duration, delay, callback);
+  }
+
   private initZoom() {
     this.zoom = zoom()
       .scaleExtent([ZOOM_MIN_SCALE, ZOOM_MAX_SCALE])
@@ -122,20 +137,5 @@ export default class Zoom {
       .on('touchstart.zoom', null)
       .on('touchmove.zoom', null)
       .on('touchend.zoom', null);
-  }
-
-  private translateGraphAroundPoint(x: number, y: number, duration: number=0, 
-      delay: number=0, callback=null) {
-    // Calculate view centered on given node
-    const center = [this.graph.width/2, this.graph.height/2];
-    const currScale = this.getCurrentScale();
-    const newX = center[0] - x * currScale;
-    const newY = center[1] - y * currScale;
-    const newTransform = zoomIdentity
-      .translate(newX, newY)
-      .scale(currScale);
-  
-    // Transition to the new view over duration ms
-    this.interpolateZoom(newTransform, duration, delay, callback);
   }
 }

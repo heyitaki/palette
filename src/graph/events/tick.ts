@@ -1,8 +1,9 @@
+import Graph from "../../Graph";
 import Link from "../components/links/Link";
 
-export function tick() {
-  setNodePositions.bind(this)(this.node);
-  setLinkPositions.bind(this)(this.link);
+export function tick(graph: Graph) {
+  setNodePositions(graph.node);
+  setLinkPositions(graph.link);
 }
 
 /**

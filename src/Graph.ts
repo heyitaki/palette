@@ -51,7 +51,7 @@ export default class Graph {
     this.doubleClickTimer = null;
 
     this.isModifierPressed = false;
-    this.fastConvergence = false;
+    this.fastConvergence = true;
     this.initGraph(graphContainerId);
   }
 
@@ -68,7 +68,7 @@ export default class Graph {
       });
     this.container = this.canvas.append('g')
       .attr('class', 'graph-bois');
-    this.grid = new Grid(this, this.container);
+    this.grid = new Grid(this);
     this.zoom = new Zoom(this);
     handleResize(this, graphContainerId);
     this.brush = new Brush(this);
@@ -86,7 +86,8 @@ export default class Graph {
     this.nodeContainer = this.container.append('g').attr('class', 'node-bois');
     this.node = this.nodeContainer.selectAll('.node');
 
-    // Display root node and neighbors 
+    // Display root node and neighbors
+    this.zoom.translateGraphAroundPoint(0, 0);
     const root = this.server.getRoot();
     this.adjacencyMap.addNodes(root, true);
     loadGraphData(this, this.server.getNeighbors(root.id));
@@ -101,7 +102,7 @@ export default class Graph {
     this.force.nodes(nodes);
     this.force.force<ForceLink<Node, Link>>('link').links(links);
     
-    // Update links, for each new link, increment weights of source and target nodes.
+    // Update links, for new links, increment weights of source/target nodes.
     const linkSelection = this.link.data(links, (l: Link) => l.id);
     this.linkEnter = linkSelection.enter().append('path')
       .attr('class', 'link')
@@ -113,7 +114,7 @@ export default class Graph {
       });
     setLinkColor(this, this.linkEnter, '#545454');
   
-    // For each removed link, decrement weights of source and target nodes
+    // For removed links, decrement weights of source/target nodes
     linkSelection.exit()
       .each((l: Link) => {
         l.source.weight--;

@@ -2,6 +2,7 @@ import { forceLink, forceManyBody, forceSimulation, forceX, forceY, Simulation, 
 import Graph from '../Graph';
 import { VELOCITY_DECAY } from './constants/graph';
 import { setLinkPositions, setNodePositions, tick } from './events/tick';
+import { getDataFromSelection } from './selection';
 
 export function initForce(graph: Graph): Simulation<SimulationNodeDatum, undefined> {
   return forceSimulation()
@@ -10,7 +11,7 @@ export function initForce(graph: Graph): Simulation<SimulationNodeDatum, undefin
     .force('y', forceY().strength(0.2))
     .force('x', forceX().strength(0.2))
     .velocityDecay(VELOCITY_DECAY)
-    .on('tick', tick.bind(graph))
+    .on('tick', () => tick(graph))
     .stop();
 }
 
@@ -43,8 +44,12 @@ export function fastForceConvergence(graph: Graph): void {
   const linkInput = graph.link
     .transition('link-opacity').delay(nodeTransitionMs).duration(linkTransitionMs)
     .style('opacity', 1)
-    .on('end', () => { graph.fastConvergence = false; });
+    .on('end', () => { 
+      graph.zoom.translateGraphAroundNode(
+        getDataFromSelection(graph.node.filter(n => n.id === '1'))[0]
+      );
+    });
 
-  setNodePositions.bind(graph)(nodeInput);
-  setLinkPositions.bind(graph)(linkInput);
+  setNodePositions(nodeInput);
+  setLinkPositions(linkInput);
 }

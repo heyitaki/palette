@@ -11,8 +11,8 @@ export default class Grid {
   numSquaresY: number;
   showGridLines: boolean;
 
-  constructor(graph: Graph, container, showGridLines=true) {
-    this.grid = container.append('g')
+  constructor(graph: Graph, showGridLines=true) {
+    this.grid = graph.container.append('g')
       .attr('class', 'grid');
     this.gridX = this.grid.append('g')
       .attr('class', 'grid-x');
