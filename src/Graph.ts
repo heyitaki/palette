@@ -10,7 +10,7 @@ import NodeClass from './graph/enums/NodeClass';
 import Brush from './graph/events/Brush';
 import Drag from './graph/events/Drag';
 import { handleResize } from './graph/events/resize';
-import { initZoom } from './graph/events/zoom';
+import Zoom from './graph/events/Zoom';
 import { fastForceConvergence, initForce } from './graph/force';
 import { getAllLinks, getAllNodes } from './graph/selection';
 import { getNumLinksToExpand, isExpandable } from './graph/state/expand';
@@ -18,11 +18,12 @@ import { classNodes } from './graph/state/select';
 import { hash } from './graph/utils';
 import Server from './Server';
 import { LinkSelection, NodeSelection } from './types';
-import { stopPropagation } from './utils';
+import { loadGraphData, stopPropagation } from './utils';
 
 export default class Graph {
   adjacencyMap: AdjacencyMap;
   brush: Brush;
+  canvas: Selection<SVGGElement, unknown, HTMLElement, any>;
   clickedNodeId: string;
   container: Selection<SVGGElement, unknown, HTMLElement, any>;
   contextMenu: ContextMenu;
@@ -41,8 +42,8 @@ export default class Graph {
   node: NodeSelection;
   nodeContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
   server: Server;
-  canvas: Selection<SVGGElement, unknown, HTMLElement, any>;
-  width: number;
+  width: number
+  zoom: Zoom;
 
   constructor(graphContainerId: string) {
     // Double click handler 
@@ -68,8 +69,8 @@ export default class Graph {
     this.container = this.canvas.append('g')
       .attr('class', 'graph-bois');
     this.grid = new Grid(this, this.container);
-    handleResize.bind(this)(graphContainerId);
-    initZoom.bind(this)();
+    this.zoom = new Zoom(this);
+    handleResize(this, graphContainerId);
     this.brush = new Brush(this);
     this.force = initForce(this);
     this.drag = new Drag(this);
@@ -88,7 +89,7 @@ export default class Graph {
     // Display root node and neighbors 
     const root = this.server.getRoot();
     this.adjacencyMap.addNodes(root, true);
-    // loadGraphData(this, this.server.getNeighbors(root.id));
+    loadGraphData(this, this.server.getNeighbors(root.id));
   }
 
   updateGraph() {

@@ -1,12 +1,12 @@
-import { getCurrentScale } from "./zoom";
+import Graph from "../../Graph";
 
 /**
  * Handle window resizing.
  * @param graphContainerId id of html element wrapping graph svg
  */
-export function handleResize(graphContainerId: string) {
-  updateGraphDimensions.bind(this)(graphContainerId);
-  window.addEventListener('resize', resized.bind(this, graphContainerId));
+export function handleResize(graph: Graph, graphContainerId: string) {
+  updateGraphDimensions(graph, graphContainerId);
+  window.addEventListener('resize', () => resized(graph, graphContainerId));
 }
 
 /**
@@ -15,11 +15,10 @@ export function handleResize(graphContainerId: string) {
  * TODO: Find out if we can avoid 50ms delay when window isnt maximized
  * @param graphContainerId id of html element wrapping graph svg
  */
-export function resized(graphContainerId: string) {
-  const self = this;
-  setTimeout(function() {
-    self.contextMenu.closeMenu();
-    updateGraphDimensions.bind(self)(graphContainerId);
+export function resized(graph: Graph, graphContainerId: string) {
+  setTimeout(() => {
+    graph.contextMenu.closeMenu();
+    updateGraphDimensions(graph, graphContainerId);
   }, 50);
 }
 
@@ -27,9 +26,9 @@ export function resized(graphContainerId: string) {
  * Update all properties dependent on svg width/height.
  * @param graphContainerId id of html element wrapping graph svg
  */
-export function updateGraphDimensions(graphContainerId: string) {
+export function updateGraphDimensions(graph: Graph, graphContainerId: string) {
   const graphContainer = document.getElementById(graphContainerId);
-  this.width = graphContainer.clientWidth;
-  this.height = graphContainer.clientHeight;
-  this.grid.updateGrid(getCurrentScale.bind(this)());
+  graph.width = graphContainer.clientWidth;
+  graph.height = graphContainer.clientHeight;
+  graph.grid.updateGrid(graph.zoom.getCurrentScale());
 }
