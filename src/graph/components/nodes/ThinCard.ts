@@ -23,6 +23,8 @@ export default class ThinCard extends Card {
 
     gNodeBody.append('rect')
       .attr('class', 'node-body')
+      .attr('x', -this.length/2)
+      .attr('y', -this.height/2)
       .attr('width', this.length)
       .attr('height', this.height)
       .attr('rx', 2.5)

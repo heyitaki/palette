@@ -29,6 +29,8 @@ export default class Card extends Node {
 
     gNodeBody.append('rect')
       .attr('class', 'node-body')
+      .attr('x', -this.length/2)
+      .attr('y', -this.height/2)
       .attr('width', this.length)
       .attr('height', this.height)
       .attr('rx', 2.5)
@@ -37,13 +39,13 @@ export default class Card extends Node {
     gNodeBody.append('circle')
       .attr('class', 'node-glyph-top')
       .attr('r', 11)
-      .attr('cx', this.length-4)
-      .attr('cy', 4);
+      .attr('cx', this.length/2-2)
+      .attr('cy', 4-this.height/2);
 
     gNodeBody.append('text')
       .attr('class', 'node-glyph-top-text')
-      .attr('dx', this.length-4)
-      .attr('dy', 8.25)
+      .attr('dx', this.length/2-2)
+      .attr('dy', 8.25-this.height/2)
       .attr('text-anchor', 'middle')
       .classed('unselectable', true);
     
@@ -89,6 +91,6 @@ export default class Card extends Node {
    * top left corner. 
    */
   public getCenter(): Point {
-    return new Point(this.x + this.length / 2, this.y + this.height / 2);
+    return new Point(this.x , this.y);
   }
 }
