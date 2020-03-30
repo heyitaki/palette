@@ -45,6 +45,7 @@ export function fastForceConvergence(graph: Graph): void {
     .transition('link-opacity').delay(nodeTransitionMs).duration(linkTransitionMs)
     .style('opacity', 1)
     .on('end', () => { 
+      // TODO: center around most recently expanded node, not root
       graph.zoom.translateGraphAroundNode(
         getDataFromSelection(graph.node.filter(n => n.id === '1'))[0]
       );
