@@ -12,8 +12,8 @@ export default class Card extends Node {
   height: number;
   length: number;
 
-  constructor(graph: Graph, data: NodeData, height?: number, length?: number) {
-    super(graph, data);
+  constructor(data: NodeData, graph: Graph, height?: number, length?: number) {
+    super(data, graph);
     this.height = height || NODE_CARD_HEIGHT;
     this.length = length || NODE_CARD_LENGTH;
   }

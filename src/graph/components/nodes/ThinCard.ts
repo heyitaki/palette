@@ -7,9 +7,9 @@ import Card from "./Card";
 import { setNodeColor } from "./Node";
 
 export default class ThinCard extends Card {
-  constructor(graph: Graph, data: NodeData, height?: number, width?: number) {
+  constructor(data: NodeData, graph: Graph, height?: number, width?: number) {
     height = height || NODE_THIN_CARD_HEIGHT;
-    super(graph, data, height, width);
+    super(data, graph, height, width);
   }
 
   renderNode(gNodeRef) {
@@ -29,6 +29,19 @@ export default class ThinCard extends Card {
       .attr('height', this.height)
       .attr('rx', 2.5)
       .attr('ry', 2.5);
+
+    gNodeBody.append('circle')
+      .attr('class', 'node-glyph-top')
+      .attr('r', 11)
+      .attr('cx', this.length/2-2)
+      .attr('cy', 4-this.height/2);
+
+    gNodeBody.append('text')
+      .attr('class', 'node-glyph-top-text')
+      .attr('dx', this.length/2-2)
+      .attr('dy', 8.25-this.height/2)
+      .attr('text-anchor', 'middle')
+      .classed('unselectable', true);
     
     setNodeColor(gNode);
   }

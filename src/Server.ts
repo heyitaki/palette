@@ -1,66 +1,71 @@
+import AdjacencyMap from "./graph/AdjacencyMap";
+import Node from "./graph/components/nodes/Node";
 import { links, nodes } from './server/data/data';
-import GraphData from './server/GraphData';
-import LinkData from './server/LinkData';
-import NodeData from './server/NodeData';
-import { toArray } from './utils';
+import GraphData from "./server/GraphData";
+import LinkData from "./server/LinkData";
+import NodeData from "./server/NodeData";
+import LinkTransformer from "./transformers/LinkTransformer";
+import NodeTransformer from "./transformers/NodeTransformer";
+import { toArray } from "./utils";
 
 export default class Server {
-  private nodes: NodeData[];
-  private links: LinkData[];
-  private nodeIdToNodeData: Map<string, NodeData>;
+  adjacencyMap: AdjacencyMap;
 
   constructor() {
-    this.loadData();
+    this.adjacencyMap = new AdjacencyMap(null);
+    const nodeData: NodeData[] = JSON.parse(nodes);
+    const linkData: LinkData[] = JSON.parse(links);
+    this.loadData(nodeData, linkData);
   }
 
-  private loadData() {
-    this.nodes = JSON.parse(nodes);
-    this.links = JSON.parse(links);
+  private loadData(nodeData: NodeData[], linkData: LinkData[]) {
+    // Load all data into adjacency map
+    this.adjacencyMap.addNodes(nodeData);
+    this.adjacencyMap.addLinks(linkData);
 
-    // Construct helper data structures
-    this.nodeIdToNodeData = new Map();
-    this.nodes.forEach((n: NodeData) => {
-      n.totalLinks = 0;
-      this.nodeIdToNodeData.set(n.id, n);
-    });
-    
-    // Calculate totalLinks field for nodes
-    this.links.forEach((l: LinkData) => {
-      this.nodeIdToNodeData.get(l.sourceId).totalLinks++;
-      this.nodeIdToNodeData.get(l.targetId).totalLinks++;
+    // Calculate total num links for each node
+    this.adjacencyMap.getNodes().forEach(node => { node.totalLinks = 0; });
+    this.adjacencyMap.getLinks().forEach(link => {
+      this.adjacencyMap.nodeIdToNodeObj.get(link.source.id).totalLinks++;
+      this.adjacencyMap.nodeIdToNodeObj.get(link.target.id).totalLinks++;
     });
   }
 
-  public getRoot() {
-    return this.nodes.filter((n) => n.id === '1')[0];
+  getRoot(): NodeData {
+    const rootNode: Node = this.adjacencyMap.getNodes('1')[0];
+    return NodeTransformer.nodeObjToNodeData(rootNode)[0];
   }
 
   /**
-   * Get neighbors and relationships between them and given node.
-   * @param id Id of node to search for
+   * Get neighboring nodes to each given node, as well as all incoming and 
+   * outgoing links from each neighoring node, in case they connect to any 
+   * existing nodes in the graph.
+   * @param nodeIds Ids of nodes to get neighbors of
    */
-  public getNeighbors(ids: string | string[]): GraphData {
-    ids = toArray(ids);
-    const nodes = [],
-          links = [];
+  getNeighbors(nodeIds: string | string[]): GraphData {
+    nodeIds = toArray(nodeIds);
+    let linkIds: string[] = [], 
+        nodes: Node[] = [], 
+        neighbors: Node[],
+        neighborId: string;
 
-    // Save each incoming/outgoing link and corresponding neighbor
-    for (let i = 0; i < ids.length; i++) {
-      this.links.forEach((l) => {
-        if (l.sourceId === ids[i]) {
-          nodes.push(this.nodeIdToNodeData.get(l.targetId));
-          links.push(l);
-        } else if (l.targetId === ids[i]) {
-          nodes.push(this.nodeIdToNodeData.get(l.sourceId));
-          links.push(l);
-        }
-      });
+    for (let i = 0; i < nodeIds.length; i++) {
+      neighbors = this.adjacencyMap.getNeighbors(nodeIds[i]);
+      for (let j = 0; j < neighbors.length; j++) {
+        neighborId = neighbors[j].id;
+        linkIds = linkIds.concat([
+          ...this.adjacencyMap.adjacencyMapIncoming.get(neighborId).values(),
+          ...this.adjacencyMap.adjacencyMapOutgoing.get(neighborId).values()
+        ]);
+      }
+
+      nodes = nodes.concat(neighbors);
     }
-
-    // Duplicates shouldn't matter since AdjacencyMap takes care of them.
-    return {
-      nodes: nodes,
-      links: links
+    
+    const links = linkIds.map(id => this.adjacencyMap.linkIdToLinkObj.get(id));
+    return { 
+      nodes: NodeTransformer.nodeObjToNodeData(nodes),
+      links: LinkTransformer.linkObjToLinkData(links)
     };
   }
 }

@@ -2,7 +2,9 @@ import _ from 'lodash';
 import Graph from '../Graph';
 import LinkData from '../server/LinkData';
 import NodeData from '../server/NodeData';
-import { exists, getMapVal, linkDataToLinkObj, nodeDataToNodeObj, toArray } from '../utils';
+import LinkTransformer from '../transformers/LinkTransformer';
+import NodeTransformer from '../transformers/NodeTransformer';
+import { exists, getMapVal, toArray } from '../utils';
 import Link from './components/links/Link';
 import Node from './components/nodes/Node';
 import { MALFORMED_DATA, MISSING_LINK_ID } from './constants/error';
@@ -14,6 +16,7 @@ export default class AdjacencyMap {
   nodeIdToNodeObj: Map<string, Node>;
   linkIdToLinkObj: Map<string, Link>;
   futureNodes: Map<string, LinkData[]>;
+  allowDeferredLinks: boolean;
 
   constructor(graph: Graph) {
     this.graph = graph;
@@ -22,6 +25,7 @@ export default class AdjacencyMap {
     this.nodeIdToNodeObj = new Map(); // {nodeId: nodeObj}
     this.linkIdToLinkObj = new Map(); // {linkId: linkObj}
     this.futureNodes = new Map(); // {futureNodeId: [deferredLinkData]}
+    this.allowDeferredLinks = false;
   }
   
   /**
@@ -68,7 +72,7 @@ export default class AdjacencyMap {
    */
   public addNodes = (nodeData: NodeData | NodeData[], update=false): void => {
     nodeData = toArray(nodeData);
-    let nodes = nodeDataToNodeObj(this.graph, nodeData);
+    let nodes = NodeTransformer.nodeDataToNodeObj(nodeData, this.graph);
 
     // Only consider each new node if it's not in the graph or a duplicate 
     // within the input list
@@ -85,13 +89,13 @@ export default class AdjacencyMap {
       this.nodeIdToNodeObj.set(currNode.id, currNode);
 
       // Add deferred links that now have both bounding nodes added
-      if (this.futureNodes.has(currNode.id)) {
+      if (this.allowDeferredLinks && this.futureNodes.has(currNode.id)) {
         deferredLinkData.concat(this.futureNodes.get(currNode.id));
         this.futureNodes.delete(currNode.id);
       }
     }
 
-    if (deferredLinkData.length > 0) {
+    if (this.allowDeferredLinks && deferredLinkData.length > 0) {
       deferredLinkData = _.uniqBy(deferredLinkData, ld => ld.id);
       this.addLinks(deferredLinkData);
     }
@@ -122,11 +126,11 @@ export default class AdjacencyMap {
             target: Node = this.getNodes(linkDatum.targetId)[0];
       if (source && target) {
         // Add link
-        const link: Link = linkDataToLinkObj(this.graph, linkDatum)[0];
+        const link: Link = LinkTransformer.linkDataToLinkObj(linkDatum, this)[0];
         this.adjacencyMapOutgoing.get(source.id).set(target.id, link.id);
         this.adjacencyMapIncoming.get(target.id).set(source.id, link.id);
         this.linkIdToLinkObj.set(link.id, link);
-      } else {
+      } else if (this.allowDeferredLinks) {
         // Defer link creation
         if (!source) getMapVal(this.futureNodes, linkDatum.sourceId, []).push(linkDatum);
         if (!target) getMapVal(this.futureNodes, linkDatum.targetId, []).push(linkDatum);
@@ -150,11 +154,13 @@ export default class AdjacencyMap {
       // Delete incoming links
       this.adjacencyMapOutgoing.get(nodeId).forEach((linkId, targetId) => {
         this.adjacencyMapIncoming.get(targetId).delete(nodeId);
+        this.linkIdToLinkObj.delete(linkId);
       });
       
       // Delete outgoing links
       this.adjacencyMapIncoming.get(nodeId).forEach((linkId, sourceId) => {
         this.adjacencyMapOutgoing.get(sourceId).delete(nodeId);
+        this.linkIdToLinkObj.delete(linkId);
       });
 
       // Delete node

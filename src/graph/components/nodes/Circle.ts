@@ -10,8 +10,8 @@ import Link from "../links/Link";
 import Node, { setNodeColor, wrapNodeText } from "./Node";
 
 export default class Circle extends Node {
-  constructor(graph: Graph, data: NodeData) {
-    super(graph, data);
+  constructor(data: NodeData, graph: Graph) {
+    super(data, graph);
   }
 
   public renderNode(gNodeRef: SVGElement) {

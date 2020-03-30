@@ -34,7 +34,7 @@ export default class Node {
   x?: number;
   y?: number;
 
-  constructor(graph: Graph, data: NodeData) {
+  constructor(data: NodeData, graph: Graph) {
     this.graph = graph;
     this.id = data.id;
     this.title = data.title;
@@ -111,8 +111,8 @@ export function setNodeColor(node: NodeSelection, nodeColor?: string) {
   if (nodeColor && nodeColor != '') {
     nodeColor = colorToHex(nodeColor);
   } else {
-    const nodeData = getDataFromSelection.bind(this)(node)[0];
-    nodeColor = getNodeColor.bind(this)(nodeData);
+    const nodeData = getDataFromSelection(node)[0];
+    nodeColor = getNodeColor(nodeData);
   }
   
   // Color node using given color and background color
