@@ -8,9 +8,14 @@ import Node from '../components/nodes/Node';
  * expandable, ignore it.
  */
 export function expandNodes(graph: Graph, nodes: NodeSelection): number {
-  if (nodes === null || nodes.empty()) return;
+  if (nodes === null) return 0;
+
+  // Get ids of nodes to expand, return no nodes to expand
   const idList: string[] = [];
   nodes.each((n: Node) => { if (isExpandable(n)) idList.push(n.id); });
+  if (idList.length === 0) return 0;
+
+  // Add all neighboring nodes and links of expanded nodes to graph
   loadGraphData(graph, graph.server.getNeighbors(idList));
   return idList.length;
 }
