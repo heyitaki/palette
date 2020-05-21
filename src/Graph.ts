@@ -18,7 +18,7 @@ import { classNodes } from './graph/state/select';
 import { hash } from './graph/utils';
 import Server from './Server';
 import { LinkSelection, NodeSelection } from './types';
-import { stopPropagation } from './utils';
+import { loadGraphData, stopPropagation } from './utils';
 
 export default class Graph {
   adjacencyMap: AdjacencyMap;
@@ -90,7 +90,7 @@ export default class Graph {
     this.zoom.translateGraphAroundPoint(0, 0);
     const root = this.server.getRoot();
     this.adjacencyMap.addNodes(root, true);
-    // loadGraphData(this, this.server.getNeighbors(root.id));
+    loadGraphData(this, this.server.getNeighbors(root.id));
   }
 
   updateGraph() {

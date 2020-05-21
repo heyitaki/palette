@@ -5,15 +5,24 @@
   transition-duration: 50ms;
 }
 
+.node-title,
 .node-title tspan {
   font-family: 'Avenir LT Std', 'Open Sans', sans-serif;
-  stroke: #efefef;
+  stroke: #f3f3f3;
   stroke-width: 3px;
   paint-order: stroke;
   font-size: 16px;
   fill: #545454;
   font-weight: 900;
   cursor: default;
+}
+
+.node-title.on-body {
+  stroke: #545454;
+  fill: #f3f3f3;
+  cursor: pointer;
+  font-size: 24px;
+  stroke-width: 3.5px;
 }
 
 .node .node-body {

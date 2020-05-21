@@ -13,7 +13,7 @@ export const nodes = `[
   {
     "id": "2",
     "type": "topic",
-    "title": "Family",
+    "title": "Startups",
     "description": "",
     "url": "",
     "icon": "",

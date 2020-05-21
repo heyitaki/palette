@@ -43,6 +43,21 @@ export default class ThinCard extends Card {
       .attr('text-anchor', 'middle')
       .classed('unselectable', true);
     
+    gNodeBody.append('text')
+      .attr('class', 'node-icon')
+      .attr('font-size', '36px')
+      .attr('x', -this.length/2+16)
+      .attr('y', this.height/2-25)
+      .text('📈')
+      .classed('unselectable', true);
+    
+    gNodeBody.append('text')
+      .attr('class', 'node-title on-body')
+      .attr('font-size', '21px')
+      .attr('font-weight', '100')
+      .text(n => n.title)
+      .classed('unselectable', true);
+    
     setNodeColor(gNode);
   }
 }

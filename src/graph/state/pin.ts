@@ -10,9 +10,9 @@ import { NodeSelection } from "../../types";
 export function pinNodes(nodes: NodeSelection, isFixed: boolean, 
     toggle: boolean=false): void {
   nodes.classed('fixed', (d) => {
-      d.fixed = toggle ? !d.fixed : isFixed;
-      d.fx = d.fixed ? d.x : null;
-      d.fy = d.fixed ? d.y : null;
-      return d.fixed;
+    d.fixed = toggle ? !d.fixed : isFixed;
+    d.fx = d.fixed ? d.x : null;
+    d.fy = d.fixed ? d.y : null;
+    return d.fixed;
   });
 }
