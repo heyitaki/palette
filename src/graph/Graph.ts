@@ -29,7 +29,7 @@ export default class Graph {
   contextMenu: ContextMenu;
   defs: Selection<SVGDefsElement, unknown, HTMLElement, any>;
   doubleClickTimer;
-  drag;
+  drag: Drag;
   fastConvergence: boolean;
   force: Simulation<SimulationNodeDatum, undefined>;
   grid: Grid;

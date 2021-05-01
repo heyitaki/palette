@@ -51,10 +51,14 @@ export default class Node {
     this.weight = 0;
   }
 
-  renderNode(gNodeRef: SVGElement): void {}
+  renderNode(gNodeRef: SVGElement): void {
+    // Do nothing
+  }
+
   getLinkPosition(link: Link): Point {
     return null;
   }
+
   getCenter(): Point {
     return null;
   }
@@ -99,10 +103,13 @@ export default class Node {
 export function getNodeColor(node: Node) {
   const nodeColor = node.color,
     nodeType = node.type;
-  if (nodeColor && nodeColor != '') return color(nodeColor).toString();
-  else if (nodeType && TYPES_TO_COLORS[nodeType])
+  if (nodeColor && nodeColor != '') {
+    return color(nodeColor).toString();
+  } else if (nodeType && TYPES_TO_COLORS[nodeType]) {
     return color(TYPES_TO_COLORS[nodeType]).toString();
-  else return color('#545454').toString();
+  } else {
+    return color('#545454').toString();
+  }
 }
 
 /**
@@ -122,11 +129,8 @@ export function setNodeColor(node: NodeSelection, nodeColor?: string) {
 
   // Color node using given color and background color
   node.select('.node-body').style('stroke', nodeColor).style('fill', nodeColor);
-
   node.select('.node-glyph-top').style('stroke', nodeColor).style('fill', '#fafafa');
-
   node.select('.node-glyph-top-text').style('stroke', nodeColor).style('fill', nodeColor);
-
   node.select('.node-icon').style('stroke', nodeColor).style('fill', '#fafafa');
 }
 
