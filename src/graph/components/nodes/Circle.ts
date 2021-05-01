@@ -49,8 +49,8 @@ export default class Circle extends Node {
       .attr('font-family', 'FontAwesome')
       .attr('font-size', '21px')
       .text((d) => {
-        return ' ';
-      }) //TODO
+        return ' '; //TODO
+      })
       .classed('unselectable', true);
 
     gNode

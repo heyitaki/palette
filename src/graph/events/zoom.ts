@@ -1,8 +1,7 @@
 import { easeLinear } from 'd3-ease';
 import { event } from 'd3-selection';
-import { zoom, zoomIdentity, zoomTransform } from 'd3-zoom';
+import { zoom, ZoomBehavior, zoomIdentity, zoomTransform } from 'd3-zoom';
 import Node from '../components/nodes/Node';
-import { ZOOM_MAX_SCALE, ZOOM_MIN_SCALE } from '../constants/graph';
 import Graph from '../Graph';
 import Point from '../Point';
 
@@ -10,7 +9,7 @@ export default class Zoom {
   graph: Graph;
   isZooming: boolean;
   isZoomPressed: boolean;
-  zoom;
+  zoom: ZoomBehavior<Element, unknown>;
 
   constructor(graph) {
     this.graph = graph;
@@ -54,7 +53,7 @@ export default class Zoom {
 
   private initZoom() {
     this.zoom = zoom()
-      .scaleExtent([ZOOM_MIN_SCALE, ZOOM_MAX_SCALE])
+      // .scaleExtent([ZOOM_MIN_SCALE, ZOOM_MAX_SCALE])
       .on('start', () => this.onZoomStart())
       .on('zoom', () => this.onZoom())
       .on('end', () => this.onZoomEnd());
@@ -97,10 +96,10 @@ export default class Zoom {
 
   // Zoom in or out by a fixed factor, around the center of the graph
   private zoomByFixedScale(zoomIn: boolean) {
-    const factor = 4 / 3,
-      center = [this.graph.width / 2, this.graph.height / 2],
-      startTransform = zoomTransform(this.graph.canvas.node()),
-      extent = this.zoom.scaleExtent();
+    const factor = 4 / 3;
+    const center = [this.graph.width / 2, this.graph.height / 2];
+    const startTransform = zoomTransform(this.graph.canvas.node());
+    const extent = this.zoom.scaleExtent();
 
     // Create object containing attributes of new view
     // Using zoomIdentity here modifies the current zoomTransform too

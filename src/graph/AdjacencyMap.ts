@@ -80,8 +80,8 @@ export default class AdjacencyMap {
     const nodesToConsider = _.differenceBy(nodes, this.getNodes(), (n) => n.id);
 
     // Add nodes to map
-    let currNode: Node,
-      deferredLinkData: LinkData[] = [];
+    let currNode: Node;
+    let deferredLinkData: LinkData[] = [];
     for (let i = 0; i < nodesToConsider.length; i++) {
       currNode = nodesToConsider[i];
       this.adjacencyMapOutgoing.set(currNode.id, new Map());

@@ -68,7 +68,7 @@ export default class Graph {
         clearTimeout(this.doubleClickTimer);
       });
     this.container = this.canvas.append('g').attr('class', 'graph-bois');
-    this.grid = new Grid(this);
+    this.grid = new Grid(this, false);
     this.zoom = new Zoom(this);
     handleResize(this, graphContainerId);
     this.brush = new Brush(this);

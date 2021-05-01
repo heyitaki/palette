@@ -16,9 +16,6 @@ export function tick(graph: Graph): void {
  * calculated positions.
  * @param nodes - Object containing list of nodes to translate.
  */
-
-// export function setNodePositions(nodes: NodeTransition): void;
-// export function setNodePositions(nodes: NodeSelection): void;
 export function setNodePositions(nodes: NodeSelection | NodeTransition) {
   nodes.attr('transform', (d) => `translate(${d.x},${d.y})`);
 }
@@ -28,8 +25,6 @@ export function setNodePositions(nodes: NodeSelection | NodeTransition) {
  * edges as opposed to centers.
  * @param links - Object containing list of links to update.
  */
-// export function setLinkPositions(links: LinkSelection | LinkSelection): void;
-// export function setLinkPositions(links: LinkSelection | LinkSelection): void;
 export function setLinkPositions(links: LinkSelection | LinkTransition): void {
   links.attr('d', (l: Link): string => {
     const sourcePos = l.source.getLinkPosition(l),
