@@ -1,6 +1,6 @@
 enum NodeClass {
   Selected = 'selected',
-  Possible = 'possible'
+  Possible = 'possible',
 }
 
 export default NodeClass;

@@ -1,7 +1,7 @@
 import { event, select, selectAll } from 'd3-selection';
-import Graph from '../../Graph';
 import { MenuSelection, NodeSelection } from '../../types';
 import { CONTEXT_MENU_HEIGHT, CONTEXT_MENU_WIDTH } from '../constants/graph';
+import Graph from '../Graph';
 import { getDataFromSelection, getSelectedNodes } from '../selection';
 import { expandNodes } from '../state/expand';
 import { pinNodes } from '../state/pin';
@@ -36,7 +36,9 @@ export default class ContextMenu {
     this.menuItems = getMenuItems(this.graph);
 
     // Create the div element that will hold the context menu
-    selectAll('.d3-context-menu').data([1]).enter()
+    selectAll('.d3-context-menu')
+      .data([1])
+      .enter()
       .append('div')
       .attr('class', 'd3-context-menu d3-context-menu-theme');
 
@@ -44,16 +46,14 @@ export default class ContextMenu {
     select('body').on('mousedown.d3-context-menu', this.closeMenu);
 
     // Right-clicking menu closes it
-    const gMenu = selectAll('.d3-context-menu')
-      .on('contextmenu', function() {
-        self.closeMenu();
-        event.preventDefault();
-        event.stopPropagation();
-      });
-    
+    const gMenu = selectAll('.d3-context-menu').on('contextmenu', function () {
+      self.closeMenu();
+      event.preventDefault();
+      event.stopPropagation();
+    });
+
     // Populate action menu
-    const parent: MenuSelection = gMenu.append('ul')
-      .attr('class', 'action-menu');
+    const parent: MenuSelection = gMenu.append('ul').attr('class', 'action-menu');
     const nodes: NodeSelection = getSelectedNodes(this.graph);
     parent.call(this.createNestedMenu, this, n, i, nodes);
 
@@ -82,7 +82,7 @@ export default class ContextMenu {
       yAlignReset = 'top';
       yAlignValue = pageHeight - event.pageY - CLICK_OFFSET + 'px';
     }
-    
+
     select('.d3-context-menu')
       .style(xAlign, xAlignValue)
       .style(xAlignReset, null)
@@ -94,18 +94,26 @@ export default class ContextMenu {
     event.stopPropagation();
   }
 
-  private createNestedMenu(parent: MenuSelection, root: ContextMenu, n: Node, 
-      i: number, nodes: NodeSelection, depth=0) {
-    parent.selectAll('li')
+  private createNestedMenu(
+    parent: MenuSelection,
+    root: ContextMenu,
+    n: Node,
+    i: number,
+    nodes: NodeSelection,
+    depth = 0,
+  ) {
+    parent
+      .selectAll('li')
       .data(function (mi: MenuItem): MenuItem[] {
-        return (depth === 0) ? root.menuItems : mi.children;
+        return depth === 0 ? root.menuItems : mi.children;
       })
       .enter()
       .append('li')
       .each(function (mi: MenuItem) {
         const listItem = select(this)
           .classed('context-menu-parent', !!mi.children)
-          .html(`
+          .html(
+            `
             <div class="context-menu-left">
               ${mi.icon ? `<img src=${mi.icon}>` : ''}
               <p class="${mi.icon ? '' : 'context-menu-no-icon'}">
@@ -113,7 +121,8 @@ export default class ContextMenu {
               </p>
             </div>
             <p class="context-menu-code">${mi.code}</p>
-          `)
+          `,
+          )
           .on('click', function () {
             event.stopPropagation();
             // Do nothing if no action
@@ -126,9 +135,10 @@ export default class ContextMenu {
 
         if (mi.children) {
           // Create children(`next parent`) and call recursive
-          const children: MenuSelection = listItem.append('ul')
+          const children: MenuSelection = listItem
+            .append('ul')
             .classed('context-menu-children', true);
-          root.createNestedMenu(children, root, n, i, nodes, ++depth)
+          root.createNestedMenu(children, root, n, i, nodes, ++depth);
         }
       });
   }
@@ -146,56 +156,62 @@ function getMenuItems(graph: Graph): MenuItem[] {
   return [
     {
       title: (d, i, nodes) => {
-        const subject = (nodes.size() > 1) ? 'nodes' : 'node';
-        return `Expand ${subject}`; 
+        const subject = nodes.size() > 1 ? 'nodes' : 'node';
+        return `Expand ${subject}`;
       },
       icon: './icons/expand.svg',
-      action: (nodes) => { expandNodes(graph, nodes); },
-      code: 'shift+e'
+      action: (nodes) => {
+        expandNodes(graph, nodes);
+      },
+      code: 'shift+e',
     },
     {
       title: (d, i, nodes) => {
         if (!nodes || nodes.size() === 0) return 'Pin node';
-        const subject = (nodes.size() > 1) ? 'nodes' : 'node';
-        const numSelected = nodes.filter((dx) => { return dx.fixed || false; }).size();
+        const subject = nodes.size() > 1 ? 'nodes' : 'node';
+        const numSelected = nodes
+          .filter((dx) => {
+            return dx.fixed || false;
+          })
+          .size();
         const action = numSelected < nodes.size() ? 'Pin' : 'Unpin';
-        return `${action} ${subject}`; 
+        return `${action} ${subject}`;
       },
       icon: './icons/pin.svg',
-      action: nodes => pinNodes(nodes, null, true),
+      action: (nodes) => pinNodes(nodes, null, true),
       code: 'shift+f',
       children: [
         {
           title: () => 'Pin',
           icon: './icons/pin.svg',
-          action: nodes => pinNodes(nodes, true),
-          code: ''
+          action: (nodes) => pinNodes(nodes, true),
+          code: '',
         },
         {
           title: () => 'Unpin',
           icon: './icons/unpin.svg',
-          action: nodes => pinNodes(nodes, false),
-          code: ''
+          action: (nodes) => pinNodes(nodes, false),
+          code: '',
         },
         {
           title: () => 'Toggle',
           icon: './icons/toggle.svg',
-          action: nodes => pinNodes(nodes, null, true),
-          code: ''
+          action: (nodes) => pinNodes(nodes, null, true),
+          code: '',
         },
-      ] 
+      ],
     },
     {
       title: (d, i, nodes) => {
-        const subject = (nodes.size() > 1) ? 'nodes' : 'node';
-        return `Remove ${subject}`; 
+        const subject = nodes.size() > 1 ? 'nodes' : 'node';
+        return `Remove ${subject}`;
       },
       icon: './icons/remove.svg',
-      action: (nodes) => { 
+      action: (nodes) => {
         const nodesToDelete = getDataFromSelection(nodes);
-        graph.adjacencyMap.deleteNodes(nodesToDelete, true); 
+        graph.adjacencyMap.deleteNodes(nodesToDelete, true);
       },
-      code: 'shift+r'
+      code: 'shift+r',
     },
   ];
 }

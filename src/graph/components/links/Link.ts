@@ -1,11 +1,11 @@
-import { color } from "d3-color";
-import Graph from "../../../Graph";
-import LinkData from "../../../server/LinkData";
-import { LinkSelection } from "../../../types";
-import { toFunction } from "../../../utils";
-import AdjacencyMap from "../../AdjacencyMap";
-import { colorToHex } from "../../utils";
-import Node from "../nodes/Node";
+import { color } from 'd3-color';
+import LinkData from '../../../server/LinkData';
+import { LinkSelection } from '../../../types';
+import { toFunction } from '../../../utils';
+import AdjacencyMap from '../../AdjacencyMap';
+import Graph from '../../Graph';
+import { colorToHex } from '../../utils';
+import Node from '../nodes/Node';
 
 export default class Link {
   id: string;
@@ -43,8 +43,11 @@ export function getLinkColor(link: Link) {
  * @param links Selection of links to color
  * @param linkColor Color to set
  */
-export function setLinkColor(graph: Graph, links: LinkSelection, 
-    linkColor: string | ((l?: Link) => string)) {
+export function setLinkColor(
+  graph: Graph,
+  links: LinkSelection,
+  linkColor: string | ((l?: Link) => string),
+) {
   if (!links || links.empty()) return;
   const linkColorFn = toFunction(linkColor);
   links
@@ -56,17 +59,17 @@ export function setLinkColor(graph: Graph, links: LinkSelection,
       if (graph.defs.select(id).empty()) {
         graph.defs
           .append('marker')
-            .attr('id', id.substring(1))
-            .attr('viewBox', '5 -5 10 10')
-            .attr('refX', 10)
-            .attr('markerWidth', 5)
-            .attr('markerHeight', 5)
-            .attr('orient', 'auto')
+          .attr('id', id.substring(1))
+          .attr('viewBox', '5 -5 10 10')
+          .attr('refX', 10)
+          .attr('markerWidth', 5)
+          .attr('markerHeight', 5)
+          .attr('orient', 'auto')
           .append('path')
-            .attr('d', 'M 0,-5 L 10,0 L 0,5')
-            .style('stroke', linkColor)
-            .style('fill', linkColor)
-            .style('fill-opacity', 1);
+          .attr('d', 'M 0,-5 L 10,0 L 0,5')
+          .style('stroke', linkColor)
+          .style('fill', linkColor)
+          .style('fill-opacity', 1);
       }
 
       return linkColor;

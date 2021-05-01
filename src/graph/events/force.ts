@@ -1,8 +1,16 @@
-import { forceLink, forceManyBody, forceSimulation, forceX, forceY, Simulation, SimulationNodeDatum } from 'd3-force';
+import {
+  forceLink,
+  forceManyBody,
+  forceSimulation,
+  forceX,
+  forceY,
+  Simulation,
+  SimulationNodeDatum,
+} from 'd3-force';
+import { VELOCITY_DECAY } from '../constants/graph';
 import Graph from '../Graph';
-import { VELOCITY_DECAY } from './constants/graph';
-import { setLinkPositions, setNodePositions, tick } from './events/tick';
-import { getDataFromSelection } from './selection';
+import { getDataFromSelection } from '../selection';
+import { setLinkPositions, setNodePositions, tick } from './tick';
 
 export function initForce(graph: Graph): Simulation<SimulationNodeDatum, undefined> {
   return forceSimulation()
@@ -16,19 +24,19 @@ export function initForce(graph: Graph): Simulation<SimulationNodeDatum, undefin
 }
 
 /**
-* Speeds up graph cooling. Calculate final stable positions of each node and then
-* transition them from their current positions, so that we don't have to render
-* every frame.
-*/
+ * Speeds up graph cooling. Calculate final stable positions of each node and then
+ * transition them from their current positions, so that we don't have to render
+ * every frame.
+ */
 export function fastForceConvergence(graph: Graph): void {
   const nodeTransitionMs = 500,
-        linkTransitionMs = 75;
+    linkTransitionMs = 75;
 
   // Necessary to not trigger rendering in ticked
   graph.fastConvergence = true;
 
   // Loop force.tick until graph is cooled
-  graph.force.alpha(1).stop(); 
+  graph.force.alpha(1).stop();
   while (graph.force.alpha() >= graph.force.alphaMin()) graph.force.tick();
 
   // Fade links out so we don't have to deal with/render them during the transition
@@ -37,17 +45,20 @@ export function fastForceConvergence(graph: Graph): void {
 
   // Translate nodes over half a second
   const nodeInput = graph.node
-    .transition('node-opacity').duration(nodeTransitionMs)
+    .transition('node-opacity')
+    .duration(nodeTransitionMs)
     .style('opacity', 1);
 
   // Wait for nodes to translate, then add links back
   const linkInput = graph.link
-    .transition('link-opacity').delay(nodeTransitionMs).duration(linkTransitionMs)
+    .transition('link-opacity')
+    .delay(nodeTransitionMs)
+    .duration(linkTransitionMs)
     .style('opacity', 1)
-    .on('end', () => { 
+    .on('end', () => {
       // TODO: center around most recently expanded node, not root
       graph.zoom.translateGraphAroundNode(
-        getDataFromSelection(graph.node.filter(n => n.id === '1'))[0]
+        getDataFromSelection(graph.node.filter((n) => n.id === '1'))[0],
       );
     });
 

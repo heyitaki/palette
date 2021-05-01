@@ -1,4 +1,3 @@
-
 export default interface NodeData {
   id: string;
   type: string;

@@ -1,18 +1,17 @@
-import { color } from "d3-color";
-import { event, select } from "d3-selection";
-import Graph from "../../../Graph";
-import NodeData from "../../../server/NodeData";
-import { NodeSelection } from "../../../types";
-import { TYPES_TO_COLORS } from "../../constants/mappings";
-import NodeClass from "../../enums/NodeClass";
-import PrintState from "../../enums/PrintState";
-import Point from "../../Point";
-import { getDataFromSelection } from "../../selection";
-import { expandNodes } from "../../state/expand";
-import { classNodes } from "../../state/select";
-import { colorToHex } from "../../utils";
-import Link from "../links/Link";
-
+import { color } from 'd3-color';
+import { event, select } from 'd3-selection';
+import NodeData from '../../../server/NodeData';
+import { NodeSelection } from '../../../types';
+import { TYPES_TO_COLORS } from '../../constants/mappings';
+import NodeClass from '../../enums/NodeClass';
+import PrintState from '../../enums/PrintState';
+import Graph from '../../Graph';
+import Point from '../../Point';
+import { getDataFromSelection } from '../../selection';
+import { expandNodes } from '../../state/expand';
+import { classNodes } from '../../state/select';
+import { colorToHex } from '../../utils';
+import Link from '../links/Link';
 
 export default class Node {
   graph: Graph;
@@ -53,8 +52,12 @@ export default class Node {
   }
 
   renderNode(gNodeRef: SVGElement): void {}
-  getLinkPosition(link: Link): Point { return null; }
-  getCenter(): Point { return null; }
+  getLinkPosition(link: Link): Point {
+    return null;
+  }
+  getCenter(): Point {
+    return null;
+  }
 
   onClick(n: Node, i: number, nodeRef: SVGElement) {
     event.stopPropagation();
@@ -83,7 +86,7 @@ export default class Node {
       classNodes(this.graph, this.graph.node, NodeClass.Selected, false);
       classNodes(this.graph, currNode, NodeClass.Selected, true);
     }
-    
+
     this.graph.contextMenu.openMenu(n, i);
   }
 }
@@ -94,9 +97,11 @@ export default class Node {
  * @param node Node to get color of
  */
 export function getNodeColor(node: Node) {
-  const nodeColor = node.color, nodeType = node.type;
+  const nodeColor = node.color,
+    nodeType = node.type;
   if (nodeColor && nodeColor != '') return color(nodeColor).toString();
-  else if (nodeType && TYPES_TO_COLORS[nodeType]) return color(TYPES_TO_COLORS[nodeType]).toString();
+  else if (nodeType && TYPES_TO_COLORS[nodeType])
+    return color(TYPES_TO_COLORS[nodeType]).toString();
   else return color('#545454').toString();
 }
 
@@ -114,23 +119,15 @@ export function setNodeColor(node: NodeSelection, nodeColor?: string) {
     const nodeData = getDataFromSelection(node)[0];
     nodeColor = getNodeColor(nodeData);
   }
-  
+
   // Color node using given color and background color
-  node.select('.node-body')
-      .style('stroke', nodeColor)
-      .style('fill', nodeColor);
+  node.select('.node-body').style('stroke', nodeColor).style('fill', nodeColor);
 
-  node.select('.node-glyph-top')
-      .style('stroke', nodeColor)
-      .style('fill', '#fafafa');
+  node.select('.node-glyph-top').style('stroke', nodeColor).style('fill', '#fafafa');
 
-  node.select('.node-glyph-top-text')
-      .style('stroke', nodeColor)
-      .style('fill', nodeColor);
-    
-  node.select('.node-icon')
-      .style('stroke', nodeColor)
-      .style('fill', '#fafafa');
+  node.select('.node-glyph-top-text').style('stroke', nodeColor).style('fill', nodeColor);
+
+  node.select('.node-icon').style('stroke', nodeColor).style('fill', '#fafafa');
 }
 
 /**
@@ -139,8 +136,7 @@ export function setNodeColor(node: NodeSelection, nodeColor?: string) {
  * @param printState Whether to abbreviate text, display full text, or hide text
  * @param width Max width of text
  */
-export function wrapNodeText(textSelection, printState: PrintState, 
-    width: number=100) {
+export function wrapNodeText(textSelection, printState: PrintState, width: number = 100) {
   const LINE_HEIGHT = 17;
   textSelection.each(function (d) {
     const text = select(this);
@@ -152,7 +148,8 @@ export function wrapNodeText(textSelection, printState: PrintState,
     let lineNum = 0;
     const dy = parseInt(text.attr('dy'), 10);
     const appendTspan = () => {
-      return text.append('tspan')
+      return text
+        .append('tspan')
         .attr('x', 0)
         .attr('y', 0)
         .attr('dy', LINE_HEIGHT * lineNum++ + dy)
@@ -165,7 +162,7 @@ export function wrapNodeText(textSelection, printState: PrintState,
       line.push(tokens[i]);
       tspan = tspan.text(line.join(' '));
       if (tspan.node().getComputedTextLength() > width) {
-        remainder = (line.length > 1) ? line.pop() : null;
+        remainder = line.length > 1 ? line.pop() : null;
         tspan.text(line.join(' '));
         tspan = appendTspan();
         line = remainder ? [remainder] : [];
@@ -177,9 +174,10 @@ export function wrapNodeText(textSelection, printState: PrintState,
     }
 
     let finalLine = line.join(' ');
-    finalLine = (printState === PrintState.Abbreviated && i < tokens.length-1) 
-      ? `${finalLine.trim()}...` 
-      : finalLine;
+    finalLine =
+      printState === PrintState.Abbreviated && i < tokens.length - 1
+        ? `${finalLine.trim()}...`
+        : finalLine;
     tspan.text(finalLine);
   });
 }

@@ -1,7 +1,7 @@
 enum PrintState {
   None = 'none',
   Abbreviated = 'abbreviated',
-  Full = 'full'
+  Full = 'full',
 }
 
 export default PrintState;

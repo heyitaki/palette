@@ -1,18 +1,19 @@
-import { color } from "d3-color";
-import { INVALID_COLOR } from "./constants/error";
+import { color } from 'd3-color';
+import { INVALID_COLOR } from './constants/error';
 
 /**
  * Non-secure quick hash function
  * @param str String to hash
  */
 export function hash(str: string): number {
-  let char, hash = 0;
+  let char,
+    hash = 0;
   if (str.length === 0) return hash;
   for (let i = 0; i < str.length; i++) {
     char = str.charCodeAt(i);
-    hash = ((hash<<5)-hash)+char;
+    hash = (hash << 5) - hash + char;
     // Convert to 32-bit integer
-    hash = hash & hash; 
+    hash = hash & hash;
   }
 
   return hash;

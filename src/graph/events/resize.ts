@@ -1,4 +1,4 @@
-import Graph from "../../Graph";
+import Graph from '../Graph';
 
 /**
  * Handle window resizing.
@@ -10,7 +10,7 @@ export function handleResize(graph: Graph, graphContainerId: string) {
 }
 
 /**
- * Update all properties dependent on svg width/height. Trigger resized with 
+ * Update all properties dependent on svg width/height. Trigger resized with
  * 50ms delay to ensure it occurs after a window maximize input.
  * TODO: Find out if we can avoid 50ms delay when window isnt maximized
  * @param graphContainerId id of html element wrapping graph svg

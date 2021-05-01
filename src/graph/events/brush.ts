@@ -1,9 +1,9 @@
-import { brush } from "d3-brush";
+import { brush } from 'd3-brush';
 import { event, select, Selection } from 'd3-selection';
 import { zoomTransform } from 'd3-zoom';
-import Graph from "../../Graph";
-import NodeClass from "../enums/NodeClass";
-import { classNodes } from "../state/select";
+import NodeClass from '../enums/NodeClass';
+import Graph from '../Graph';
+import { classNodes } from '../state/select';
 
 export default class Brush {
   graph: Graph;
@@ -20,18 +20,27 @@ export default class Brush {
   }
 
   private initBrush() {
-    this.brushContainer = this.graph.canvas.append('g')
-      .attr('class', 'brush-container');
-  
+    this.brushContainer = this.graph.canvas.append('g').attr('class', 'brush-container');
+
     this.brush = brush()
-      .on('start', () => { this.onBrushStart(); })
-      .on('brush', () => { this.onBrush(); })
-      .on('end', () => { this.onBrushEnd(); });
+      .on('start', () => {
+        this.onBrushStart();
+      })
+      .on('brush', () => {
+        this.onBrush();
+      })
+      .on('end', () => {
+        this.onBrushEnd();
+      });
     this.brush.keyModifiers(false);
-  
+
     select('body')
-      .on('keydown.brush', () => { this.onKeyDown(); })
-      .on('keyup.brush', () => { this.onKeyUp(); });
+      .on('keydown.brush', () => {
+        this.onKeyDown();
+      })
+      .on('keyup.brush', () => {
+        this.onKeyUp();
+      });
   }
 
   private onBrushStart() {
@@ -41,24 +50,23 @@ export default class Brush {
 
   private onBrush() {
     const extent = event.selection;
-    this.graph.node
-      .classed('possible', (d) => {
-        const center = d.getCenter(),
-              transform = zoomTransform(this.graph.canvas.node()),
-              x = center.x * transform.k + transform.x,
-              y = center.y * transform.k + transform.y;
-        return d.possible = (extent[0][0] <= x && x <= extent[1][0]
-                          && extent[0][1] <= y && y <= extent[1][1]);
-      });
-  
-    const possibleNodes = this.graph.node.filter(n => n.possible);
+    this.graph.node.classed('possible', (d) => {
+      const center = d.getCenter(),
+        transform = zoomTransform(this.graph.canvas.node()),
+        x = center.x * transform.k + transform.x,
+        y = center.y * transform.k + transform.y;
+      return (d.possible =
+        extent[0][0] <= x && x <= extent[1][0] && extent[0][1] <= y && y <= extent[1][1]);
+    });
+
+    const possibleNodes = this.graph.node.filter((n) => n.possible);
     classNodes(this.graph, possibleNodes, NodeClass.Possible, true);
   }
 
   private onBrushEnd() {
     this.isBrushing = false;
     this.removeBrush();
-  
+
     // Reset possible nodes and select those nodes
     const possibleNodes = this.graph.node.filter('.possible');
     classNodes(this.graph, possibleNodes, NodeClass.Possible, false);
@@ -67,9 +75,8 @@ export default class Brush {
 
   private onKeyDown() {
     // Track if modifier is pressed
-    this.graph.isModifierPressed = event 
-      && (event.shiftKey || event.ctrlKey || event.metaKey); 
-  
+    this.graph.isModifierPressed = event && (event.shiftKey || event.ctrlKey || event.metaKey);
+
     // Only draw extent if shift drag or box select button is pressed
     if (this.graph.isModifierPressed) this.addBrush();
   }
@@ -77,15 +84,14 @@ export default class Brush {
   private onKeyUp() {
     // Modifier is no longer pressed
     this.graph.isModifierPressed = false;
-    
+
     // Remove brush (zoom/pan functionality restored automatically)
     this.removeBrush();
   }
 
   private addBrush() {
     if (this.gBrush || this.gLasso) return;
-    this.gBrush = this.brushContainer.append('g')
-      .attr('class', 'brush');
+    this.gBrush = this.brushContainer.append('g').attr('class', 'brush');
     this.gBrush.call(this.brush);
   }
 

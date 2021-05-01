@@ -1,6 +1,6 @@
-import Graph from '../Graph';
 import { LinkSelection, NodeSelection } from '../types';
 import Node from './components/nodes/Node';
+import Graph from './Graph';
 
 export function getSelectedNodes(graph: Graph): NodeSelection {
   return graph.nodeContainer.selectAll('.node.selected');

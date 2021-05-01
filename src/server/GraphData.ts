@@ -1,5 +1,5 @@
-import LinkData from "./LinkData";
-import NodeData from "./NodeData";
+import LinkData from './LinkData';
+import NodeData from './NodeData';
 
 export default interface GraphData {
   nodes: NodeData[];
