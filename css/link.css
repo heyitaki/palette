@@ -18,3 +18,18 @@ path.link.selected {
 path.link.possible {
   stroke: #519dea;
 }
+
+.link-title {
+  font-family: 'Avenir LT Std', 'Open Sans', sans-serif;
+  stroke: #efefef;
+  stroke-width: 3px;
+  fill: #545454;
+  paint-order: stroke;
+  font-size: 14px;
+  font-weight: bolder;
+  letter-spacing: 1.2px;
+}
+
+.link-title textPath.hidden {
+  visibility: hidden;
+}
