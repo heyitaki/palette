@@ -3,4 +3,5 @@ export default interface LinkData {
   title: string;
   sourceId: string;
   targetId: string;
+  bidirectional: boolean;
 }

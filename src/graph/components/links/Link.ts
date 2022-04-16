@@ -8,8 +8,9 @@ import { colorToHex } from '../../utils';
 import Node from '../nodes/Node';
 
 export default class Link {
-  id: string;
+  bidirectional: boolean;
   color: string;
+  id: string;
   possible: boolean;
   selected: boolean;
   source: Node;
@@ -17,6 +18,7 @@ export default class Link {
   title: string;
 
   constructor(data: LinkData, map: AdjacencyMap) {
+    this.bidirectional = data.bidirectional;
     this.id = data.id;
     this.title = data.title;
     this.color = '#545454';

@@ -15,6 +15,7 @@ export default class LinkTransformer {
         title: link.title,
         sourceId: link.source.id,
         targetId: link.target.id,
+        bidirectional: link.bidirectional,
       };
     });
   }

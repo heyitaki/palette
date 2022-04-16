@@ -27,8 +27,8 @@ export function setNodePositions(nodes: NodeSelection | NodeTransition) {
  */
 export function setLinkPositions(links: LinkSelection | LinkTransition): void {
   links.attr('d', (l: Link): string => {
-    const sourcePos = l.source.getLinkPosition(l),
-      targetPos = l.target.getLinkPosition(l);
+    const sourcePos = l.source.getLinkPosition(l);
+    const targetPos = l.target.getLinkPosition(l);
     return 'M' + sourcePos.x + ',' + sourcePos.y + 'L' + targetPos.x + ',' + targetPos.y;
   });
 }

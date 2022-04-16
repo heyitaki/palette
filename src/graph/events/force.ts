@@ -14,8 +14,8 @@ import { setLinkPositions, setNodePositions, tick } from './tick';
 
 export function initForce(graph: Graph): Simulation<SimulationNodeDatum, undefined> {
   return forceSimulation()
-    .force('link', forceLink().distance(300).strength(1).iterations(7))
-    .force('charge', forceManyBody().strength(-17000).distanceMax(10000).theta(0.75))
+    .force('link', forceLink().distance(300).strength(1).iterations(3))
+    .force('charge', forceManyBody().strength(-15000).distanceMax(10000).theta(0.75))
     .force('y', forceY().strength(0.2))
     .force('x', forceX().strength(0.2))
     .velocityDecay(VELOCITY_DECAY)

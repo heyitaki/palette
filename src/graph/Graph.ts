@@ -67,7 +67,7 @@ export default class Graph {
         classNodes(this, this.node, NodeClass.Selected, false);
         clearTimeout(this.doubleClickTimer);
       });
-    this.container = this.canvas.append('g').attr('class', 'graph-bois');
+    this.container = this.canvas.append('g').attr('class', 'graph');
     this.grid = new Grid(this, false);
     this.zoom = new Zoom(this);
     handleResize(this, graphContainerId);
@@ -80,10 +80,10 @@ export default class Graph {
     this.adjacencyMap = new AdjacencyMap(this);
 
     // Selectors
-    this.linkContainer = this.container.append('g').attr('class', 'link-bois');
+    this.linkContainer = this.container.append('g').attr('class', 'links');
     this.linkText = this.linkContainer.selectAll('.link-text > textPath');
     this.link = this.linkContainer.selectAll('.link');
-    this.nodeContainer = this.container.append('g').attr('class', 'node-bois');
+    this.nodeContainer = this.container.append('g').attr('class', 'nodes');
     this.node = this.nodeContainer.selectAll('.node');
 
     // Display root node and neighbors
