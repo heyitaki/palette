@@ -29,9 +29,8 @@ export default class ContextMenu {
     this.isOpen = false;
   }
 
-  openMenu(n: Node, i: number) {
+  openMenu = (n: Node, i: number) => {
     this.closeMenu();
-    const self = this;
     this.isOpen = true;
     this.menuItems = getMenuItems(this.graph);
 
@@ -46,8 +45,8 @@ export default class ContextMenu {
     select('body').on('mousedown.d3-context-menu', this.closeMenu);
 
     // Right-clicking menu closes it
-    const gMenu = selectAll('.d3-context-menu').on('contextmenu', function () {
-      self.closeMenu();
+    const gMenu = selectAll('.d3-context-menu').on('contextmenu', () => {
+      this.closeMenu();
       event.preventDefault();
       event.stopPropagation();
     });
@@ -92,16 +91,16 @@ export default class ContextMenu {
 
     event.preventDefault();
     event.stopPropagation();
-  }
+  };
 
-  private createNestedMenu(
+  private createNestedMenu = (
     parent: MenuSelection,
     root: ContextMenu,
     n: Node,
     i: number,
     nodes: NodeSelection,
     depth = 0,
-  ) {
+  ) => {
     parent
       .selectAll('li')
       .data(function (mi: MenuItem): MenuItem[] {
@@ -114,14 +113,14 @@ export default class ContextMenu {
           .classed('context-menu-parent', !!mi.children)
           .html(
             `
-            <div class="context-menu-left">
-              ${mi.icon ? `<img src=${mi.icon}>` : ''}
-              <p class="${mi.icon ? '' : 'context-menu-no-icon'}">
-                ${mi.title(n, i, nodes)}
-              </p>
-            </div>
-            <p class="context-menu-code">${mi.code}</p>
-          `,
+              <div class="context-menu-left">
+                ${mi.icon ? `<img src=${mi.icon}>` : ''}
+                <p class="${mi.icon ? '' : 'context-menu-no-icon'}">
+                  ${mi.title(n, i, nodes)}
+                </p>
+              </div>
+              <p class="context-menu-code">${mi.code}</p>
+            `,
           )
           .on('click', function () {
             event.stopPropagation();
@@ -141,18 +140,18 @@ export default class ContextMenu {
           root.createNestedMenu(children, root, n, i, nodes, ++depth);
         }
       });
-  }
+  };
 
-  closeMenu() {
+  closeMenu = () => {
     if (this.isOpen) {
       select('.d3-context-menu').remove();
       select('body').on('mousedown.d3-context-menu', null);
       this.isOpen = false;
     }
-  }
+  };
 }
 
-function getMenuItems(graph: Graph): MenuItem[] {
+const getMenuItems = (graph: Graph): MenuItem[] => {
   return [
     {
       title: (d, i, nodes) => {
@@ -214,4 +213,4 @@ function getMenuItems(graph: Graph): MenuItem[] {
       code: 'shift+r',
     },
   ];
-}
+};

@@ -135,9 +135,9 @@ export function setNodeColor(node: NodeSelection, nodeColor?: string) {
 }
 
 /**
- * Wrap long node labels. printFull states => abbrev, full, none
+ * Wrap node labels if length exceeds the given width.
  * @param textSelection Element that will contain the tspans
- * @param printState Whether to abbreviate text, display full text, or hide text
+ * @param printState Specify whether to abbreviate text, display full text, or hide text
  * @param width Max width of text
  */
 export function wrapNodeText(textSelection, printState: PrintState, width: number = 100) {
