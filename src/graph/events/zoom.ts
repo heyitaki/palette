@@ -1,6 +1,6 @@
 import { easeLinear } from 'd3-ease';
 import { event } from 'd3-selection';
-import { zoom, ZoomBehavior, zoomIdentity, zoomTransform } from 'd3-zoom';
+import { zoom, ZoomBehavior, zoomIdentity, zoomTransform, ZoomTransform } from 'd3-zoom';
 import Node from '../components/nodes/Node';
 import Graph from '../Graph';
 import Point from '../Point';
@@ -18,8 +18,17 @@ export default class Zoom {
     this.initZoom();
   }
 
-  public getCurrentScale() {
+  public getScale() {
     return zoomTransform(this.graph.canvas.node()).k;
+  }
+
+  public getTransform(): ZoomTransform {
+    return zoomTransform(this.graph.canvas.node()) || ({ k: 1, x: 0, y: 0 } as ZoomTransform);
+  }
+
+  public getTranslationOffset() {
+    const transform = zoomTransform(this.graph.canvas.node());
+    return [transform.x, transform.y];
   }
 
   public translateGraphAroundNode(
@@ -28,7 +37,6 @@ export default class Zoom {
     delay: number = 0,
     callback = null,
   ) {
-    console.log(n);
     const center: Point = n.getCenter();
     this.translateGraphAroundPoint(center.x, center.y, duration, delay, callback);
   }
@@ -42,7 +50,7 @@ export default class Zoom {
   ) {
     // Calculate view centered on given node
     const center = [this.graph.width / 2, this.graph.height / 2];
-    const currScale = this.getCurrentScale();
+    const currScale = this.getScale();
     const newX = center[0] - x * currScale;
     const newY = center[1] - y * currScale;
     const newTransform = zoomIdentity.translate(newX, newY).scale(currScale);
@@ -68,8 +76,8 @@ export default class Zoom {
   private onZoom() {
     // Apply transform to grid
     const et = event.transform;
-    this.graph.grid.updateGrid(this.getCurrentScale());
-    this.graph.grid.transformGrid(et);
+    this.graph.grid.updateGrid();
+    this.graph.grid.transformGrid();
 
     // Apply transform to all other elements
     this.graph.container.attr('transform', et);

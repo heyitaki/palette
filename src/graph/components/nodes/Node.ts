@@ -1,7 +1,7 @@
 import { color } from 'd3-color';
 import { event, select } from 'd3-selection';
 import NodeData from '../../../server/NodeData';
-import { NodeSelection } from '../../../types';
+import { NodeSelection, NodeTextSelection } from '../../../types';
 import { TYPES_TO_COLORS } from '../../constants/mappings';
 import NodeClass from '../../enums/NodeClass';
 import PrintState from '../../enums/PrintState';
@@ -71,7 +71,7 @@ export default class Node {
     const currNode: NodeSelection = select(nodeRef);
     if (!this.graph.isModifierPressed) {
       // Unselect all other nodes, select current node
-      classNodes(this.graph, this.graph.node, NodeClass.Selected, false);
+      classNodes(this.graph, this.graph.nodes, NodeClass.Selected, false);
       classNodes(this.graph, currNode, NodeClass.Selected, true);
     } else {
       // State of other nodes unchanged, toggle selection of current node
@@ -87,7 +87,7 @@ export default class Node {
   onRightClick(n: Node, i: number, nodeRef: SVGElement) {
     if (!n.selected) {
       const currNode: NodeSelection = select(nodeRef);
-      classNodes(this.graph, this.graph.node, NodeClass.Selected, false);
+      classNodes(this.graph, this.graph.nodes, NodeClass.Selected, false);
       classNodes(this.graph, currNode, NodeClass.Selected, true);
     }
 
@@ -140,9 +140,13 @@ export function setNodeColor(node: NodeSelection, nodeColor?: string) {
  * @param printState Specify whether to abbreviate text, display full text, or hide text
  * @param width Max width of text
  */
-export function wrapNodeText(textSelection, printState: PrintState, width: number = 100) {
+export function wrapNodeText(
+  textSelection: NodeTextSelection,
+  printState: PrintState,
+  width: number = 100,
+) {
   const LINE_HEIGHT = 17;
-  textSelection.each(function (d) {
+  textSelection.each(function (n: Node) {
     const text = select(this);
     const tokens = text.text().split(' ');
     text.text(null);
@@ -159,8 +163,8 @@ export function wrapNodeText(textSelection, printState: PrintState, width: numbe
         .attr('dy', LINE_HEIGHT * lineNum++ + dy)
         .classed('unselectable', true);
     };
-    let tspan = appendTspan();
 
+    let tspan = appendTspan();
     let i;
     for (i = 0; i < tokens.length; i++) {
       line.push(tokens[i]);

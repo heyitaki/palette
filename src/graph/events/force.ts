@@ -29,8 +29,8 @@ export function initForce(graph: Graph): Simulation<SimulationNodeDatum, undefin
  * every frame.
  */
 export function fastForceConvergence(graph: Graph): void {
-  const nodeTransitionMs = 500,
-    linkTransitionMs = 75;
+  const nodeTransitionMs = 500;
+  const linkTransitionMs = 75;
 
   // Necessary to not trigger rendering in ticked
   graph.fastConvergence = true;
@@ -41,16 +41,16 @@ export function fastForceConvergence(graph: Graph): void {
 
   // Fade links out so we don't have to deal with/render them during the transition
   // aesthetics.removeLinkText.bind(graph)();
-  graph.link.transition('link-opacity').duration(0).style('opacity', 0).remove();
+  graph.links.transition('link-opacity').duration(0).style('opacity', 0).remove();
 
   // Translate nodes over half a second
-  const nodeInput = graph.node
+  const nodeInput = graph.nodes
     .transition('node-opacity')
     .duration(nodeTransitionMs)
     .style('opacity', 1);
 
   // Wait for nodes to translate, then add links back
-  const linkInput = graph.link
+  const linkInput = graph.links
     .transition('link-opacity')
     .delay(nodeTransitionMs)
     .duration(linkTransitionMs)
@@ -58,7 +58,7 @@ export function fastForceConvergence(graph: Graph): void {
     .on('end', () => {
       // TODO: center around most recently expanded node, not root
       graph.zoom.translateGraphAroundNode(
-        getDataFromSelection(graph.node.filter((n) => n.id === '1'))[0],
+        getDataFromSelection(graph.nodes.filter((n) => n.id === '1'))[0],
       );
     });
 

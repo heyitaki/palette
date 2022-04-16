@@ -6,7 +6,7 @@ import { loadGraphData, stopPropagation } from '../utils';
 import AdjacencyMap from './AdjacencyMap';
 import ContextMenu from './components/ContextMenu';
 import Grid from './components/Grid';
-import Link, { setLinkColor } from './components/links/Link';
+import Link, { addLinkText, setLinkColor } from './components/links/Link';
 import Node from './components/nodes/Node';
 import { LINK_STROKE_WIDTH } from './constants/graph';
 import NodeClass from './enums/NodeClass';
@@ -35,11 +35,11 @@ export default class Graph {
   grid: Grid;
   height: number;
   isModifierPressed: boolean;
-  link: LinkSelection;
+  links: LinkSelection;
   linkContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
   linkEnter: Selection<SVGPathElement, Link, SVGGElement, unknown>;
   linkText: Selection<BaseType, unknown, SVGGElement, unknown>;
-  node: NodeSelection;
+  nodes: NodeSelection;
   nodeContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
   server: Server;
   width: number;
@@ -64,11 +64,12 @@ export default class Graph {
       .classed('svg-content', true)
       .on('click', () => {
         this.contextMenu.closeMenu();
-        classNodes(this, this.node, NodeClass.Selected, false);
+        classNodes(this, this.nodes, NodeClass.Selected, false);
         clearTimeout(this.doubleClickTimer);
+        this.grid.displayGrid(!this.grid.showGridLines);
       });
     this.container = this.canvas.append('g').attr('class', 'graph');
-    this.grid = new Grid(this, false);
+    this.grid = new Grid(this, true);
     this.zoom = new Zoom(this);
     handleResize(this, graphContainerId);
     this.brush = new Brush(this);
@@ -81,21 +82,24 @@ export default class Graph {
 
     // Selectors
     this.linkContainer = this.container.append('g').attr('class', 'links');
+    // this.linkText = this.linkContainer.selectAll('.link-text');
     this.linkText = this.linkContainer.selectAll('.link-text > textPath');
-    this.link = this.linkContainer.selectAll('.link');
+    this.links = this.linkContainer.selectAll('.link');
     this.nodeContainer = this.container.append('g').attr('class', 'nodes');
-    this.node = this.nodeContainer.selectAll('.node');
+    this.nodes = this.nodeContainer.selectAll('.node');
 
     // Display root node and neighbors
     this.zoom.translateGraphAroundPoint(0, 0);
     const root = this.server.getRoot();
     this.adjacencyMap.addNodes(root, true);
     loadGraphData(this, this.server.getNeighbors(root.id));
+
+    // addLinkText(this, this.adjacencyMap.getLinks());
   }
 
   updateGraph() {
-    const nodes: Node[] = this.adjacencyMap.getNodes(),
-      links: Link[] = this.adjacencyMap.getLinks();
+    const nodes: Node[] = this.adjacencyMap.getNodes();
+    const links: Link[] = this.adjacencyMap.getLinks();
 
     // Update node/link-based forces
     this.force.stop();
@@ -103,7 +107,7 @@ export default class Graph {
     this.force.force<ForceLink<Node, Link>>('link').links(links);
 
     // Update links, for new links, increment weights of source/target nodes.
-    const linkSelection = this.link.data(links, (l: Link) => l.id);
+    const linkSelection = this.links.data(links, (l: Link) => l.id);
     this.linkEnter = linkSelection
       .enter()
       .append('path')
@@ -126,7 +130,7 @@ export default class Graph {
       .remove();
 
     // Update nodes
-    const nodeSelection = this.node.data(nodes, (n: Node) => n.id);
+    const nodeSelection = this.nodes.data(nodes, (n: Node) => n.id);
     const gNode = nodeSelection
       .enter()
       .append('g')
@@ -145,13 +149,13 @@ export default class Graph {
     nodeSelection.exit().remove();
 
     // Update selectors
-    this.link = getAllLinks(this);
-    this.node = getAllNodes(this);
+    this.links = getAllLinks(this);
+    this.nodes = getAllNodes(this);
 
     // Update node glyphs
-    this.node.select('.node-glyph-top').classed('hidden', (n: Node) => !isExpandable(n));
+    this.nodes.select('.node-glyph-top').classed('hidden', (n: Node) => !isExpandable(n));
 
-    this.node
+    this.nodes
       .select('.node-glyph-top-text')
       .text((n: Node) => getNumLinksToExpand(n))
       .classed('hidden', (n: Node) => !isExpandable(n));

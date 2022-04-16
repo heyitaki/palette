@@ -16,12 +16,14 @@ export default class Link {
   source: Node;
   target: Node;
   title: string;
+  length?: number;
 
   constructor(data: LinkData, map: AdjacencyMap) {
     this.bidirectional = data.bidirectional;
     this.id = data.id;
     this.title = data.title;
     this.color = '#545454';
+    this.length = 0;
     this.possible = false;
     this.selected = false;
     this.source = map.getNodes(data.sourceId)[0];
@@ -82,3 +84,38 @@ export function setLinkColor(
       return `url(${id})`;
     });
 }
+
+export const addLinkText = (graph: Graph, links: Link[]) => {
+  if (links === undefined) return;
+
+  // console.log('running addLinkText', links);
+  const linkTitles = graph.linkContainer.selectAll('.link-title').data(links, (l: Link) => l.id);
+  // console.log(graph.linkContainer.selectAll('.link-title').data().length);
+  // console.log(
+  //   linkTitles.data(),
+  //   linkTitles.data().length,
+  //   linkTitles.enter(),
+  //   linkTitles.enter().size(),
+  // );
+
+  linkTitles
+    .enter()
+    .append('text')
+    .attr('class', 'link-title')
+    .attr('text-anchor', 'middle')
+    .attr('dy', '.3em');
+  // .each(function (l: Link) {
+  //   console.log(l);
+  // });
+  // .attr('transform', rotateLinkText);
+
+  // const textPath = graph.linkText
+  //   .append('textPath')
+  //   .attr('id', (l: Link) => `text-${l.id}`)
+  //   .attr('startOffset', '50%')
+  //   .attr('xlink:href', (l: Link) => `#link-${l.id}`)
+  //   .attr('length', (l: Link) => l.length)
+  //   .text((l: Link) => l.title)
+  //   .style('opacity', 0);
+  // .each(hideLongLinkText);
+};

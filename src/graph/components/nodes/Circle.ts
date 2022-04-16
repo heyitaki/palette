@@ -6,6 +6,7 @@ import { NODE_CIRCLE_RADIUS } from '../../constants/graph';
 import PrintState from '../../enums/PrintState';
 import Graph from '../../Graph';
 import Point from '../../Point';
+import { getDistance } from '../../utils';
 import Link from '../links/Link';
 import Node, { setNodeColor, wrapNodeText } from './Node';
 
@@ -87,15 +88,15 @@ export default class Circle extends Node {
       return;
     }
 
-    const sourcePos = l.source.getCenter(),
-      targetPos = l.target.getCenter(),
-      x1 = sourcePos.x,
-      y1 = sourcePos.y,
-      x2 = targetPos.x,
-      y2 = targetPos.y,
-      dist = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+    const sourcePos = l.source.getCenter();
+    const targetPos = l.target.getCenter();
+    const x1 = sourcePos.x;
+    const y1 = sourcePos.y;
+    const x2 = targetPos.x;
+    const y2 = targetPos.y;
+    const dist = getDistance(x1, y1, x2, y2);
 
-    // Determine which end of the link we want to calculate new position
+    // Determine which end of the link we want to calculate new position for
     const scale = (n: number): number => (n * (dist - NODE_CIRCLE_RADIUS)) / dist;
     return this.id === l.target.id
       ? new Point(x1 + scale(x2 - x1), y1 + scale(y2 - y1))

@@ -1,7 +1,6 @@
 import Card from '../graph/components/nodes/Card';
 import Circle from '../graph/components/nodes/Circle';
 import Node from '../graph/components/nodes/Node';
-import ThinCard from '../graph/components/nodes/ThinCard';
 import { NODE_THIN_CARD_HEIGHT } from '../graph/constants/graph';
 import Graph from '../graph/Graph';
 import NodeData from '../server/NodeData';
@@ -13,9 +12,6 @@ export default class NodeTransformer {
       switch (data.type.toLowerCase()) {
         case 'intro':
           return new Card(data, graph);
-        case 'topic':
-        case 'subject':
-          return new ThinCard(data, graph, NODE_THIN_CARD_HEIGHT);
         default:
           return new Circle(data, graph);
       }

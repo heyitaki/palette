@@ -1,14 +1,15 @@
 import { LinkSelection, LinkTransition, NodeSelection, NodeTransition } from '../../types';
 import Link from '../components/links/Link';
 import Graph from '../Graph';
+import { getDistance } from '../utils';
 
 /**
  * Calculate new positions of all graph items.
  * @param graph
  */
 export function tick(graph: Graph): void {
-  setNodePositions(graph.node);
-  setLinkPositions(graph.link);
+  setNodePositions(graph.nodes);
+  setLinkPositions(graph.links);
 }
 
 /**
@@ -29,6 +30,7 @@ export function setLinkPositions(links: LinkSelection | LinkTransition): void {
   links.attr('d', (l: Link): string => {
     const sourcePos = l.source.getLinkPosition(l);
     const targetPos = l.target.getLinkPosition(l);
+    l.length = getDistance(sourcePos.x, sourcePos.y, targetPos.x, targetPos.y);
     return 'M' + sourcePos.x + ',' + sourcePos.y + 'L' + targetPos.x + ',' + targetPos.y;
   });
 }

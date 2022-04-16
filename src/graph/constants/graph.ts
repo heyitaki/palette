@@ -1,5 +1,6 @@
-export const ZOOM_MIN_SCALE = 0.25;
-export const ZOOM_MAX_SCALE = 10.0;
+export const ZOOM_SCALE_INTIAL = 1;
+export const ZOOM_SCALE_MIN = 0.25;
+export const ZOOM_SCALE_MAX = 10.0;
 export const GRID_SQUARE_WIDTH = 80;
 
 // Nodes

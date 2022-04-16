@@ -19,7 +19,7 @@ export function classNodes(
   toggle: boolean = false,
 ) {
   nodes.classed(className, (n) => (n[className] = toggle ? !n[className] : isClassed));
-  classLinks(graph, graph.link, className);
+  classLinks(graph, graph.links, className);
 }
 
 /**

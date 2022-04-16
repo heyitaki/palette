@@ -44,13 +44,13 @@ export default class Brush {
   }
 
   private onBrushStart() {
-    classNodes(this.graph, this.graph.node, NodeClass.Selected, false);
+    classNodes(this.graph, this.graph.nodes, NodeClass.Selected, false);
     this.isBrushing = true;
   }
 
   private onBrush() {
     const extent = event.selection;
-    this.graph.node.classed('possible', (d) => {
+    this.graph.nodes.classed('possible', (d) => {
       const center = d.getCenter(),
         transform = zoomTransform(this.graph.canvas.node()),
         x = center.x * transform.k + transform.x,
@@ -59,7 +59,7 @@ export default class Brush {
         extent[0][0] <= x && x <= extent[1][0] && extent[0][1] <= y && y <= extent[1][1]);
     });
 
-    const possibleNodes = this.graph.node.filter((n) => n.possible);
+    const possibleNodes = this.graph.nodes.filter((n) => n.possible);
     classNodes(this.graph, possibleNodes, NodeClass.Possible, true);
   }
 
@@ -68,7 +68,7 @@ export default class Brush {
     this.removeBrush();
 
     // Reset possible nodes and select those nodes
-    const possibleNodes = this.graph.node.filter('.possible');
+    const possibleNodes = this.graph.nodes.filter('.possible');
     classNodes(this.graph, possibleNodes, NodeClass.Possible, false);
     classNodes(this.graph, possibleNodes, NodeClass.Selected, true);
   }

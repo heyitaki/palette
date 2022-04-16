@@ -8,7 +8,7 @@
 .node-title,
 .node-title tspan {
   font-family: 'Avenir LT Std', 'Open Sans', sans-serif;
-  stroke: #f3f3f3;
+  stroke: #fafafa;
   stroke-width: 3px;
   paint-order: stroke;
   font-size: 16px;
@@ -19,7 +19,7 @@
 
 .node-title.on-body {
   stroke: #545454;
-  fill: #f3f3f3;
+  fill: #fafafa;
   cursor: pointer;
   font-size: 24px;
   stroke-width: 3.5px;
