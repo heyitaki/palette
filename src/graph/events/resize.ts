@@ -2,7 +2,8 @@ import Graph from '../Graph';
 
 /**
  * Handle window resizing.
- * @param graphContainerId id of html element wrapping graph svg
+ * @param graph Graph to update on resize events
+ * @param graphContainerId ID of html element wrapping graph svg
  */
 export function handleResize(graph: Graph, graphContainerId: string) {
   updateGraphDimensions(graph, graphContainerId);
@@ -13,7 +14,8 @@ export function handleResize(graph: Graph, graphContainerId: string) {
  * Update all properties dependent on svg width/height. Trigger resized with
  * 50ms delay to ensure it occurs after a window maximize input.
  * TODO: Find out if we can avoid 50ms delay when window isnt maximized
- * @param graphContainerId id of html element wrapping graph svg
+ * @param graph Graph to update on resize
+ * @param graphContainerId ID of html element wrapping graph svg
  */
 function resized(graph: Graph, graphContainerId: string) {
   setTimeout(() => {
@@ -24,7 +26,8 @@ function resized(graph: Graph, graphContainerId: string) {
 
 /**
  * Update all properties dependent on svg width/height.
- * @param graphContainerId id of html element wrapping graph svg
+ * @param graph Graph for which dimensions need to be updated
+ * @param graphContainerId ID of html element wrapping graph svg
  */
 function updateGraphDimensions(graph: Graph, graphContainerId: string) {
   const graphContainer = document.getElementById(graphContainerId);

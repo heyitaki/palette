@@ -5,6 +5,9 @@ import Node from '../components/nodes/Node';
 import Graph from '../Graph';
 import Point from '../Point';
 
+/**
+ *
+ */
 export default class Zoom {
   graph: Graph;
   isZooming: boolean;
@@ -15,20 +18,16 @@ export default class Zoom {
     this.graph = graph;
     this.isZooming = false;
     this.isZoomPressed = false;
-    this.initZoom();
-  }
-
-  public getScale() {
-    return zoomTransform(this.graph.canvas.node()).k;
+    this.zoom = zoom()
+      // .scaleExtent([ZOOM_MIN_SCALE, ZOOM_MAX_SCALE])
+      .on('start', () => this.onZoomStart())
+      .on('zoom', () => this.onZoom())
+      .on('end', () => this.onZoomEnd());
+    this.graph.canvas.call(this.zoom);
   }
 
   public getTransform(): ZoomTransform {
-    return zoomTransform(this.graph.canvas.node()) || ({ k: 1, x: 0, y: 0 } as ZoomTransform);
-  }
-
-  public getTranslationOffset() {
-    const transform = zoomTransform(this.graph.canvas.node());
-    return [transform.x, transform.y];
+    return zoomTransform(this.graph.canvas.node());
   }
 
   public translateGraphAroundNode(
@@ -50,22 +49,13 @@ export default class Zoom {
   ) {
     // Calculate view centered on given node
     const center = [this.graph.width / 2, this.graph.height / 2];
-    const currScale = this.getScale();
+    const currScale = this.getTransform().k;
     const newX = center[0] - x * currScale;
     const newY = center[1] - y * currScale;
     const newTransform = zoomIdentity.translate(newX, newY).scale(currScale);
 
     // Transition to the new view over duration ms
     this.interpolateZoom(newTransform, duration, delay, callback);
-  }
-
-  private initZoom() {
-    this.zoom = zoom()
-      // .scaleExtent([ZOOM_MIN_SCALE, ZOOM_MAX_SCALE])
-      .on('start', () => this.onZoomStart())
-      .on('zoom', () => this.onZoom())
-      .on('end', () => this.onZoomEnd());
-    this.addZoom();
   }
 
   private onZoomStart() {
@@ -87,8 +77,19 @@ export default class Zoom {
     this.isZooming = false;
   }
 
-  // Smoothly zoom between two views based on given transform for duration ms
-  private interpolateZoom(transform, duration, delay = 0, callback = null) {
+  /**
+   * Smoothly zoom between two views based on given transform for duration ms.
+   * @param transform
+   * @param duration
+   * @param delay
+   * @param callback
+   */
+  private interpolateZoom(
+    transform: ZoomTransform,
+    duration: number,
+    delay: number = 0,
+    callback?: Function,
+  ) {
     this.isZooming = true;
     this.graph.canvas
       .transition()
@@ -102,26 +103,31 @@ export default class Zoom {
       });
   }
 
-  // Zoom in or out by a fixed factor, around the center of the graph
-  private zoomByFixedScale(zoomIn: boolean) {
+  /**
+   * Zoom in or out by a fixed factor around the center of the graph. This method is currently
+   * unused, but will be used for button-based zooming.
+   * @param zoomIn Direction of zoom (true = zoom in, false = zoom out)
+   */
+  private zoomByFixedScale(zoomIn: boolean): void {
     const factor = 4 / 3;
     const center = [this.graph.width / 2, this.graph.height / 2];
     const startTransform = zoomTransform(this.graph.canvas.node());
     const extent = this.zoom.scaleExtent();
 
-    // Create object containing attributes of new view
-    // Using zoomIdentity here modifies the current zoomTransform too
+    // Create object containing attributes of new view because using zoomIdentity here modifies
+    // the current zoomTransform too
     const view = {
       x: startTransform.x,
       y: startTransform.y,
       k: startTransform.k,
     };
 
-    // If new scale is not inbounds, limit to scaleExtent bounds
-    // If scale doesn't change, no transition is necessary
+    // Ensure scale is within bounds
     let newScale = view.k * (zoomIn ? factor : 1 / factor);
     newScale = Math.max(newScale, extent[0]);
     newScale = Math.min(newScale, extent[1]);
+
+    // If scale doesn't change, no transition is necessary
     if (startTransform.k === newScale) return;
 
     // Calculate new view
@@ -131,6 +137,7 @@ export default class Zoom {
     view.x += center[0] - translate1[0];
     view.y += center[1] - translate1[1];
 
+    // Create the transform that defines the zoom transition
     const newTransform = zoomIdentity.translate(view.x, view.y).scale(view.k);
 
     // If zoom button is still pressed, keep zooming
@@ -139,20 +146,7 @@ export default class Zoom {
       else this.isZooming = false;
     };
 
-    // Transition to the new view over 150ms
+    // Transition to the new view
     this.interpolateZoom(newTransform, 150, 0, callback);
-  }
-
-  private addZoom() {
-    this.graph.canvas.call(this.zoom);
-  }
-
-  private removeZoom() {
-    this.graph.canvas
-      .on('dblclick.zoom', null)
-      .on('mousedown.zoom', null)
-      .on('touchstart.zoom', null)
-      .on('touchmove.zoom', null)
-      .on('touchend.zoom', null);
   }
 }

@@ -12,9 +12,15 @@ import Graph from '../Graph';
 import { getDataFromSelection } from '../selection';
 import { setLinkPositions, setNodePositions, tick } from './tick';
 
+/**
+ * Create a force simulation for the graph. This is used to update the positions of nodes
+ * at each tick.
+ * @param graph Graph for which the created simulation will act upon
+ * @returns Force simulation for the given graph
+ */
 export function initForce(graph: Graph): Simulation<SimulationNodeDatum, undefined> {
   return forceSimulation()
-    .force('link', forceLink().distance(300).strength(1).iterations(3))
+    .force('link', forceLink().distance(200).strength(1).iterations(3))
     .force('charge', forceManyBody().strength(-15000).distanceMax(10000).theta(0.75))
     .force('y', forceY().strength(0.2))
     .force('x', forceX().strength(0.2))
@@ -27,8 +33,9 @@ export function initForce(graph: Graph): Simulation<SimulationNodeDatum, undefin
  * Speeds up graph cooling. Calculate final stable positions of each node and then
  * transition them from their current positions, so that we don't have to render
  * every frame.
+ * @param graph Graph that is being fast-forwarded
  */
-export function fastForceConvergence(graph: Graph): void {
+export async function fastForceConvergence(graph: Graph): Promise<void> {
   const nodeTransitionMs = 500;
   const linkTransitionMs = 75;
 
@@ -55,13 +62,17 @@ export function fastForceConvergence(graph: Graph): void {
     .delay(nodeTransitionMs)
     .duration(linkTransitionMs)
     .style('opacity', 1)
-    .on('end', () => {
-      // TODO: center around most recently expanded node, not root
-      graph.zoom.translateGraphAroundNode(
-        getDataFromSelection(graph.nodes.filter((n) => n.id === '1'))[0],
-      );
-    });
+    .end()
+    .then(
+      () => {
+        // TODO: center around most recently expanded node, not root
+        graph.zoom.translateGraphAroundNode(
+          getDataFromSelection(graph.nodes.filter((n) => n.id === '1'))[0],
+        );
+      },
+      () => {},
+    );
 
   setNodePositions(nodeInput);
-  setLinkPositions(linkInput);
+  setLinkPositions(graph.links);
 }

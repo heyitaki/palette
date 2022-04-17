@@ -66,10 +66,9 @@ export default class Graph {
         this.contextMenu.closeMenu();
         classNodes(this, this.nodes, NodeClass.Selected, false);
         clearTimeout(this.doubleClickTimer);
-        this.grid.displayGrid(!this.grid.showGridLines);
       });
     this.container = this.canvas.append('g').attr('class', 'graph');
-    this.grid = new Grid(this, true);
+    this.grid = new Grid(this, false);
     this.zoom = new Zoom(this);
     handleResize(this, graphContainerId);
     this.brush = new Brush(this);
@@ -91,7 +90,7 @@ export default class Graph {
     // Display root node and neighbors
     this.zoom.translateGraphAroundPoint(0, 0);
     const root = this.server.getRoot();
-    this.adjacencyMap.addNodes(root, true);
+    this.adjacencyMap.addNodes(root, false);
     loadGraphData(this, this.server.getNeighbors(root.id));
 
     // addLinkText(this, this.adjacencyMap.getLinks());

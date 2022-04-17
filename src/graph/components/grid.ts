@@ -53,7 +53,7 @@ export default class Grid {
 
   updateGrid(): void {
     if (this.showGridLines) {
-      const currScale = this.graph.zoom?.getScale() || ZOOM_SCALE_INTIAL;
+      const currScale = this.graph.zoom?.getTransform().k || ZOOM_SCALE_INTIAL;
       const prevNumSquaresX = this.numSquaresX || 0;
       this.numSquaresX = this.graph.width / GRID_SQUARE_WIDTH / currScale;
       this.numSquaresY = this.graph.height / GRID_SQUARE_WIDTH / currScale;

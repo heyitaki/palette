@@ -11,7 +11,6 @@ export default class Brush {
   brush;
   isBrushing: boolean;
   gBrush: Selection<SVGGElement, unknown, HTMLElement, any>;
-  gLasso: Selection<SVGGElement, unknown, HTMLElement, any>;
 
   constructor(graph: Graph) {
     this.graph = graph;
@@ -85,12 +84,12 @@ export default class Brush {
     // Modifier is no longer pressed
     this.graph.isModifierPressed = false;
 
-    // Remove brush (zoom/pan functionality restored automatically)
+    // Remove brush, which automatically restores zooming and panning functionality
     this.removeBrush();
   }
 
   private addBrush() {
-    if (this.gBrush || this.gLasso) return;
+    if (this.gBrush) return;
     this.gBrush = this.brushContainer.append('g').attr('class', 'brush');
     this.gBrush.call(this.brush);
   }
