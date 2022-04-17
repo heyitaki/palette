@@ -49,9 +49,7 @@ export default class Circle extends Node {
       .attr('dominant-baseline', 'central')
       .attr('font-family', 'FontAwesome')
       .attr('font-size', '21px')
-      .text((d) => {
-        return ' '; //TODO
-      })
+      .text((n: Node) => '') // TODO: add icon
       .classed('unselectable', true);
 
     gNode

@@ -7,6 +7,7 @@ import {
   Simulation,
   SimulationNodeDatum,
 } from 'd3-force';
+import { LinkSelection } from '../../types';
 import { VELOCITY_DECAY } from '../constants/graph';
 import Graph from '../Graph';
 import { getDataFromSelection } from '../selection';
@@ -35,44 +36,27 @@ export function initForce(graph: Graph): Simulation<SimulationNodeDatum, undefin
  * every frame.
  * @param graph Graph that is being fast-forwarded
  */
-export async function fastForceConvergence(graph: Graph): Promise<void> {
-  const nodeTransitionMs = 500;
-  const linkTransitionMs = 75;
-
-  // Necessary to not trigger rendering in ticked
-  graph.fastConvergence = true;
+export async function fastForceConvergence(graph: Graph, newLinks?: LinkSelection): Promise<void> {
+  const DURATION_MS = 400;
 
   // Loop force.tick until graph is cooled
   graph.force.alpha(1).stop();
   while (graph.force.alpha() >= graph.force.alphaMin()) graph.force.tick();
 
-  // Fade links out so we don't have to deal with/render them during the transition
-  // aesthetics.removeLinkText.bind(graph)();
-  graph.links.transition('link-opacity').duration(0).style('opacity', 0).remove();
+  // Hide new links and display them after final node/link positions have been calculated
+  if (newLinks) {
+    // aesthetics.removeLinkText.bind(graph)();
+    newLinks.style('display', 'none');
+    newLinks.transition('link-display').delay(DURATION_MS).duration(0).style('display', '');
+  }
 
-  // Translate nodes over half a second
-  const nodeInput = graph.nodes
-    .transition('node-opacity')
-    .duration(nodeTransitionMs)
-    .style('opacity', 1);
+  // Center graph on root node
+  // TODO: center around most recently expanded node, not root
+  graph.zoom.translateGraphAroundNode(
+    getDataFromSelection(graph.nodes.filter((n) => n.id === '1'))[0],
+  );
 
-  // Wait for nodes to translate, then add links back
-  const linkInput = graph.links
-    .transition('link-opacity')
-    .delay(nodeTransitionMs)
-    .duration(linkTransitionMs)
-    .style('opacity', 1)
-    .end()
-    .then(
-      () => {
-        // TODO: center around most recently expanded node, not root
-        graph.zoom.translateGraphAroundNode(
-          getDataFromSelection(graph.nodes.filter((n) => n.id === '1'))[0],
-        );
-      },
-      () => {},
-    );
-
-  setNodePositions(nodeInput);
-  setLinkPositions(graph.links);
+  // Update positions of nodes and links
+  setNodePositions(graph.nodes.transition('node-transition').duration(DURATION_MS));
+  setLinkPositions(graph.links.transition('link-transition').duration(DURATION_MS));
 }

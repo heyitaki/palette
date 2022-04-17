@@ -24,20 +24,17 @@ export default class Graph {
   adjacencyMap: AdjacencyMap;
   brush: Brush;
   canvas: Selection<SVGGElement, unknown, HTMLElement, any>;
-  clickedNodeId: string;
   container: Selection<SVGGElement, unknown, HTMLElement, any>;
   contextMenu: ContextMenu;
   defs: Selection<SVGDefsElement, unknown, HTMLElement, any>;
-  doubleClickTimer;
   drag: Drag;
-  fastConvergence: boolean;
   force: Simulation<SimulationNodeDatum, undefined>;
   grid: Grid;
   height: number;
   isModifierPressed: boolean;
+  lastExpandedNodes: Node[];
   links: LinkSelection;
   linkContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
-  linkEnter: Selection<SVGPathElement, Link, SVGGElement, unknown>;
   linkText: Selection<BaseType, unknown, SVGGElement, unknown>;
   nodes: NodeSelection;
   nodeContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
@@ -46,12 +43,7 @@ export default class Graph {
   zoom: Zoom;
 
   constructor(graphContainerId: string) {
-    // Double click handler
-    this.clickedNodeId = null;
-    this.doubleClickTimer = null;
-
     this.isModifierPressed = false;
-    this.fastConvergence = true;
     this.initGraph(graphContainerId);
   }
 
@@ -65,7 +57,6 @@ export default class Graph {
       .on('click', () => {
         this.contextMenu.closeMenu();
         classNodes(this, this.nodes, NodeClass.Selected, false);
-        clearTimeout(this.doubleClickTimer);
       });
     this.container = this.canvas.append('g').attr('class', 'graph');
     this.grid = new Grid(this, false);
@@ -91,6 +82,7 @@ export default class Graph {
     this.zoom.translateGraphAroundPoint(0, 0);
     const root = this.server.getRoot();
     this.adjacencyMap.addNodes(root, false);
+    this.lastExpandedNodes = [this.adjacencyMap.getNodes(root.id)[0]];
     loadGraphData(this, this.server.getNeighbors(root.id));
 
     // addLinkText(this, this.adjacencyMap.getLinks());
@@ -107,7 +99,7 @@ export default class Graph {
 
     // Update links, for new links, increment weights of source/target nodes.
     const linkSelection = this.links.data(links, (l: Link) => l.id);
-    this.linkEnter = linkSelection
+    const linkEnter = linkSelection
       .enter()
       .append('path')
       .attr('class', 'link')
@@ -117,7 +109,7 @@ export default class Graph {
         l.source.weight++;
         l.target.weight++;
       });
-    setLinkColor(this, this.linkEnter, '#545454');
+    setLinkColor(this, linkEnter, '#545454');
 
     // For removed links, decrement weights of source/target nodes
     linkSelection
@@ -159,7 +151,6 @@ export default class Graph {
       .text((n: Node) => getNumLinksToExpand(n))
       .classed('hidden', (n: Node) => !isExpandable(n));
 
-    if (this.fastConvergence) fastForceConvergence(this);
-    else this.force.restart();
+    fastForceConvergence(this, linkEnter);
   }
 }

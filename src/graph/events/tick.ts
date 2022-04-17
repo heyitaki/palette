@@ -8,6 +8,7 @@ import { getDistance } from '../utils';
  * @param graph
  */
 export function tick(graph: Graph): void {
+  console.log('tick');
   setNodePositions(graph.nodes);
   setLinkPositions(graph.links);
 }
