@@ -1,3 +1,6 @@
+/**
+ * Simple implementation of a point. Contains x and y coordinates.
+ */
 export default class Point {
   public x: number;
   public y: number;

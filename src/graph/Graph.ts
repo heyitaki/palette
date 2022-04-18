@@ -23,10 +23,10 @@ import { hash } from './utils';
 export default class Graph {
   adjacencyMap: AdjacencyMap;
   brush: Brush;
-  canvas: Selection<SVGGElement, unknown, HTMLElement, any>;
-  container: Selection<SVGGElement, unknown, HTMLElement, any>;
+  canvas: Selection<SVGGElement, any, HTMLElement, any>;
+  container: Selection<SVGGElement, any, HTMLElement, any>;
   contextMenu: ContextMenu;
-  defs: Selection<SVGDefsElement, unknown, HTMLElement, any>;
+  defs: Selection<SVGDefsElement, any, HTMLElement, any>;
   drag: Drag;
   force: Simulation<SimulationNodeDatum, undefined>;
   grid: Grid;
@@ -34,20 +34,20 @@ export default class Graph {
   isModifierPressed: boolean;
   lastExpandedNodes: Node[];
   links: LinkSelection;
-  linkContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
-  linkText: Selection<BaseType, unknown, SVGGElement, unknown>;
+  linkContainer: Selection<SVGGElement, any, HTMLElement, any>;
+  linkText: Selection<BaseType, any, SVGGElement, any>;
   nodes: NodeSelection;
-  nodeContainer: Selection<SVGGElement, unknown, HTMLElement, any>;
+  nodeContainer: Selection<SVGGElement, any, HTMLElement, any>;
   server: Server;
   width: number;
   zoom: Zoom;
 
+  /**
+   * Initialize different components of the graph and selectors that are used in helper functions.
+   * Adds root node and each of its neighbors to the graph as its starting state.
+   * @param graphContainerId The ID to assign to the graph container
+   */
   constructor(graphContainerId: string) {
-    this.isModifierPressed = false;
-    this.initGraph(graphContainerId);
-  }
-
-  private initGraph(graphContainerId: string) {
     // Graph components
     this.canvas = select('#' + graphContainerId)
       .append('svg')
@@ -69,6 +69,7 @@ export default class Graph {
     this.contextMenu = new ContextMenu(this);
     this.server = new Server();
     this.adjacencyMap = new AdjacencyMap(this);
+    this.isModifierPressed = false;
 
     // Selectors
     this.linkContainer = this.container.append('g').attr('class', 'links');
@@ -88,7 +89,12 @@ export default class Graph {
     // addLinkText(this, this.adjacencyMap.getLinks());
   }
 
-  updateGraph() {
+  /**
+   * Update the graph to reflect changes to the underlying adjacency map. New nodes/links are
+   * added to the graph, and old nodes/links are removed. The force simulation is also fast-
+   * forwarded to avoid scenarios in which graph cooling can take a long time.
+   */
+  update(): void {
     const nodes: Node[] = this.adjacencyMap.getNodes();
     const links: Link[] = this.adjacencyMap.getLinks();
 
@@ -145,12 +151,12 @@ export default class Graph {
 
     // Update node glyphs
     this.nodes.select('.node-glyph-top').classed('hidden', (n: Node) => !isExpandable(n));
-
     this.nodes
       .select('.node-glyph-top-text')
       .text((n: Node) => getNumLinksToExpand(n))
       .classed('hidden', (n: Node) => !isExpandable(n));
 
+    // Fast-forward graph to stable state
     fastForceConvergence(this, linkEnter);
   }
 }

@@ -100,7 +100,7 @@ export default class AdjacencyMap {
       this.addLinks(deferredLinkData);
     }
 
-    if (update) this.graph.updateGraph();
+    if (update) this.graph.update();
   };
 
   /**
@@ -137,7 +137,7 @@ export default class AdjacencyMap {
       }
     }
 
-    if (update) this.graph.updateGraph();
+    if (update) this.graph.update();
   };
 
   /**
@@ -169,7 +169,7 @@ export default class AdjacencyMap {
       this.nodeIdToNodeObj.delete(nodeId);
     }
 
-    if (update) this.graph.updateGraph();
+    if (update) this.graph.update();
   };
 
   /**
@@ -191,7 +191,7 @@ export default class AdjacencyMap {
       this.linkIdToLinkObj.delete(currLink.id);
     }
 
-    if (update) this.graph.updateGraph();
+    if (update) this.graph.update();
   };
 
   /**
