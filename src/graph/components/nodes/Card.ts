@@ -7,7 +7,8 @@ import Graph from '../../Graph';
 import Point from '../../Point';
 import { getDistance } from '../../utils';
 import Link from '../links/Link';
-import Node, { setNodeColor } from './Node';
+import Node from './Node';
+import { setNodeColor } from './utils';
 
 export default class Card extends Node {
   height: number;

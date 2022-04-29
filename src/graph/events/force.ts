@@ -37,7 +37,7 @@ export function initForce(graph: Graph): Simulation<SimulationNodeDatum, undefin
  * @param graph Graph that is being fast-forwarded
  */
 export async function fastForceConvergence(graph: Graph, newLinks?: LinkSelection): Promise<void> {
-  const DURATION_MS = 400;
+  const duration = 400;
 
   // Loop force.tick until graph is cooled
   graph.force.alpha(1).stop();
@@ -47,7 +47,7 @@ export async function fastForceConvergence(graph: Graph, newLinks?: LinkSelectio
   if (newLinks) {
     // aesthetics.removeLinkText.bind(graph)();
     newLinks.style('display', 'none');
-    newLinks.transition('link-display').delay(DURATION_MS).duration(0).style('display', '');
+    newLinks.transition('link-display').delay(duration).duration(0).style('display', '');
   }
 
   // Center graph on root node
@@ -57,6 +57,6 @@ export async function fastForceConvergence(graph: Graph, newLinks?: LinkSelectio
   );
 
   // Update positions of nodes and links
-  setNodePositions(graph.nodes.transition('node-transition').duration(DURATION_MS));
-  setLinkPositions(graph.links.transition('link-transition').duration(DURATION_MS));
+  setNodePositions(graph.nodes.transition('node-transition').duration(duration));
+  setLinkPositions(graph.links.transition('link-transition').duration(duration));
 }

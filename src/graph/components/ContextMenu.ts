@@ -29,7 +29,7 @@ export default class ContextMenu {
     this.isOpen = false;
   }
 
-  openMenu = (n: Node, i: number) => {
+  public openMenu = (n: Node, i: number) => {
     this.closeMenu();
     this.isOpen = true;
     this.menuItems = getMenuItems(this.graph);
@@ -93,6 +93,14 @@ export default class ContextMenu {
     event.stopPropagation();
   };
 
+  public closeMenu = () => {
+    if (this.isOpen) {
+      select('.d3-context-menu').remove();
+      select('body').on('mousedown.d3-context-menu', null);
+      this.isOpen = false;
+    }
+  };
+
   private createNestedMenu = (
     parent: MenuSelection,
     root: ContextMenu,
@@ -140,14 +148,6 @@ export default class ContextMenu {
           root.createNestedMenu(children, root, n, i, nodes, ++depth);
         }
       });
-  };
-
-  closeMenu = () => {
-    if (this.isOpen) {
-      select('.d3-context-menu').remove();
-      select('body').on('mousedown.d3-context-menu', null);
-      this.isOpen = false;
-    }
   };
 }
 

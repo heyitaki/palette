@@ -1,5 +1,6 @@
 import { LinkSelection, NodeSelection } from '../../types';
-import Link, { getLinkColor, setLinkColor } from '../components/links/Link';
+import Link from '../components/links/Link';
+import { getLinkColor, setLinkColor } from '../components/links/utils';
 import NodeClass from '../enums/NodeClass';
 import Graph from '../Graph';
 

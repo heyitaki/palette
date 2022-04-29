@@ -1,5 +1,7 @@
+import { selectAll } from 'd3-selection';
 import { LinkSelection, LinkTransition, NodeSelection, NodeTransition } from '../../types';
 import Link from '../components/links/Link';
+import { hideLongLinkText, rotateLinkText } from '../components/links/utils';
 import Graph from '../Graph';
 import { getDistance } from '../utils';
 
@@ -11,6 +13,7 @@ export function tick(graph: Graph): void {
   console.log('tick');
   setNodePositions(graph.nodes);
   setLinkPositions(graph.links);
+  setLinkTextPositions();
 }
 
 /**
@@ -41,9 +44,10 @@ export function setLinkPositions(links: LinkSelection | LinkTransition): void {
  * stays centered on link text. Hide link texts that are too short for the link.
  */
 export function setLinkTextPositions() {
-  // this.linkContainer.selectAll('.link-text')
-  //         .attr('transform', aesthetics.rotateLinkText)
-  //     .select('textPath')
-  //         .each(aesthetics.hideLongLinkText);
-  // this.link.attr('stroke-dasharray', aesthetics.createLinkTextBackground);
+  selectAll('.link')
+    .selectAll('.link-title')
+    .attr('transform', rotateLinkText)
+    .select('textPath')
+    .each(hideLongLinkText);
+  // this.link.attr('stroke-dasharray', createLinkTextBackground);
 }

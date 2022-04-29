@@ -11,7 +11,7 @@ export function getAllNodes(graph: Graph): NodeSelection {
 }
 
 export function getAllLinks(graph: Graph): LinkSelection {
-  return graph.linkContainer.selectAll('.link');
+  return graph.linkContainer.selectAll('.link-body');
 }
 
 /**

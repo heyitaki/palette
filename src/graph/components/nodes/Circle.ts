@@ -8,7 +8,8 @@ import Graph from '../../Graph';
 import Point from '../../Point';
 import { getDistance } from '../../utils';
 import Link from '../links/Link';
-import Node, { setNodeColor, wrapNodeText } from './Node';
+import Node from './Node';
+import { setNodeColor, wrapNodeText } from './utils';
 
 export default class Circle extends Node {
   constructor(data: NodeData, graph: Graph) {

@@ -6,7 +6,8 @@ import { loadGraphData, stopPropagation } from '../utils';
 import AdjacencyMap from './AdjacencyMap';
 import ContextMenu from './components/ContextMenu';
 import Grid from './components/Grid';
-import Link, { addLinkText, setLinkColor } from './components/links/Link';
+import Link from './components/links/Link';
+import { addLinkText, setLinkColor } from './components/links/utils';
 import Node from './components/nodes/Node';
 import { LINK_STROKE_WIDTH } from './constants/graph';
 import NodeClass from './enums/NodeClass';
@@ -18,7 +19,6 @@ import Zoom from './events/Zoom';
 import { getAllLinks, getAllNodes } from './selection';
 import { getNumLinksToExpand, isExpandable } from './state/expand';
 import { classNodes } from './state/select';
-import { hash } from './utils';
 
 export default class Graph {
   adjacencyMap: AdjacencyMap;
@@ -35,7 +35,6 @@ export default class Graph {
   lastExpandedNodes: Node[];
   links: LinkSelection;
   linkContainer: Selection<SVGGElement, any, HTMLElement, any>;
-  linkText: Selection<BaseType, any, SVGGElement, any>;
   nodes: NodeSelection;
   nodeContainer: Selection<SVGGElement, any, HTMLElement, any>;
   server: Server;
@@ -73,9 +72,7 @@ export default class Graph {
 
     // Selectors
     this.linkContainer = this.container.append('g').attr('class', 'links');
-    // this.linkText = this.linkContainer.selectAll('.link-text');
-    this.linkText = this.linkContainer.selectAll('.link-text > textPath');
-    this.links = this.linkContainer.selectAll('.link');
+    this.links = this.linkContainer.selectAll('.link-body');
     this.nodeContainer = this.container.append('g').attr('class', 'nodes');
     this.nodes = this.nodeContainer.selectAll('.node');
 
@@ -86,7 +83,7 @@ export default class Graph {
     this.lastExpandedNodes = [this.adjacencyMap.getNodes(root.id)[0]];
     loadGraphData(this, this.server.getNeighbors(root.id));
 
-    // addLinkText(this, this.adjacencyMap.getLinks());
+    addLinkText(this, this.adjacencyMap.getLinks());
   }
 
   /**
@@ -107,9 +104,11 @@ export default class Graph {
     const linkSelection = this.links.data(links, (l: Link) => l.id);
     const linkEnter = linkSelection
       .enter()
-      .append('path')
+      .append('g')
       .attr('class', 'link')
-      .attr('id', (l: Link) => `link-${hash(l.id)}`)
+      .append('path')
+      .attr('class', 'link-body')
+      .attr('id', (l: Link) => `link-${l.id}`)
       .style('stroke-width', LINK_STROKE_WIDTH + 'px')
       .each((l: Link) => {
         l.source.weight++;

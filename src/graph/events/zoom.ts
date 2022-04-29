@@ -5,9 +5,6 @@ import Node from '../components/nodes/Node';
 import Graph from '../Graph';
 import Point from '../Point';
 
-/**
- *
- */
 export default class Zoom {
   graph: Graph;
   isZooming: boolean;
