@@ -1,4 +1,4 @@
-path.link {
+path.link-body {
   stroke: #999;
   opacity: 1;
   transition-property: opacity;
@@ -7,15 +7,15 @@ path.link {
   cursor: pointer;
 }
 
-path.link.hidden {
+path.link-body.hidden {
   stroke-width: 0;
 }
 
-path.link.selected {
+path.link-body.selected {
   stroke: #0d77e2;
 }
 
-path.link.possible {
+path.link-body.possible {
   stroke: #519dea;
 }
 
