@@ -1,8 +1,10 @@
 import { color } from 'd3-color';
 import { select, selectAll } from 'd3-selection';
-import { LinkSelection } from '../../../types';
+import { LinkSelection, LinkTextPathSelection } from '../../../types';
 import { toFunction } from '../../../utils';
+import { LINK_TITLE_PADDING } from '../../constants/graph';
 import Graph from '../../Graph';
+import { getAllLinkText } from '../../selection';
 import { colorToHex, getDistance } from '../../utils';
 import Link from './Link';
 
@@ -64,16 +66,16 @@ export function setLinkColor(
     });
 }
 
-export const addLinkText = (graph: Graph, links: Link[]) => {
-  const linkTitles = selectAll('.link')
-    .selectAll('.link-title')
-    .data(
-      (l: Link) => {
-        console.log(l);
-        return [l];
-      },
-      (l: Link) => l.id,
-    );
+/**
+ * Append link titles to all visible links.
+ * @param graph Graph that contains links to add titles to
+ * @param links Specific links to add titles to
+ */
+export const addLinkTitles = (graph: Graph, links: Link[]) => {
+  const linkTitles = getAllLinkText(graph).data(
+    (l: Link) => [l],
+    (l: Link) => l.id,
+  );
 
   linkTitles
     .enter()
@@ -81,20 +83,30 @@ export const addLinkText = (graph: Graph, links: Link[]) => {
     .attr('class', 'link-title')
     .attr('text-anchor', 'middle')
     .attr('dy', '.3em')
-    .attr('transform', rotateLinkText)
+    .attr('transform', rotateLinkTitle)
     .append('textPath')
+    .attr('id', (l: Link) => `text-${l.id}`)
     .attr('startOffset', '50%')
     .attr('xlink:href', (l: Link) => `#link-${l.id}`)
     .attr('length', (l: Link) => l.length)
-    .text((l: Link) => l.title)
-    .each(hideLongLinkText);
+    .text((l: Link) => l.title);
   // .style('opacity', 0);
+
+  graph.links.attr('stroke-dasharray', (l: Link) => createLinkTextBackground(graph, l));
 };
 
-export const rotateLinkText = (l: Link) => {
+/**
+ * Ensures that the link title associated with the given link is always right side up by
+ * calculating the transformation necessary to rotate the link title 180 degrees about its center
+ * if necessary.
+ * @param l Datum of link to calculate rotation of
+ * @returns Transformation to rotate link title
+ */
+export const rotateLinkTitle = (l: Link): string => {
   // Do nothing if link doesn't have custom attributes or is forward-facing
-  if (!l.source.x || !l.source.y || !l.target.x || !l.target.y || l.source.x < l.target.x)
+  if (!l.source.x || !l.source.y || !l.target.x || !l.target.y || l.source.x < l.target.x) {
     return '';
+  }
 
   // Calculate center of l and return rotation transform about center
   const centerX = l.source.x + (l.target.x - l.source.x) / 2;
@@ -102,10 +114,35 @@ export const rotateLinkText = (l: Link) => {
   return `rotate(180 ${centerX} ${centerY})`;
 };
 
-export function hideLongLinkText(l: Link) {
-  const textPath = select(this);
+/**
+ * Because link titles are positioned on top of links, links will show underneath some letters. In
+ * order to avoid this, we can either create a background rectangle behind the link title to hide
+ * the link or hide that portion of the link that intersects with the link title. This method uses
+ * approach #2 so as to not introduce more elements into the DOM.
+ *
+ * Additionally, hides the link title if it is longer than the length of the link that it is
+ * attached to.
+ *
+ * TODO: change path to draw 2 separate lines as opposed to exploiting stroke-dasharray.
+ * @param l Datum of link that link title is attached to
+ */
+export const createLinkTextBackground = (graph: Graph, l: Link) => {
+  // Select corresponding textPath of link by id, which is set in `addLinkTitles`
+  const textPath: LinkTextPathSelection = graph.linkContainer.select(`#text-${l.id}`);
+
+  // Don't partition link if there is no corresponding textPath or if there is no title
+  if (textPath.empty() || !textPath.text()) return 'none';
+
+  // Compute distance for displayed link partitions and space in between (where title shows)
   const textLength =
     textPath.node().getComputedTextLength() + textPath.node().getNumberOfChars() * 2 - 10;
-  const pathLength = getDistance(l.source.x, l.source.y, l.target.x, l.target.y);
-  textPath.classed('hidden', textLength > pathLength - 15);
-}
+  const lineLength = l.length - textLength;
+
+  // Hide the link title if it is longer than the length of the link that it is attached to
+  const isLonger = textLength > (l.length || 0) - LINK_TITLE_PADDING;
+  textPath.classed('hidden', isLonger);
+  if (isLonger) return 'none';
+
+  // Account for padding in between text and link partitions
+  return `${(lineLength - LINK_TITLE_PADDING) / 2} ${textLength + LINK_TITLE_PADDING}`;
+};

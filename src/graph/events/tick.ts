@@ -1,8 +1,8 @@
-import { selectAll } from 'd3-selection';
 import { LinkSelection, LinkTransition, NodeSelection, NodeTransition } from '../../types';
 import Link from '../components/links/Link';
-import { hideLongLinkText, rotateLinkText } from '../components/links/utils';
+import { createLinkTextBackground, rotateLinkTitle } from '../components/links/utils';
 import Graph from '../Graph';
+import { getAllLinkText } from '../selection';
 import { getDistance } from '../utils';
 
 /**
@@ -13,7 +13,7 @@ export function tick(graph: Graph): void {
   console.log('tick');
   setNodePositions(graph.nodes);
   setLinkPositions(graph.links);
-  setLinkTextPositions();
+  setLinkTextPositions(graph);
 }
 
 /**
@@ -43,11 +43,7 @@ export function setLinkPositions(links: LinkSelection | LinkTransition): void {
  * Update position and angle of link texts. Ensure that link text background
  * stays centered on link text. Hide link texts that are too short for the link.
  */
-export function setLinkTextPositions() {
-  selectAll('.link')
-    .selectAll('.link-title')
-    .attr('transform', rotateLinkText)
-    .select('textPath')
-    .each(hideLongLinkText);
-  // this.link.attr('stroke-dasharray', createLinkTextBackground);
+export function setLinkTextPositions(graph: Graph) {
+  getAllLinkText(graph).attr('transform', rotateLinkTitle).select('textPath');
+  graph.links.attr('stroke-dasharray', (l: Link) => createLinkTextBackground(graph, l));
 }

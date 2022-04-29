@@ -7,7 +7,7 @@ import AdjacencyMap from './AdjacencyMap';
 import ContextMenu from './components/ContextMenu';
 import Grid from './components/Grid';
 import Link from './components/links/Link';
-import { addLinkText, setLinkColor } from './components/links/utils';
+import { addLinkTitles, setLinkColor } from './components/links/utils';
 import Node from './components/nodes/Node';
 import { LINK_STROKE_WIDTH } from './constants/graph';
 import NodeClass from './enums/NodeClass';
@@ -83,7 +83,7 @@ export default class Graph {
     this.lastExpandedNodes = [this.adjacencyMap.getNodes(root.id)[0]];
     loadGraphData(this, this.server.getNeighbors(root.id));
 
-    addLinkText(this, this.adjacencyMap.getLinks());
+    addLinkTitles(this, this.adjacencyMap.getLinks());
   }
 
   /**
