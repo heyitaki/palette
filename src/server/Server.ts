@@ -3,7 +3,7 @@ import Node from '../graph/components/nodes/Node';
 import LinkTransformer from '../transformers/LinkTransformer';
 import NodeTransformer from '../transformers/NodeTransformer';
 import { toArray } from '../utils';
-import { links, nodes } from './data/data';
+import { links, nodes } from './data/three_nodes';
 import GraphData from './GraphData';
 import LinkData from './LinkData';
 import NodeData from './NodeData';

@@ -22,7 +22,7 @@ export default class Circle extends Node {
       n.onRightClick(n, i, this);
     });
 
-    const gNodeBody = gNode.append('g').attr('class', 'node-body');
+    const gNodeBody = gNode.append('g').attr('class', 'node-body-container');
     // .on('mouseenter', function (d) { console.log(d); })
     // .on('mouseleave', function (d) { events.mouseleave.bind(self)(d, this); });
 

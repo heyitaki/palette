@@ -3,9 +3,9 @@
 export const nodes = `[
   {
     "id": "1",
-    "type": "card",
-    "title": "Hi! I'm Akshath.",
-    "description": "Click this box to learn more about the things I love 😊",
+    "type": "person",
+    "title": "Akshath Sivaprasad",
+    "description": "This is a test.",
     "url": "",
     "icon": "",
     "color": ""

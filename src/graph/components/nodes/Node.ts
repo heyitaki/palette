@@ -18,15 +18,17 @@ export default class Node {
   description?: string;
   dragDistance?: number;
   fixed?: boolean;
-  fx?: number;
-  fy?: number;
+  fx?: number; // d3 internals
+  fy?: number; // d3 internals
   possible?: boolean;
   selected?: boolean;
   saveRadical?: boolean;
   totalLinks?: number;
   url?: string;
-  x?: number;
-  y?: number;
+  vx?: number; // d3 internals
+  vy?: number; // d3 internals
+  x?: number; // d3 internals
+  y?: number; // d3 internals
 
   constructor(data: NodeData, graph: Graph) {
     this.graph = graph;

@@ -1,30 +1,3 @@
-.node {
-  opacity: 1;
-  transition-property: stroke-opacity, fill-opacity;
-  transition-delay: 0ms;
-  transition-duration: 50ms;
-}
-
-.node-title,
-.node-title tspan {
-  font-family: 'Avenir LT Std', 'Open Sans', sans-serif;
-  stroke: #fafafa;
-  stroke-width: 3px;
-  paint-order: stroke;
-  font-size: 16px;
-  fill: #545454;
-  font-weight: 900;
-  cursor: default;
-}
-
-.node-title.on-body {
-  stroke: #545454;
-  fill: #fafafa;
-  cursor: pointer;
-  font-size: 24px;
-  stroke-width: 3.5px;
-}
-
 .node .node-body {
   cursor: pointer;
 }
@@ -58,7 +31,6 @@
 }
 
 .node circle.node-glyph-top {
-  /*stroke: #fff !important;*/
   fill: #fff !important;
   stroke-width: 3px;
 }
@@ -95,4 +67,16 @@
 .node.possible text.node-glyph-top-text {
   stroke: #519dea !important;
   fill: #519dea !important;
+}
+
+.node-title,
+.node-title tspan {
+  font-family: 'Avenir LT Std', 'Open Sans', sans-serif;
+  stroke: #fafafa;
+  stroke-width: 3px;
+  paint-order: stroke;
+  font-size: 16px;
+  fill: #545454;
+  font-weight: 900;
+  cursor: default;
 }

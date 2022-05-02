@@ -13,7 +13,8 @@ export const NODE_THIN_CARD_HEIGHT = 75;
 export const LINK_STROKE_WIDTH = 2.7;
 export const LINK_DISTANCE = 100;
 export const MARKER_PADDING = 7;
-export const LINK_TITLE_PADDING = 15;
+export const LINK_TITLE_PADDING = 10;
+export const LINK_TRANSITION_DURATION = 400;
 
 // Force
 export const ALPHA_TARGET = 0;

@@ -82,8 +82,6 @@ export default class Graph {
     this.adjacencyMap.addNodes(root, false);
     this.lastExpandedNodes = [this.adjacencyMap.getNodes(root.id)[0]];
     loadGraphData(this, this.server.getNeighbors(root.id));
-
-    addLinkTitles(this, this.adjacencyMap.getLinks());
   }
 
   /**
@@ -125,12 +123,16 @@ export default class Graph {
       })
       .remove();
 
+    // Add link titles for new links
+    const linkTitleEnter = addLinkTitles(this, linkSelection.enter());
+
     // Update nodes
     const nodeSelection = this.nodes.data(nodes, (n: Node) => n.id);
     const gNode = nodeSelection
       .enter()
       .append('g')
       .attr('class', 'node')
+      .attr('id', (n: Node) => `node-${n.id}`)
       .on('click', function (n, i) {
         n.onClick(n, i, this);
       })
@@ -156,6 +158,6 @@ export default class Graph {
       .classed('hidden', (n: Node) => !isExpandable(n));
 
     // Fast-forward graph to stable state
-    fastForceConvergence(this, linkEnter);
+    fastForceConvergence(this, linkEnter, linkTitleEnter);
   }
 }

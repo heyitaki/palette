@@ -3,17 +3,17 @@
 export const nodes = `[
   {
     "id": "1",
-    "type": "intro",
-    "title": "Hi! I'm Akshath.",
-    "description": "Click this box to learn more about the things I love 😊",
+    "type": "person",
+    "title": "Akshath Sivaprasad",
+    "description": "This is a test.",
     "url": "",
     "icon": "",
     "color": ""
   },
   {
     "id": "2",
-    "type": "topic",
-    "title": "Family",
+    "type": "company",
+    "title": "Jane Street",
     "description": "",
     "url": "",
     "icon": "",
@@ -39,8 +39,8 @@ export const links = `[
   },
   {
     "id": "2",
-    "title": "",
-    "sourceId": "1",
+    "title": "works at",
+    "sourceId": "3",
     "targetId": "2"
   }
 ]`;

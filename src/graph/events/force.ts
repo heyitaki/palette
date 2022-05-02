@@ -7,11 +7,13 @@ import {
   Simulation,
   SimulationNodeDatum,
 } from 'd3-force';
-import { LinkSelection } from '../../types';
-import { VELOCITY_DECAY } from '../constants/graph';
+import { interpolate } from 'd3-interpolate';
+import { LinkSelection, LinkTitleSelection } from '../../types';
+import { LINK_TRANSITION_DURATION, VELOCITY_DECAY } from '../constants/graph';
 import Graph from '../Graph';
+import Point from '../Point';
 import { getDataFromSelection } from '../selection';
-import { setLinkPositions, setNodePositions, tick } from './tick';
+import { setLinkPositions, setLinkTextPositions, setNodePositions, tick } from './tick';
 
 /**
  * Create a force simulation for the graph. This is used to update the positions of nodes
@@ -36,18 +38,44 @@ export function initForce(graph: Graph): Simulation<SimulationNodeDatum, undefin
  * every frame.
  * @param graph Graph that is being fast-forwarded
  */
-export async function fastForceConvergence(graph: Graph, newLinks?: LinkSelection): Promise<void> {
-  const duration = 400;
+export async function fastForceConvergence(
+  graph: Graph,
+  newLinks?: LinkSelection,
+  newLinkTitles?: LinkTitleSelection,
+): Promise<void> {
+  // Get the current positions of all nodes
+  const positions: { [id: string]: { initial?: Point; final?: Point } } = {};
+  graph.nodes.each((n) => {
+    positions[n.id] = {};
+    positions[n.id].initial = new Point(n.x, n.y);
+  });
 
   // Loop force.tick until graph is cooled
   graph.force.alpha(1).stop();
   while (graph.force.alpha() >= graph.force.alphaMin()) graph.force.tick();
 
+  // Get the final positions of all nodes
+  graph.nodes.each((n) => (positions[n.id].final = new Point(n.x, n.y)));
+
   // Hide new links and display them after final node/link positions have been calculated
   if (newLinks) {
-    // aesthetics.removeLinkText.bind(graph)();
     newLinks.style('display', 'none');
-    newLinks.transition('link-display').delay(duration).duration(0).style('display', '');
+    newLinks
+      .transition('link-display')
+      .delay(LINK_TRANSITION_DURATION)
+      .duration(0)
+      .style('display', 'block');
+  }
+
+  // Hide new link titles and display them after final node/link positions have been calculated
+  if (newLinkTitles) {
+    newLinkTitles.style('display', 'none');
+    newLinkTitles
+      .transition('link-title-display')
+      .delay(LINK_TRANSITION_DURATION)
+      .duration(0)
+      .style('display', 'block')
+      .on('end', () => setLinkTextPositions(graph));
   }
 
   // Center graph on root node
@@ -57,6 +85,19 @@ export async function fastForceConvergence(graph: Graph, newLinks?: LinkSelectio
   );
 
   // Update positions of nodes and links
-  setNodePositions(graph.nodes.transition('node-transition').duration(duration));
-  setLinkPositions(graph.links.transition('link-transition').duration(duration));
+  graph.nodes
+    .transition('node-transition')
+    .duration(LINK_TRANSITION_DURATION)
+    .attrTween('transform', function (d, i, nodes) {
+      return function (t) {
+        const currPos = interpolate(positions[d.id].initial, positions[d.id].final)(t);
+        d.x = currPos.x;
+        d.y = currPos.y;
+        setLinkTextPositions(graph);
+        return `translate(${currPos.x}, ${currPos.y})`;
+      };
+    });
+  // setNodePositions(graph.nodes.transition('node-transition').duration(LINK_TRANSITION_DURATION));
+  setLinkPositions(graph.links.transition('link-transition').duration(LINK_TRANSITION_DURATION));
+  setLinkTextPositions(graph);
 }

@@ -1,10 +1,10 @@
 import { color } from 'd3-color';
 import { select, selectAll } from 'd3-selection';
-import { LinkSelection, LinkTextPathSelection } from '../../../types';
+import { LinkSelection, LinkTextPathSelection, LinkTitleSelection } from '../../../types';
 import { toFunction } from '../../../utils';
 import { LINK_TITLE_PADDING } from '../../constants/graph';
 import Graph from '../../Graph';
-import { getAllLinkText } from '../../selection';
+import { getLinkTitles } from '../../selection';
 import { colorToHex, getDistance } from '../../utils';
 import Link from './Link';
 
@@ -71,28 +71,30 @@ export function setLinkColor(
  * @param graph Graph that contains links to add titles to
  * @param links Specific links to add titles to
  */
-export const addLinkTitles = (graph: Graph, links: Link[]) => {
-  const linkTitles = getAllLinkText(graph).data(
+export const addLinkTitles = (graph: Graph, links: LinkSelection): LinkTitleSelection => {
+  const linkTitleSelection = getLinkTitles(graph).data(
     (l: Link) => [l],
     (l: Link) => l.id,
   );
 
-  linkTitles
+  const linkTitleEnter: LinkTitleSelection = linkTitleSelection
     .enter()
     .append('text')
     .attr('class', 'link-title')
     .attr('text-anchor', 'middle')
     .attr('dy', '.3em')
-    .attr('transform', rotateLinkTitle)
+    .attr('transform', rotateLinkTitle);
+
+  linkTitleEnter
     .append('textPath')
     .attr('id', (l: Link) => `text-${l.id}`)
     .attr('startOffset', '50%')
     .attr('xlink:href', (l: Link) => `#link-${l.id}`)
     .attr('length', (l: Link) => l.length)
     .text((l: Link) => l.title);
-  // .style('opacity', 0);
 
-  graph.links.attr('stroke-dasharray', (l: Link) => createLinkTextBackground(graph, l));
+  graph.links.attr('stroke-dasharray', (l: Link) => createLinkTitleBackground(graph, l));
+  return linkTitleEnter;
 };
 
 /**
@@ -104,10 +106,12 @@ export const addLinkTitles = (graph: Graph, links: Link[]) => {
  */
 export const rotateLinkTitle = (l: Link): string => {
   // Do nothing if link doesn't have custom attributes or is forward-facing
+  console.log(1, l.source.x, l.source.y);
   if (!l.source.x || !l.source.y || !l.target.x || !l.target.y || l.source.x < l.target.x) {
+    console.log(2);
     return '';
   }
-
+  console.log(3);
   // Calculate center of l and return rotation transform about center
   const centerX = l.source.x + (l.target.x - l.source.x) / 2;
   const centerY = l.source.y + (l.target.y - l.source.y) / 2;
@@ -126,16 +130,16 @@ export const rotateLinkTitle = (l: Link): string => {
  * TODO: change path to draw 2 separate lines as opposed to exploiting stroke-dasharray.
  * @param l Datum of link that link title is attached to
  */
-export const createLinkTextBackground = (graph: Graph, l: Link) => {
+export const createLinkTitleBackground = (graph: Graph, l: Link) => {
   // Select corresponding textPath of link by id, which is set in `addLinkTitles`
   const textPath: LinkTextPathSelection = graph.linkContainer.select(`#text-${l.id}`);
 
   // Don't partition link if there is no corresponding textPath or if there is no title
-  if (textPath.empty() || !textPath.text()) return 'none';
+  const numChars = textPath.node()?.getNumberOfChars();
+  if (textPath.empty() || !textPath.text() || !numChars) return 'none';
 
   // Compute distance for displayed link partitions and space in between (where title shows)
-  const textLength =
-    textPath.node().getComputedTextLength() + textPath.node().getNumberOfChars() * 2 - 10;
+  const textLength = textPath.node().getComputedTextLength() + numChars * 2 - 10;
   const lineLength = l.length - textLength;
 
   // Hide the link title if it is longer than the length of the link that it is attached to

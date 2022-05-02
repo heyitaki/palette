@@ -1,6 +1,6 @@
 import { color } from 'd3-color';
 import { select } from 'd3-selection';
-import { NodeSelection, NodeTextSelection } from '../../../types';
+import { NodeSelection, NodeTitleSelection } from '../../../types';
 import { TYPES_TO_COLORS } from '../../constants/mappings';
 import PrintState from '../../enums/PrintState';
 import { getDataFromSelection } from '../../selection';
@@ -53,7 +53,7 @@ export function setNodeColor(node: NodeSelection, nodeColor?: string) {
  * @param width Max width of text
  */
 export function wrapNodeText(
-  textSelection: NodeTextSelection,
+  textSelection: NodeTitleSelection,
   printState: PrintState,
   width: number = 100,
 ) {
