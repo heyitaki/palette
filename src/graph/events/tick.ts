@@ -1,5 +1,4 @@
-import { select } from 'd3-selection';
-import { LinkSelection, LinkTransition, NodeSelection, NodeTransition } from '../../types';
+import { LinkBodySelection, LinkTransition, NodeSelection, NodeTransition } from '../../types';
 import Link from '../components/links/Link';
 import { createLinkTitleBackground, rotateLinkTitle } from '../components/links/utils';
 import Graph from '../Graph';
@@ -11,8 +10,8 @@ import { getDistance } from '../utils';
  * @param graph Graph to update
  */
 export function tick(graph: Graph): void {
-  setNodePositions(graph.nodes);
-  setLinkPositions(graph.links);
+  setNodePositions(graph.refs.nodes);
+  setLinkPositions(graph.refs.linkBodies);
   setLinkTextPositions(graph);
 }
 
@@ -30,7 +29,7 @@ export function setNodePositions(nodes: NodeSelection | NodeTransition): void {
  * edges as opposed to centers.
  * @param links Object containing list of links to update
  */
-export function setLinkPositions(links: LinkSelection | LinkTransition): void {
+export function setLinkPositions(links: LinkBodySelection | LinkTransition): void {
   links.attr('d', (l: Link): string => {
     const sourcePos = l.source.getLinkPosition(l);
     const targetPos = l.target.getLinkPosition(l);
@@ -45,7 +44,9 @@ export function setLinkPositions(links: LinkSelection | LinkTransition): void {
  * @param graph Graph containing links to update
  * @param links Specific links to update
  */
-export function setLinkTextPositions(graph: Graph, links?: LinkSelection): void {
+export function setLinkTextPositions(graph: Graph, links?: LinkBodySelection): void {
   getLinkTitles(graph, links).attr('transform', rotateLinkTitle);
-  (links || graph.links).attr('stroke-dasharray', (l: Link) => createLinkTitleBackground(graph, l));
+  (links || graph.refs.linkBodies).attr('stroke-dasharray', (l: Link) =>
+    createLinkTitleBackground(graph, l),
+  );
 }

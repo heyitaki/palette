@@ -22,7 +22,7 @@ export default class Grid {
   displayGrid(showGridLines: boolean): void {
     this.showGridLines = showGridLines;
     if (showGridLines) {
-      this.grid = this.graph.container.append('g').lower().attr('class', 'grid');
+      this.grid = this.graph.refs.graphContainer.append('g').lower().attr('class', 'grid');
       this.gridX = this.grid.append('g').attr('class', 'grid-x');
       this.gridY = this.grid.append('g').attr('class', 'grid-y');
       this.updateGrid();

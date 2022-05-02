@@ -80,7 +80,7 @@ export default class Drag {
     if (n.dragDistance > dragTolerance) {
       if (n.selected && this.graph.isModifierPressed) {
         // Drag all selected nodes together
-        this.graph.nodes
+        this.graph.refs.nodes
           .filter((dx) => {
             return dx.selected;
           })

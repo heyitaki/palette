@@ -1,7 +1,23 @@
-import { LinkSelection, LinkTitleSelection, NodeSelection } from '../types';
-import Link from './components/links/Link';
+import {
+  GroupSelection,
+  LinkBodySelection,
+  LinkSelection,
+  LinkTitleSelection,
+  NodeSelection,
+} from '../types';
 import Node from './components/nodes/Node';
 import Graph from './Graph';
+import { Selection } from 'd3-selection';
+
+export class GraphSelections {
+  canvasContainer: GroupSelection;
+  defs: Selection<SVGDefsElement, any, HTMLElement, any>;
+  graphContainer: GroupSelection;
+  linkBodies: LinkBodySelection;
+  linkContainer: GroupSelection;
+  nodeContainer: GroupSelection;
+  nodes: NodeSelection;
+}
 
 /**
  *
@@ -9,7 +25,7 @@ import Graph from './Graph';
  * @returns
  */
 export function getAllNodes(graph: Graph): NodeSelection {
-  return graph.nodeContainer.selectAll('.node');
+  return graph.refs.nodeContainer.selectAll('.node');
 }
 
 /**
@@ -18,7 +34,7 @@ export function getAllNodes(graph: Graph): NodeSelection {
  * @returns
  */
 export function getSelectedNodes(graph: Graph): NodeSelection {
-  return graph.nodeContainer.selectAll('.node.selected');
+  return graph.refs.nodeContainer.selectAll('.node.selected');
 }
 
 /**
@@ -26,8 +42,8 @@ export function getSelectedNodes(graph: Graph): NodeSelection {
  * @param graph
  * @returns
  */
-export function getAllLinks(graph: Graph): LinkSelection {
-  return graph.linkContainer.selectAll('.link-body');
+export function getAllLinkBodies(graph: Graph): LinkBodySelection {
+  return graph.refs.linkContainer.selectAll('.link-body');
 }
 
 /**
@@ -38,7 +54,7 @@ export function getAllLinks(graph: Graph): LinkSelection {
  * @returns A D3 selection of the specified link title elements.
  */
 export function getLinkTitles(graph: Graph, links?: LinkSelection): LinkTitleSelection {
-  return (links || graph.linkContainer.selectAll('.link')).selectAll('.link-title');
+  return (links || graph.refs.linkContainer.selectAll('.link')).selectAll('.link-title');
 }
 
 /**

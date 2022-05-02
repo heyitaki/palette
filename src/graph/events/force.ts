@@ -1,19 +1,13 @@
-import {
-  forceLink,
-  forceManyBody,
-  forceSimulation,
-  forceX,
-  forceY,
-  Simulation,
-  SimulationNodeDatum,
-} from 'd3-force';
+import { forceLink, forceManyBody, forceSimulation, forceX, forceY, Simulation } from 'd3-force';
 import { interpolate } from 'd3-interpolate';
-import { LinkSelection, LinkTitleSelection } from '../../types';
+import { LinkBodySelection, LinkTitleSelection } from '../../types';
 import { LINK_TRANSITION_DURATION, VELOCITY_DECAY } from '../constants/graph';
 import Graph from '../Graph';
 import Point from '../Point';
 import { getDataFromSelection } from '../selection';
-import { setLinkPositions, setLinkTextPositions, setNodePositions, tick } from './tick';
+import { setLinkPositions, setLinkTextPositions, tick } from './tick';
+import Node from '../components/nodes/Node';
+import Link from '../components/links/Link';
 
 /**
  * Create a force simulation for the graph. This is used to update the positions of nodes
@@ -21,7 +15,7 @@ import { setLinkPositions, setLinkTextPositions, setNodePositions, tick } from '
  * @param graph Graph for which the created simulation will act upon
  * @returns Force simulation for the given graph
  */
-export function initForce(graph: Graph): Simulation<SimulationNodeDatum, undefined> {
+export function initForce(graph: Graph): Simulation<Partial<Node>, Link> {
   return forceSimulation()
     .force('link', forceLink().distance(200).strength(1).iterations(3))
     .force('charge', forceManyBody().strength(-15000).distanceMax(10000).theta(0.75))
@@ -40,12 +34,12 @@ export function initForce(graph: Graph): Simulation<SimulationNodeDatum, undefin
  */
 export async function fastForceConvergence(
   graph: Graph,
-  newLinks?: LinkSelection,
+  newLinkBodies?: LinkBodySelection,
   newLinkTitles?: LinkTitleSelection,
 ): Promise<void> {
   // Get the current positions of all nodes
   const positions: { [id: string]: { initial?: Point; final?: Point } } = {};
-  graph.nodes.each((n) => {
+  graph.refs.nodes.each((n) => {
     positions[n.id] = {};
     positions[n.id].initial = new Point(n.x, n.y);
   });
@@ -55,12 +49,12 @@ export async function fastForceConvergence(
   while (graph.force.alpha() >= graph.force.alphaMin()) graph.force.tick();
 
   // Get the final positions of all nodes
-  graph.nodes.each((n) => (positions[n.id].final = new Point(n.x, n.y)));
+  graph.refs.nodes.each((n) => (positions[n.id].final = new Point(n.x, n.y)));
 
   // Hide new links and display them after final node/link positions have been calculated
-  if (newLinks) {
-    newLinks.style('display', 'none');
-    newLinks
+  if (newLinkBodies) {
+    newLinkBodies.style('display', 'none');
+    newLinkBodies
       .transition('link-display')
       .delay(LINK_TRANSITION_DURATION)
       .duration(0)
@@ -81,11 +75,11 @@ export async function fastForceConvergence(
   // Center graph on root node
   // TODO: center around most recently expanded node, not root
   graph.zoom.translateGraphAroundNode(
-    getDataFromSelection(graph.nodes.filter((n) => n.id === '1'))[0],
+    getDataFromSelection(graph.refs.nodes.filter((n) => n.id === '1'))[0],
   );
 
   // Update positions of nodes and links
-  graph.nodes
+  graph.refs.nodes
     .transition('node-transition')
     .duration(LINK_TRANSITION_DURATION)
     .attrTween('transform', function (d, i, nodes) {
@@ -98,6 +92,8 @@ export async function fastForceConvergence(
       };
     });
   // setNodePositions(graph.nodes.transition('node-transition').duration(LINK_TRANSITION_DURATION));
-  setLinkPositions(graph.links.transition('link-transition').duration(LINK_TRANSITION_DURATION));
+  setLinkPositions(
+    graph.refs.linkBodies.transition('link-transition').duration(LINK_TRANSITION_DURATION),
+  );
   setLinkTextPositions(graph);
 }

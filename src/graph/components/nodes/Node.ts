@@ -68,7 +68,7 @@ export default class Node {
     const currNode: NodeSelection = select(nodeRef);
     if (!this.graph.isModifierPressed) {
       // Unselect all other nodes, select current node
-      classNodes(this.graph, this.graph.nodes, NodeClass.Selected, false);
+      classNodes(this.graph, this.graph.refs.nodes, NodeClass.Selected, false);
       classNodes(this.graph, currNode, NodeClass.Selected, true);
     } else {
       // State of other nodes unchanged, toggle selection of current node
@@ -84,7 +84,7 @@ export default class Node {
   onRightClick(n: Node, i: number, nodeRef: SVGElement) {
     if (!n.selected) {
       const currNode: NodeSelection = select(nodeRef);
-      classNodes(this.graph, this.graph.nodes, NodeClass.Selected, false);
+      classNodes(this.graph, this.graph.refs.nodes, NodeClass.Selected, false);
       classNodes(this.graph, currNode, NodeClass.Selected, true);
     }
 

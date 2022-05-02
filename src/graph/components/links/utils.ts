@@ -1,6 +1,11 @@
 import { color } from 'd3-color';
 import { select, selectAll } from 'd3-selection';
-import { LinkSelection, LinkTextPathSelection, LinkTitleSelection } from '../../../types';
+import {
+  LinkBodySelection,
+  LinkSelection,
+  LinkTextPathSelection,
+  LinkTitleSelection,
+} from '../../../types';
 import { toFunction } from '../../../utils';
 import { LINK_TITLE_PADDING } from '../../constants/graph';
 import Graph from '../../Graph';
@@ -30,7 +35,7 @@ export function getLinkColor(link: Link) {
  */
 export function setLinkColor(
   graph: Graph,
-  links: LinkSelection,
+  links: LinkBodySelection,
   linkColor: string | ((l?: Link) => string),
 ) {
   if (!links || links.empty()) return;
@@ -41,8 +46,8 @@ export function setLinkColor(
 
       // If marker def doesn't exist for given color, create it.
       const id: string = `#defs-link-${linkColor.substring(1)}`;
-      if (graph.defs.select(id).empty()) {
-        graph.defs
+      if (graph.refs.defs.select(id).empty()) {
+        graph.refs.defs
           .append('marker')
           .attr('id', id.substring(1))
           .attr('viewBox', '5 -5 10 10')
@@ -93,7 +98,7 @@ export const addLinkTitles = (graph: Graph, links: LinkSelection): LinkTitleSele
     .attr('length', (l: Link) => l.length)
     .text((l: Link) => l.title);
 
-  graph.links.attr('stroke-dasharray', (l: Link) => createLinkTitleBackground(graph, l));
+  graph.refs.linkBodies.attr('stroke-dasharray', (l: Link) => createLinkTitleBackground(graph, l));
   return linkTitleEnter;
 };
 
@@ -132,7 +137,7 @@ export const rotateLinkTitle = (l: Link): string => {
  */
 export const createLinkTitleBackground = (graph: Graph, l: Link) => {
   // Select corresponding textPath of link by id, which is set in `addLinkTitles`
-  const textPath: LinkTextPathSelection = graph.linkContainer.select(`#text-${l.id}`);
+  const textPath: LinkTextPathSelection = graph.refs.linkContainer.select(`#text-${l.id}`);
 
   // Don't partition link if there is no corresponding textPath or if there is no title
   const numChars = textPath.node()?.getNumberOfChars();

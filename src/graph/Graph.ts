@@ -1,7 +1,6 @@
-import { ForceLink, Simulation, SimulationNodeDatum } from 'd3-force';
-import { BaseType, select, Selection } from 'd3-selection';
+import { ForceLink, Simulation } from 'd3-force';
+import { select } from 'd3-selection';
 import Server from '../server/Server';
-import { LinkSelection, NodeSelection } from '../types';
 import { loadGraphData, stopPropagation } from '../utils';
 import AdjacencyMap from './AdjacencyMap';
 import ContextMenu from './components/ContextMenu';
@@ -16,27 +15,21 @@ import Drag from './events/Drag';
 import { fastForceConvergence, initForce } from './events/force';
 import { handleResize } from './events/resize';
 import Zoom from './events/Zoom';
-import { getAllLinks, getAllNodes } from './selection';
+import { getAllLinkBodies, getAllNodes, GraphSelections } from './selection';
 import { getNumLinksToExpand, isExpandable } from './state/expand';
 import { classNodes } from './state/select';
 
 export default class Graph {
   adjacencyMap: AdjacencyMap;
   brush: Brush;
-  canvas: Selection<SVGGElement, any, HTMLElement, any>;
-  container: Selection<SVGGElement, any, HTMLElement, any>;
   contextMenu: ContextMenu;
-  defs: Selection<SVGDefsElement, any, HTMLElement, any>;
   drag: Drag;
-  force: Simulation<SimulationNodeDatum, undefined>;
+  force: Simulation<Partial<Node>, Link>;
   grid: Grid;
   height: number;
   isModifierPressed: boolean;
   lastExpandedNodes: Node[];
-  links: LinkSelection;
-  linkContainer: Selection<SVGGElement, any, HTMLElement, any>;
-  nodes: NodeSelection;
-  nodeContainer: Selection<SVGGElement, any, HTMLElement, any>;
+  refs: GraphSelections;
   server: Server;
   width: number;
   zoom: Zoom;
@@ -48,33 +41,34 @@ export default class Graph {
    */
   constructor(graphContainerId: string) {
     // Graph components
-    this.canvas = select('#' + graphContainerId)
+    this.refs = new GraphSelections();
+    this.refs.canvasContainer = select('#' + graphContainerId)
       .append('svg')
       .attr('id', 'graph-canvas')
       .attr('pointer-events', 'all')
       .classed('svg-content', true)
       .on('click', () => {
         this.contextMenu.closeMenu();
-        classNodes(this, this.nodes, NodeClass.Selected, false);
+        classNodes(this, this.refs.nodes, NodeClass.Selected, false);
       });
-    this.container = this.canvas.append('g').attr('class', 'graph');
+    this.refs.graphContainer = this.refs.canvasContainer.append('g').attr('class', 'graph');
     this.grid = new Grid(this, false);
     this.zoom = new Zoom(this);
     handleResize(this, graphContainerId);
     this.brush = new Brush(this);
     this.force = initForce(this);
     this.drag = new Drag(this);
-    this.defs = this.canvas.append('defs');
+    this.refs.defs = this.refs.canvasContainer.append('defs');
     this.contextMenu = new ContextMenu(this);
     this.server = new Server();
     this.adjacencyMap = new AdjacencyMap(this);
     this.isModifierPressed = false;
 
     // Selectors
-    this.linkContainer = this.container.append('g').attr('class', 'links');
-    this.links = this.linkContainer.selectAll('.link-body');
-    this.nodeContainer = this.container.append('g').attr('class', 'nodes');
-    this.nodes = this.nodeContainer.selectAll('.node');
+    this.refs.linkContainer = this.refs.graphContainer.append('g').attr('class', 'links');
+    this.refs.linkBodies = this.refs.linkContainer.selectAll('.link-body');
+    this.refs.nodeContainer = this.refs.graphContainer.append('g').attr('class', 'nodes');
+    this.refs.nodes = this.refs.nodeContainer.selectAll('.node');
 
     // Display root node and neighbors
     this.zoom.translateGraphAroundPoint(0, 0);
@@ -90,6 +84,7 @@ export default class Graph {
    * forwarded to avoid scenarios in which graph cooling can take a long time.
    */
   update(): void {
+    // Fetch nodes and links that are currently visible
     const nodes: Node[] = this.adjacencyMap.getNodes();
     const links: Link[] = this.adjacencyMap.getLinks();
 
@@ -99,8 +94,8 @@ export default class Graph {
     this.force.force<ForceLink<Node, Link>>('link').links(links);
 
     // Update links, for new links, increment weights of source/target nodes.
-    const linkSelection = this.links.data(links, (l: Link) => l.id);
-    const linkEnter = linkSelection
+    const linkSelection = this.refs.linkBodies.data(links, (l: Link) => l.id);
+    const newLinkBodies = linkSelection
       .enter()
       .append('g')
       .attr('class', 'link')
@@ -112,7 +107,7 @@ export default class Graph {
         l.source.weight++;
         l.target.weight++;
       });
-    setLinkColor(this, linkEnter, '#545454');
+    setLinkColor(this, newLinkBodies, '#545454');
 
     // For removed links, decrement weights of source/target nodes
     linkSelection
@@ -124,11 +119,11 @@ export default class Graph {
       .remove();
 
     // Add link titles for new links
-    const linkTitleEnter = addLinkTitles(this, linkSelection.enter());
+    const newLinkTitles = addLinkTitles(this, linkSelection.enter());
 
     // Update nodes
-    const nodeSelection = this.nodes.data(nodes, (n: Node) => n.id);
-    const gNode = nodeSelection
+    const nodeSelection = this.refs.nodes.data(nodes, (n: Node) => n.id);
+    const newNodes = nodeSelection
       .enter()
       .append('g')
       .attr('class', 'node')
@@ -141,23 +136,23 @@ export default class Graph {
       })
       .on('mousedown', stopPropagation)
       .call(this.drag.get());
-    gNode.each(function (n: Node) {
+    newNodes.each(function (n: Node) {
       n.renderNode(this);
     });
     nodeSelection.exit().remove();
 
     // Update selectors
-    this.links = getAllLinks(this);
-    this.nodes = getAllNodes(this);
+    this.refs.linkBodies = getAllLinkBodies(this);
+    this.refs.nodes = getAllNodes(this);
 
     // Update node glyphs
-    this.nodes.select('.node-glyph-top').classed('hidden', (n: Node) => !isExpandable(n));
-    this.nodes
+    this.refs.nodes.select('.node-glyph-top').classed('hidden', (n: Node) => !isExpandable(n));
+    this.refs.nodes
       .select('.node-glyph-top-text')
       .text((n: Node) => getNumLinksToExpand(n))
       .classed('hidden', (n: Node) => !isExpandable(n));
 
     // Fast-forward graph to stable state
-    fastForceConvergence(this, linkEnter, linkTitleEnter);
+    fastForceConvergence(this, newLinkBodies, newLinkTitles);
   }
 }

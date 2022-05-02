@@ -1,4 +1,4 @@
-import { LinkSelection, NodeSelection } from '../../types';
+import { LinkBodySelection, NodeSelection } from '../../types';
 import Link from '../components/links/Link';
 import { getLinkColor, setLinkColor } from '../components/links/utils';
 import NodeClass from '../enums/NodeClass';
@@ -20,7 +20,7 @@ export function classNodes(
   toggle: boolean = false,
 ) {
   nodes.classed(className, (n) => (n[className] = toggle ? !n[className] : isClassed));
-  classLinks(graph, graph.links, className);
+  classLinks(graph, graph.refs.linkBodies, className);
 }
 
 /**
@@ -35,7 +35,7 @@ export function classNodes(
  */
 export function classLinks(
   graph: Graph,
-  links: LinkSelection,
+  links: LinkBodySelection,
   className: NodeClass,
   isClassed?: boolean,
   toggle: boolean = false,

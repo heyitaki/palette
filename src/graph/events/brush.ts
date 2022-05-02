@@ -19,7 +19,9 @@ export default class Brush {
   }
 
   private initBrush() {
-    this.brushContainer = this.graph.canvas.append('g').attr('class', 'brush-container');
+    this.brushContainer = this.graph.refs.canvasContainer
+      .append('g')
+      .attr('class', 'brush-container');
 
     this.brush = brush()
       .on('start', () => {
@@ -43,22 +45,22 @@ export default class Brush {
   }
 
   private onBrushStart() {
-    classNodes(this.graph, this.graph.nodes, NodeClass.Selected, false);
+    classNodes(this.graph, this.graph.refs.nodes, NodeClass.Selected, false);
     this.isBrushing = true;
   }
 
   private onBrush() {
     const extent = event.selection;
-    this.graph.nodes.classed('possible', (d) => {
+    this.graph.refs.nodes.classed('possible', (d) => {
       const center = d.getCenter(),
-        transform = zoomTransform(this.graph.canvas.node()),
+        transform = zoomTransform(this.graph.refs.canvasContainer.node()),
         x = center.x * transform.k + transform.x,
         y = center.y * transform.k + transform.y;
       return (d.possible =
         extent[0][0] <= x && x <= extent[1][0] && extent[0][1] <= y && y <= extent[1][1]);
     });
 
-    const possibleNodes = this.graph.nodes.filter((n) => n.possible);
+    const possibleNodes = this.graph.refs.nodes.filter((n) => n.possible);
     classNodes(this.graph, possibleNodes, NodeClass.Possible, true);
   }
 
@@ -67,7 +69,7 @@ export default class Brush {
     this.removeBrush();
 
     // Reset possible nodes and select those nodes
-    const possibleNodes = this.graph.nodes.filter('.possible');
+    const possibleNodes = this.graph.refs.nodes.filter('.possible');
     classNodes(this.graph, possibleNodes, NodeClass.Possible, false);
     classNodes(this.graph, possibleNodes, NodeClass.Selected, true);
   }

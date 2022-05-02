@@ -20,11 +20,11 @@ export default class Zoom {
       .on('start', () => this.onZoomStart())
       .on('zoom', () => this.onZoom())
       .on('end', () => this.onZoomEnd());
-    this.graph.canvas.call(this.zoom);
+    this.graph.refs.canvasContainer.call(this.zoom);
   }
 
   public getTransform(): ZoomTransform {
-    return zoomTransform(this.graph.canvas.node());
+    return zoomTransform(this.graph.refs.canvasContainer.node());
   }
 
   public translateGraphAroundNode(
@@ -67,7 +67,7 @@ export default class Zoom {
     this.graph.grid.transformGrid();
 
     // Apply transform to all other elements
-    this.graph.container.attr('transform', et);
+    this.graph.refs.graphContainer.attr('transform', et);
   }
 
   private onZoomEnd() {
@@ -88,7 +88,7 @@ export default class Zoom {
     callback?: Function,
   ) {
     this.isZooming = true;
-    this.graph.canvas
+    this.graph.refs.canvasContainer
       .transition()
       .delay(delay)
       .duration(duration)
@@ -108,7 +108,7 @@ export default class Zoom {
   private zoomByFixedScale(zoomIn: boolean): void {
     const factor = 4 / 3;
     const center = [this.graph.width / 2, this.graph.height / 2];
-    const startTransform = zoomTransform(this.graph.canvas.node());
+    const startTransform = zoomTransform(this.graph.refs.canvasContainer.node());
     const extent = this.zoom.scaleExtent();
 
     // Create object containing attributes of new view because using zoomIdentity here modifies
