@@ -1,9 +1,5 @@
 path.link-body {
-  stroke: #999;
-  opacity: 1;
-  transition-property: opacity;
-  transition-delay: 0ms;
-  transition-duration: 50ms;
+  stroke: #545454;
   cursor: pointer;
 }
 
@@ -21,7 +17,7 @@ path.link-body.possible {
 
 .link-title {
   font-family: 'Avenir LT Std', 'Open Sans', sans-serif;
-  stroke: #efefef;
+  stroke: #fafafa;
   stroke-width: 3px;
   fill: #545454;
   paint-order: stroke;
