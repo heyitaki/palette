@@ -39,6 +39,10 @@ export class GraphSelections {
    */
   linkContainer: GroupSelection;
 
+  /**
+   * A selection of all link `g` elements in the graph, each of which contains link body and link
+   * title elements.
+   */
   links: LinkSelection;
 
   /**

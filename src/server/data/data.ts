@@ -22,7 +22,7 @@ export const nodes = `[
   {
     "id": "3",
     "type": "person",
-    "title": "Dinkey Kong",
+    "title": "Danny Wang",
     "description": "",
     "url": "",
     "icon": "",
