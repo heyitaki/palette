@@ -15,7 +15,7 @@ import Drag from './events/Drag';
 import { fastForceConvergence, initForce } from './events/force';
 import { handleResize } from './events/resize';
 import Zoom from './events/Zoom';
-import { getAllLinkBodies, getAllNodes, GraphSelections } from './selection';
+import { getAllLinkBodies, getAllLinks, getAllNodes, GraphSelections } from './selection';
 import { getNumLinksToExpand, isExpandable } from './state/expand';
 import { classNodes } from './state/select';
 
@@ -66,9 +66,10 @@ export default class Graph {
 
     // Selectors
     this.refs.linkContainer = this.refs.graphContainer.append('g').attr('class', 'links');
-    this.refs.linkBodies = this.refs.linkContainer.selectAll('.link-body');
     this.refs.nodeContainer = this.refs.graphContainer.append('g').attr('class', 'nodes');
-    this.refs.nodes = this.refs.nodeContainer.selectAll('.node');
+    this.refs.linkBodies = getAllLinkBodies(this);
+    this.refs.links = getAllLinks(this);
+    this.refs.nodes = getAllNodes(this);
 
     // Display root node and neighbors
     this.zoom.translateGraphAroundPoint(0, 0);
@@ -94,7 +95,7 @@ export default class Graph {
     this.force.force<ForceLink<Node, Link>>('link').links(links);
 
     // Update links, for new links, increment weights of source/target nodes.
-    const linkSelection = this.refs.linkBodies.data(links, (l: Link) => l.id);
+    const linkSelection = this.refs.links.data(links, (l: Link) => l.id);
     const newLinkBodies = linkSelection
       .enter()
       .append('g')
@@ -143,6 +144,7 @@ export default class Graph {
 
     // Update selectors
     this.refs.linkBodies = getAllLinkBodies(this);
+    this.refs.links = getAllLinks(this);
     this.refs.nodes = getAllNodes(this);
 
     // Update node glyphs

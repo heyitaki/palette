@@ -39,6 +39,8 @@ export class GraphSelections {
    */
   linkContainer: GroupSelection;
 
+  links: LinkSelection;
+
   /**
    * A reference to the container that holds all nodes in this graph.
    */
