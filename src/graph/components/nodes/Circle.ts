@@ -16,18 +16,23 @@ export default class Circle extends Node {
     super(data, graph);
   }
 
+  /**
+   * Render this node within the given SVG element.
+   * @param gNodeRef DOM element within which node will be rendered
+   */
   public renderNode(gNodeRef: SVGElement) {
     const gNode: NodeSelection = select(gNodeRef);
+
+    // Use custom context menu for nodes
     gNode.on('contextmenu', function (n, i) {
       n.onRightClick(n, i, this);
     });
 
+    // Add node body
     const gNodeBody = gNode.append('g').attr('class', 'node-body-container');
-    // .on('mouseenter', function (d) { console.log(d); })
-    // .on('mouseleave', function (d) { events.mouseleave.bind(self)(d, this); });
-
     gNodeBody.append('circle').attr('class', 'node-body').attr('r', NODE_CIRCLE_RADIUS);
 
+    // Add background for glyph
     gNodeBody
       .append('circle')
       .attr('class', 'node-glyph-top')
@@ -35,6 +40,7 @@ export default class Circle extends Node {
       .attr('cx', 18)
       .attr('cy', -19);
 
+    // Add text for glyph, which will show number of unexpanded links from/to this node
     gNodeBody
       .append('text')
       .attr('class', 'node-glyph-top-text')
@@ -43,16 +49,7 @@ export default class Circle extends Node {
       .attr('text-anchor', 'middle')
       .classed('unselectable', true);
 
-    gNodeBody
-      .append('text')
-      .attr('class', 'node-icon')
-      .attr('text-anchor', 'middle')
-      .attr('dominant-baseline', 'central')
-      .attr('font-family', 'FontAwesome')
-      .attr('font-size', '21px')
-      .text((n: Node) => '') // TODO: add icon
-      .classed('unselectable', true);
-
+    // Add node title
     gNode
       .append('text')
       .attr('class', 'node-title')
@@ -61,17 +58,8 @@ export default class Circle extends Node {
       .classed('unselectable', true)
       .text((n: Node) => n.title)
       .call(wrapNodeText, PrintState.Full);
-    // .on('click', this.stopPropagation)
-    // .on('dblclick', this.stopPropagation)
-    // .on('mouseenter', this.stopPropagation)
-    // .on('mouseleave', this.stopPropagation)
-    // .on('mouseover', this.stopPropagation)
-    // .call(drag()
-    //     .on('start', this.stopPropagation)
-    //     .on('drag', this.stopPropagation)
-    //     .on('end', this.stopPropagation)
-    // );
 
+    // Color node based on type
     setNodeColor(gNode);
   }
 
@@ -104,6 +92,7 @@ export default class Circle extends Node {
 
   /**
    * Get the center of this node.
+   * @returns Point representing center of this node
    */
   public getCenter(): Point {
     return new Point(this.x, this.y);
