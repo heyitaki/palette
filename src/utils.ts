@@ -13,10 +13,6 @@ export function toArray<T>(input: T | T[]): T[] {
   return input instanceof Array ? input : [input];
 }
 
-export function exists(input) {
-  return !(!input && input != 0);
-}
-
 /**
  * Wrap input in function if it isn't already a function.
  * @param input Output or function that returns an output of the same type.
@@ -37,11 +33,20 @@ export function getMapVal<K, V>(map: Map<K, V>, key: K, defaultVal: V = null) {
   return map.get(key);
 }
 
+/**
+ * Shorthand to stop event propagation.
+ */
 export function stopPropagation() {
   event.stopPropagation();
 }
 
-export function loadGraphData(graph: Graph, graphData: GraphData) {
+/**
+ * Load node and link data from server into the given graph.
+ * @param graph Graph to load data into
+ * @param graphData Data of nodes and links to add to the graph
+ * @returns A promise that resolves when the data is loaded and the graph has cooled
+ */
+export function loadGraphData(graph: Graph, graphData: GraphData): Promise<void> {
   graph.adjacencyMap.addNodes(graphData.nodes);
-  graph.adjacencyMap.addLinks(graphData.links, true);
+  return graph.adjacencyMap.addLinks(graphData.links, true);
 }

@@ -3,7 +3,7 @@ import LinkData from '../server/LinkData';
 import NodeData from '../server/NodeData';
 import LinkTransformer from '../transformers/LinkTransformer';
 import NodeTransformer from '../transformers/NodeTransformer';
-import { exists, getMapVal, toArray } from '../utils';
+import { getMapVal, toArray } from '../utils';
 import Link from './components/links/Link';
 import Node from './components/nodes/Node';
 import { MALFORMED_DATA, MISSING_LINK_ID } from './constants/error';
@@ -70,7 +70,7 @@ export default class AdjacencyMap {
    * @param nodeData Either a single nodeData or list of one or more nodes to add.
    * @param update Whether or not to visually update graph to reflect changes.
    */
-  public addNodes = (nodeData: NodeData | NodeData[], update = false): void => {
+  public addNodes = (nodeData: NodeData | NodeData[], update = false): Promise<void> => {
     nodeData = toArray(nodeData);
     let nodes = NodeTransformer.nodeDataToNodeObj(nodeData, this.graph);
 
@@ -100,7 +100,7 @@ export default class AdjacencyMap {
       this.addLinks(deferredLinkData);
     }
 
-    if (update) this.graph.update();
+    if (update) return this.graph.update();
   };
 
   /**
@@ -108,17 +108,15 @@ export default class AdjacencyMap {
    * @param linkData Either a single link or a list of one or more links to add.
    * @param update Whether or not to visually update graph to reflect changes.
    */
-  public addLinks = (linkData: LinkData | LinkData[], update = false): void => {
+  public addLinks = (linkData: LinkData | LinkData[], update = false): Promise<void> => {
     linkData = _.uniqBy(toArray(linkData), (ld) => ld.id);
     linkData = _.differenceBy(linkData, this.getLinks(), (ld) => ld.id);
 
     let linkDatum: LinkData;
     for (let i = 0; i < linkData.length; i++) {
       linkDatum = linkData[i];
-      if (!linkDatum || !exists(linkDatum.id)) console.error(MISSING_LINK_ID);
-      if (!exists(linkDatum.sourceId) || !exists(linkDatum.targetId)) {
-        console.error(MALFORMED_DATA, linkDatum);
-      }
+      if (!linkDatum || !linkDatum.id) console.error(MISSING_LINK_ID);
+      if (!linkDatum.sourceId || !linkDatum.targetId) console.error(MALFORMED_DATA, linkDatum);
 
       // If source and target nodes have been added to map, add link between them
       // Else defer link until bounding nodes are added
@@ -137,7 +135,7 @@ export default class AdjacencyMap {
       }
     }
 
-    if (update) this.graph.update();
+    if (update) return this.graph.update();
   };
 
   /**
@@ -145,7 +143,7 @@ export default class AdjacencyMap {
    * @param nodes Either a single node or a list of one or more nodes to remove.
    * @param update Whether or not to visually update graph to reflect changes.
    */
-  public deleteNodes = (nodes: Node | Node[], update = false): void => {
+  public deleteNodes = (nodes: Node | Node[], update = false): Promise<void> => {
     nodes = toArray(nodes);
     let nodeId: string;
     for (let i = 0; i < nodes.length; i++) {
@@ -169,7 +167,7 @@ export default class AdjacencyMap {
       this.nodeIdToNodeObj.delete(nodeId);
     }
 
-    if (update) this.graph.update();
+    if (update) return this.graph.update();
   };
 
   /**
@@ -177,7 +175,7 @@ export default class AdjacencyMap {
    * @param links Either a single link or a list of one or more links to remove.
    * @param update Whether or not to visually update graph to reflect changes.
    */
-  public deleteLinks = (links: Link | Link[], update = false): void => {
+  public deleteLinks = (links: Link | Link[], update = false): Promise<void> => {
     links = toArray(links);
     let currLink, sourceId, targetId;
     for (let i = 0; i < links.length; i++) {
@@ -191,7 +189,7 @@ export default class AdjacencyMap {
       this.linkIdToLinkObj.delete(currLink.id);
     }
 
-    if (update) this.graph.update();
+    if (update) return this.graph.update();
   };
 
   /**

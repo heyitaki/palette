@@ -30,6 +30,7 @@ export function initForce(graph: Graph): Simulation<Partial<Node>, Link> {
  * Speeds up graph cooling. Calculate final stable positions of each node and then
  * transition them from their current positions, so that we don't have to render
  * every frame.
+ * TODO: can we replace the second two parameters with a single parameter?
  * @param graph Graph that is being fast-forwarded
  */
 export async function fastForceConvergence(
@@ -52,48 +53,61 @@ export async function fastForceConvergence(
   graph.refs.nodes.each((n) => (positions[n.id].final = new Point(n.x, n.y)));
 
   // Hide new links and display them after final node/link positions have been calculated
+  const promises: Promise<void>[] = [];
   if (newLinkBodies) {
     newLinkBodies.style('display', 'none');
-    newLinkBodies
-      .transition('link-display')
-      .delay(LINK_TRANSITION_DURATION)
-      .duration(0)
-      .style('display', 'block');
+    promises.push(
+      newLinkBodies
+        .transition('link-display')
+        .delay(LINK_TRANSITION_DURATION)
+        .duration(0)
+        .style('display', 'block')
+        .end(),
+    );
   }
 
   // Hide new link titles and display them after final node/link positions have been calculated
   if (newLinkTitles) {
     newLinkTitles.style('display', 'none');
-    newLinkTitles
-      .transition('link-title-display')
-      .delay(LINK_TRANSITION_DURATION)
-      .duration(0)
-      .style('display', 'block')
-      .on('end', () => setLinkTextPositions(graph));
+    promises.push(
+      newLinkTitles
+        .transition('link-title-display')
+        .delay(LINK_TRANSITION_DURATION)
+        .duration(0)
+        .style('display', 'block')
+        .on('end', () => setLinkTextPositions(graph))
+        .end(),
+    );
   }
 
-  // Center graph on root node
-  // TODO: center around most recently expanded node, not root
-  graph.zoom.translateGraphAroundNode(
-    getDataFromSelection(graph.refs.nodes.filter((n) => n.id === '1'))[0],
+  // Update positions of nodes. We are using `attrTween` instead of the normal `attr`, which uses
+  // D3's native interpolators, so that we can provide our own custom interpolator and add a
+  // side effect that updates each node's position during the transition. This is necessary to
+  // calculate the exact position of the link titles in `rotateLinkTitle`.
+  promises.push(
+    graph.refs.nodes
+      .transition('node-transition')
+      .duration(LINK_TRANSITION_DURATION)
+      .attrTween('transform', function (d, i, nodes) {
+        return function (t) {
+          const currPos = interpolate(positions[d.id].initial, positions[d.id].final)(t);
+          d.x = currPos.x;
+          d.y = currPos.y;
+          setLinkTextPositions(graph);
+          return `translate(${currPos.x}, ${currPos.y})`;
+        };
+      })
+      .end(),
   );
 
-  // Update positions of nodes and links
-  graph.refs.nodes
-    .transition('node-transition')
-    .duration(LINK_TRANSITION_DURATION)
-    .attrTween('transform', function (d, i, nodes) {
-      return function (t) {
-        const currPos = interpolate(positions[d.id].initial, positions[d.id].final)(t);
-        d.x = currPos.x;
-        d.y = currPos.y;
-        setLinkTextPositions(graph);
-        return `translate(${currPos.x}, ${currPos.y})`;
-      };
-    });
-  // setNodePositions(graph.nodes.transition('node-transition').duration(LINK_TRANSITION_DURATION));
-  setLinkPositions(
-    graph.refs.linkBodies.transition('link-transition').duration(LINK_TRANSITION_DURATION),
-  );
+  // Update postitions of links and link titles
+  const linkTransition = graph.refs.linkBodies
+    .transition('link-transition')
+    .duration(LINK_TRANSITION_DURATION);
+  promises.push(linkTransition.end());
+  setLinkPositions(linkTransition);
   setLinkTextPositions(graph);
+
+  // Return a promise that resolves when all transitions have finished
+  return Promise.all(promises).then();
 }

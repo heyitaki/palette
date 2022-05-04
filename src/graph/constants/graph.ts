@@ -1,6 +1,9 @@
+// Zoom
 export const ZOOM_SCALE_INTIAL = 1;
 export const ZOOM_SCALE_MIN = 0.25;
 export const ZOOM_SCALE_MAX = 10.0;
+
+// Grid
 export const GRID_SQUARE_WIDTH = 80;
 
 // Nodes
@@ -13,7 +16,7 @@ export const NODE_THIN_CARD_HEIGHT = 75;
 export const LINK_STROKE_WIDTH = 2.7;
 export const LINK_DISTANCE = 100;
 export const MARKER_PADDING = 7;
-export const LINK_TITLE_PADDING = 10;
+export const LINK_TITLE_PADDING = 7.5;
 export const LINK_TRANSITION_DURATION = 400;
 
 // Force

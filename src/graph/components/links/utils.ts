@@ -111,12 +111,10 @@ export const addLinkTitles = (graph: Graph, links: LinkSelection): LinkTitleSele
  */
 export const rotateLinkTitle = (l: Link): string => {
   // Do nothing if link doesn't have custom attributes or is forward-facing
-  console.log(1, l.source.x, l.source.y);
   if (!l.source.x || !l.source.y || !l.target.x || !l.target.y || l.source.x < l.target.x) {
-    console.log(2);
     return '';
   }
-  console.log(3);
+
   // Calculate center of l and return rotation transform about center
   const centerX = l.source.x + (l.target.x - l.source.x) / 2;
   const centerY = l.source.y + (l.target.y - l.source.y) / 2;

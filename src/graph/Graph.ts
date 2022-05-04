@@ -15,6 +15,7 @@ import Drag from './events/Drag';
 import { fastForceConvergence, initForce } from './events/force';
 import { handleResize } from './events/resize';
 import Zoom from './events/Zoom';
+import Point from './Point';
 import { getAllLinkBodies, getAllLinks, getAllNodes, GraphSelections } from './selection';
 import { getNumLinksToExpand, isExpandable } from './state/expand';
 import { classNodes } from './state/select';
@@ -72,7 +73,7 @@ export default class Graph {
     this.refs.nodes = getAllNodes(this);
 
     // Display root node and neighbors
-    this.zoom.translateGraphAroundPoint(0, 0);
+    this.zoom.translateGraphAroundPoint(new Point(0, 0));
     const root = this.server.getRoot();
     this.adjacencyMap.addNodes(root, false);
     this.lastExpandedNodes = [this.adjacencyMap.getNodes(root.id)[0]];
@@ -84,7 +85,7 @@ export default class Graph {
    * added to the graph, and old nodes/links are removed. The force simulation is also fast-
    * forwarded to avoid scenarios in which graph cooling can take a long time.
    */
-  update(): void {
+  update(): Promise<void> {
     // Fetch nodes and links that are currently visible
     const nodes: Node[] = this.adjacencyMap.getNodes();
     const links: Link[] = this.adjacencyMap.getLinks();
@@ -155,6 +156,6 @@ export default class Graph {
       .classed('hidden', (n: Node) => !isExpandable(n));
 
     // Fast-forward graph to stable state
-    fastForceConvergence(this, newLinkBodies, newLinkTitles);
+    return fastForceConvergence(this, newLinkBodies, newLinkTitles);
   }
 }
